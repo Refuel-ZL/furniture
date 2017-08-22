@@ -1,17 +1,21 @@
+'use strict'
+/*
+ * @Author: ZhaoLei 
+ * @Date: 2017-08-22 14:29:25 
+ * @Last Modified by: ZhaoLei
+ * @Last Modified time: 2017-08-22 14:43:50
+ */
 const Koa = require('koa')
-
 const app = new Koa()
-
 
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
-const static = require('koa-static')
+const staticServer = require('koa-static')
 const path = require('path')
 
 const logUtil = require('./models/log4js/log_utils')
-
 const config = require('./config')
 const index = require('./routes/index')
 
@@ -48,7 +52,7 @@ app.use(bodyparser({
     enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
-app.use(static(__dirname + '/public', {
+app.use(staticServer(__dirname + '/public', {
     // maxage: 365 * 24 * 60 * 60,//浏览器缓存时间
 
 }))
@@ -72,5 +76,5 @@ app.on('error', function(err, ctx) {
 })
 
 module.exports = app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`)
+    logUtil.writeInfo(`Listening on http://localhost:${port}`)
 })

@@ -1,3 +1,10 @@
+'use strict'
+/*
+ * @Author: ZhaoLei 
+ * @Date: 2017-08-22 14:29:25 
+ * @Last Modified by: ZhaoLei
+ * @Last Modified time: 2017-08-22 14:42:39
+ */
 var users = require('./users')
 const router = require('koa-router')()
 
