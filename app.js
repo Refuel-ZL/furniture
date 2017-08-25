@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-22 14:43:50
+ * @Last Modified time: 2017-08-25 11:57:10
  */
 const Koa = require('koa')
 const app = new Koa()
@@ -58,8 +58,8 @@ app.use(staticServer(__dirname + '/public', {
 }))
 app.use(views(path.join(__dirname, '/views'), {
     options: { settings: { views: path.join(__dirname, 'views') } },
-    map: { 'ejs': 'ejs' },
-    extension: 'ejs'
+    map: { 'html': 'ejs' },
+    extension: 'html'
 }))
 
 

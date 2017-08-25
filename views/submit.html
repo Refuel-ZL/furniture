@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%=title%>
+    </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+        
+        .panel {
+            width: 100%;
+            margin: 20px auto
+        }
+        
+        .content {
+            text-align: center;
+            padding: 30px
+        }
+        
+        .title {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="panel">
+        <div class="title">
+            <h1>用户操作</h1>
+            <h3 style="margin-top: 5px;">
+                <%=title%>
+            </h3>
+        </div>
+        <div class="content">
+            <%- content  -%>
+        </div>
+    </div>
+
+    <%- include("./footer.ejs") %>
+
+</body>
+
+</html>
