@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-25 11:57:10
+ * @Last Modified time: 2017-08-30 14:46:08
  */
 const Koa = require('koa')
 const app = new Koa()
@@ -54,7 +54,7 @@ app.use(bodyparser({
 app.use(json())
 app.use(staticServer(__dirname + '/public', {
     // maxage: 365 * 24 * 60 * 60,//浏览器缓存时间
-
+    maxage: 60
 }))
 app.use(views(path.join(__dirname, '/views'), {
     options: { settings: { views: path.join(__dirname, 'views') } },

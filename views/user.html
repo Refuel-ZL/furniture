@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>用户登记</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .reg-form {
+            max-width: 480px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        
+        .reg-form-heading {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("./header.ejs") %>
+        <script src="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
+        <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+        <div class="container">
+            <form class="form-horizontal reg-form" id="Form">
+                <h2 class="reg-form-heading">注册</h2>
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">帐户名</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="Name" placeholder="Name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-3 control-label">密码</label>
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" name="Password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputOpenid" class="col-sm-3 control-label">工位</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" id="position">
+                                <optgroup label="A生产线">
+                                        <option value="1">下料</option>
+                                        <option value="2">拼版</option>
+                                        <option value="3">刨方</option>
+                                </optgroup>
+                                <optgroup label="B生产线">
+                                        <option value="1">下料</option>
+                                        <option value="2">封边</option>
+                                        <option value="3">排钻</option>
+                                </optgroup> 
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputOpenid" class="col-sm-3 control-label">微信认证</label>
+                    <div class="col-sm-8">
+                        <div id="qrcode"></div>
+                        <input type="text" class="form-control" style="height:0px;border:0px;margin:0px;padding:0px;" name="Openid" id="Openid" placeholder="微信特征码">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-8">
+                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="submit" id="submit">注册</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <button onclick="makeqr()">生成</button>
+        <button onclick="clearqr()">清除</button>
+        <button onclick="printTest()">获取</button>
+        <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/language/zh_CN.min.js"></script>
+        <link href="https://cdn.bootcss.com/bootstrap-validator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+        <script>
+            $('#Form').bootstrapValidator({
+                message: '此值无效！',
+                verbose: false,
+                excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证  
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    message: '该值是无效的',
+                    Name: {
+                        message: '用户名是无效的',
+                        validators: {
+                            notEmpty: {
+                                message: '用户名是必需的，不能是空的'
+                            },
+                            stringLength: {
+                                min: 2,
+                                max: 10,
+                                message: '用户名必须2~10个字符'
+                            },
+                            different: {
+                                field: 'Password',
+                                message: '用户名和密码不可能是一样的'
+                            },
+                            remote: {
+                                url: '/user/check/name',
+                                delay: 2000,
+                                message: '用户名是不可用的'
+                            }
+                        }
+                    },
+                    Password: {
+                        message: '密码是无效的',
+                        validators: {
+                            notEmpty: {
+                                message: '密码是必需的，不能是空的'
+                            },
+                            stringLength: {
+                                min: 6,
+                                max: 30,
+                                message: '密码必须6~30个字符'
+                            },
+                            regexp: {
+                                regexp: /^[a-zA-Z0-9_\.]+$/,
+                                message: '密码只能由字母，数字，点和下划线组成'
+                            },
+                            different: {
+                                field: 'Name',
+                                message: '用户名和密码不可能是一样的'
+                            }
+                        }
+                    },
+                    Openid: {
+                        message: '认证码是无效的',
+                        trigger: "change",
+                        validators: {
+                            notEmpty: {
+                                message: '认证码是必需的，不能是空的'
+                            },
+                            callback: {
+                                message: 'sorry,特征码已失效，请重新获取二维码',
+                                callback: function(value, validator) {
+                                    var flag = false;
+                                    if (value != '已失效') {
+                                        flag = true;
+                                    }
+                                    return flag;
+                                }
+                            },
+                            stringLength: {
+                                min: 6,
+                                max: 30,
+                                message: '认证码必须6~30个字符'
+                            },
+                            remote: {
+                                url: '/user/check/key',
+                                delay: 2000,
+                                message: '认证码已失效'
+                            }
+                        }
+                    }
+                }
+            })
+
+            $("#Form").submit(function(ev) {
+                ev.preventDefault();
+            });
+            $("#submit").on("click", function() {
+                var bootstrapValidator = $("#Form").data('bootstrapValidator');
+                bootstrapValidator.validate();
+                if (bootstrapValidator.isValid()) {
+                    $.ajax({
+                        type: 'post',
+                        url: '/user/registe',
+                        data: $("form").serialize(),
+                        async: false,
+                        error: function(res) {
+                            console.log(res.message)
+                        },
+                        success: function(res) {
+                            if (res.code == 'ok') {
+                                // swal("Good!", "弹出了一个操作成功的提示框", "success");
+                                swal({
+                                        title: "",
+                                        text: "恭喜你注册成功",
+                                        type: "success",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "继续注册",
+                                        cancelButtonText: "返回主页",
+                                        closeOnConfirm: false,
+                                        closeOnCancel: false
+                                    },
+                                    function(isConfirm) {
+                                        if (isConfirm) {
+                                            window.location.replace(window.location.href);
+                                        } else {
+                                            window.location.href = "/"
+                                        }
+                                    });
+                            } else {
+                                console.log(res.message)
+                            }
+                        }
+                    });
+                } else return;
+
+            });
+        </script>
+        <script>
+            function printTest() {
+                var oSelect = document.getElementById('position');
+                // alert($("option:selected", oSelect).val());
+                // alert($("option:selected", oSelect).parent().index());
+                var res = $("option:selected", oSelect)
+                var ind = oSelect.selectedIndex;
+                var data = oSelect.options[oSelect.selectedIndex]
+                var val = data.value || res.val();
+                var tex = data.text || res.text();
+                var gname = data.parentNode.attributes["label"].value;
+                var gid = res.parent().index();
+                console.log({
+                    "id": ind,
+                    "val": val,
+                    "text": tex,
+                    "gname": gname,
+                    "gid": gid
+                });
+            }
+        </script>
+
+        <script type="text/javascript" src="/js/eventsource-polyfill.js"></script>
+        <script type="text/javascript" src="/js/jquery.qrcode.js"></script>
+        <script>
+            var evtSource = null
+            var lose = null
+            var t = 10 * 1000
+            $(function() {
+                makeqr(); //初始化二维码
+                // $("#position").bind("click", function() {
+                // });
+                console.log('sad');
+                // $.ajax({
+                //     url: "/control/showunit/",
+                //     dataType: "json",
+                //     success: function(data) {
+                //         $.each(data, function(index, units) {
+                //             $("#unitItem").append("<option value=" + units.id + ">" + units.unit + "</option>");
+                //         });
+                //     },
+                //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                //         alert("error");
+                //     }
+                // });
+
+
+
+            })
+
+            function makeqr(key, status) {
+                clearqr()
+                    // var status = 'invalid' //normal、invalid、error 
+                var w = 256;
+                var h = 256;
+                // var key = (new Date()).valueOf();
+                var config = {
+                    div: {
+                        id: "qrcode"
+                    },
+                    status: status || 'normal',
+                    QRcode: { //原始二维码
+                        "id": "QRcode",
+                        width: w,
+                        height: h,
+                        text: key || (new Date()).valueOf()
+                    },
+                    Qrcanvas: { //处理二维码
+                        'id': "Qrcanvas",
+                        width: w,
+                        height: h,
+                    },
+                    Qrimg: { //输出img格式二维码
+                        'id': "Qrimg",
+                    }
+                }
+                var QRcode = $('<div>');
+                QRcode.attr('id', config.QRcode.id); //为<div>添加属性id
+                // QRcode.css('float', "right"); //这里演示如何进行css操作
+                QRcode.qrcode({
+                    width: config.QRcode.width,
+                    height: config.QRcode.height,
+                    text: window.location.origin + '/user/qr?t=' + config.QRcode.text
+                }).hide();
+                $('#' + config.div.id).append(QRcode); //将二维码元素添append到页面上id为‘qrcode’的元素上
+
+                var Qrcanvas = $('<canvas>');
+                Qrcanvas.attr({
+                        id: config.Qrcanvas.id,
+                        width: config.Qrcanvas.width,
+                        height: config.Qrcanvas.height,
+                    }) //为<div>添加属性id
+
+                $('#' + config.div.id).append(Qrcanvas); //将画布元素添append到页面上id为‘qrcode’的元素上
+
+                var Qrimg = $('<img>');
+                Qrimg.attr('id', "Qrimg") //为<div>添加属性id
+                $('#' + config.div.id).append(Qrimg); //将画布元素添append到页面上id为‘qrcode’的元素上
+
+
+                var canvas = QRcode.find('canvas').get(0);
+                var oldCtx = canvas.getContext('2d');
+
+                var imgCanvas = Qrcanvas.get(0);
+                var ctx = imgCanvas.getContext('2d');
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
+                ctx.putImageData(oldCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
+                if (config.status != 'normal') {
+                    let text = "失效"; //设置文字内容  
+                    ctx.fillStyle = 'rgba(96,96,96, 0.9)';
+                    ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
+                    ctx.fillStyle = '#000000';
+                    ctx.strokStyle = 'rgb(1,1,0)';
+                    ctx.stroke = 3;
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+                    ctx.font = 'bolder 30px Helvetica';
+                    if (config.status == 'invalid') {
+                        text = "该二维码已失效"; //设置文字内容 
+                        document.getElementById("Openid").value = ''
+                    } else {
+                        text = key; //设置文字内容  
+                    }
+                    ctx.fillText(text, imgCanvas.width / 2, imgCanvas.height / 2);
+                    ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height / 2);
+                    $('#' + config.Qrimg.id).on("click", function() {
+                        makeqr('hhh' + (new Date()).valueOf())
+                    })
+
+                    $('#' + config.Qrimg.id).css("cursor", "pointer")
+                } else {
+                    /**定时作废*/
+                    lose = setTimeout(nullify, t)
+                    evtSource = new EventSource("/user/fetch?t=" + config.QRcode.text);
+                    evtSource.addEventListener("ready", function(e) {
+                        try {
+                            var res = JSON.parse(e.data)
+                            console.log(e.data)
+                            document.getElementById("Openid").value = ""
+                            if (res.value) {
+                                evtSource.close();
+                                clearTimeout(lose)
+                                makeqr('已扫描', 'ok')
+                                $('#' + config.Qrimg.id).unbind("click");
+                                $("#Openid").val(res.value.openid).change(); //赋值并触发校验
+                            }
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }, false);
+                }
+                imgCanvas.style.display = 'none';
+                $('#' + config.Qrimg.id).attr('src', imgCanvas.toDataURL('image/png'))
+                $("#" + config.QRcode.id).remove();
+                $("#" + config.Qrcanvas.id).remove();
+            }
+
+            function clearqr() {
+                $('#qrcode').html("");
+                if (evtSource) {
+                    evtSource.close();
+                    evtSource = null
+                }
+                clearTimeout(lose)
+            }
+
+            function nullify() {
+                makeqr('该二维码已失效', 'invalid')
+            }
+        </script>
+
+        <%- include("./footer.ejs") %>
+</body>
+
+</html>

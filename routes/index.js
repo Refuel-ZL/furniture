@@ -3,11 +3,9 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-25 15:08:05
+ * @Last Modified time: 2017-08-31 10:24:37
  */
-var users = require('./users')
 var wx = require('./wx')
-var Wechat = require('../wechat/wechat')
 const router = require('koa-router')()
 var CryptoJS = require('crypto-js')
 const logUtil = require('../models/log4js/log_utils')
@@ -18,8 +16,10 @@ var productutil = require('../service/product')
 
 const config = require('../config/index')
 var urlencode = require('urlencode')
+var Wechat = require('../wechat/wechat')
 
 var wechatApi = new Wechat(config.wechat)
+var users = require('./users')
 
 
 var outtime = 10 * 60 * 1000 //二维码超时
@@ -33,8 +33,7 @@ router.get('/', async(ctx, next) => {
         content: '恭喜你操作成功'
     }
 
-    // await ctx.render('index', ctx.state)
-    await ctx.render('submit', ctx.state)
+    await ctx.render('index', ctx.state)
 })
 
 router.all('/reguser', async(ctx, next) => { //扫描二维码注册
