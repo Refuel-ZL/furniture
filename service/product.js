@@ -3,13 +3,15 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-25 15:11:28
+ * @Last Modified time: 2017-09-01 16:10:44
  */
 const consql = require('../models/sqlite/util')
 const logUtil = require('../models/log4js/log_utils')
 var config = require('./config')
 const async = require('async')
 const Promise = require('bluebird')
+const util = require('util')
+
 
 var moment = require('moment-timezone')
 moment.tz.setDefault('Asia/Shanghai')
@@ -82,10 +84,64 @@ exports = module.exports = {
             logUtil.writeErr('提交工作异常', JSON.stringify(error))
             return '错误'
         }
+    },
+    getlog: async function(idlist, item) {
+        // let sql1 = 'UPDATE product SET step = $step,state=$state where item_no = $itemno'
+        var res = ''
+        try {
+            res = await getidlog(idlist, item)
+        } catch (error) {
+            console.dir(error)
+            res = ''
+        }
+
+        return res
     }
 }
 
+async function getidlog(idlist, item) {
+    var res = {
+        row: idlist.length,
+        data: {}
 
+    }
+    let sql1 = 'SELECT  pl.item_no,pl.time, pl.USER, pl.action, pl.STATUS  FROM productlog AS pl  WHERE pl.item_no = $pid ORDER BY pl.id ASC'
+    let sql2 = 'SELECT  p.item_no,p.beltline,p.step,p.next,p.state  FROM product AS p  WHERE p.item_no = $pid'
+
+    for (var i = 0; i < idlist.length; i++) {
+        let _idlist = {
+            $pid: idlist[i]
+        }
+        try {
+            if (item === 'process') {
+                let process = await consql.select(sql1, _idlist)
+                res.data[idlist[i]] = {
+                    process: process,
+                }
+            } else if (item === 'actuality') {
+                let actuality = await consql.select(sql2, _idlist)
+                res.data[idlist[i]] = {
+                    actuality: actuality
+                }
+            } else {
+                let process = await consql.select(sql1, _idlist)
+                let actuality = await consql.select(sql2, _idlist)
+                res.data[idlist[i]] = {
+                    process: process,
+                    actuality: actuality
+                }
+            }
+        } catch (error) {
+            console.dir(error)
+            res.data[idlist[i]] = {
+                process: '',
+                actuality: ''
+            }
+        }
+
+    }
+    return res
+}
 
 
 function getuserinfo(openid) {

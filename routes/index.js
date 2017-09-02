@@ -3,9 +3,9 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-31 10:24:37
+ * @Last Modified time: 2017-08-31 16:45:09
  */
-var wx = require('./wx')
+
 const router = require('koa-router')()
 var CryptoJS = require('crypto-js')
 const logUtil = require('../models/log4js/log_utils')
@@ -19,13 +19,18 @@ var urlencode = require('urlencode')
 var Wechat = require('../wechat/wechat')
 
 var wechatApi = new Wechat(config.wechat)
-var users = require('./users')
+const users = require('./users')
+const wx = require('./wx')
+const record = require('./record')
 
 
 var outtime = 10 * 60 * 1000 //二维码超时
 
 router.use('/user', users.routes(), users.allowedMethods())
 router.use('/wx', wx.routes(), wx.allowedMethods())
+router.use('/record', record.routes(), record.allowedMethods())
+
+
 router.get('/', async(ctx, next) => {
     // ctx.body = 'Hello World'
     ctx.state = {
@@ -36,6 +41,11 @@ router.get('/', async(ctx, next) => {
     await ctx.render('index', ctx.state)
 })
 
+
+/**
+ * C# 
+ * 扫码等记
+ */
 router.all('/reguser', async(ctx, next) => { //扫描二维码注册
     var val = ''
     var e = new Error()
@@ -74,6 +84,10 @@ router.all('/reguser', async(ctx, next) => { //扫描二维码注册
 
 })
 
+
+/**
+ * 得到微信特征码  写入数据库
+ */
 router.all('/reg', async(ctx, next) => {
     try {
         var code = ctx.query.code
@@ -105,6 +119,10 @@ router.all('/reg', async(ctx, next) => {
     }
 })
 
+
+/**
+ * 提交产品
+ */
 router.all('/submit', async(ctx, next) => {
     var no = ctx.query.t || ctx.request.body.t //获取提交的型号
     var params = {
@@ -116,6 +134,9 @@ router.all('/submit', async(ctx, next) => {
     ctx.redirect(url) //重定向
 })
 
+/**
+ * 最终核对，写入数据
+ */
 router.all('/submitItem', async(ctx, next) => {
     var code = ctx.query.code
     var state = ctx.query.state

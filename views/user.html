@@ -31,7 +31,7 @@
         <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
         <div class="container">
             <form class="form-horizontal reg-form" id="Form">
-                <h2 class="reg-form-heading">注册</h2>
+                <h2 class="reg-form-heading">登记</h2>
                 <div class="form-group">
                     <label for="inputName" class="col-sm-3 control-label">帐户名</label>
                     <div class="col-sm-8">
@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label for="inputOpenid" class="col-sm-3 control-label">工位</label>
                     <div class="col-sm-8">
-                        <select class="form-control" id="position">
+                        <select class="form-control" id="Position" name="Position" placeholder="Position">
                                 <optgroup label="A生产线">
                                         <option value="1">下料</option>
                                         <option value="2">拼版</option>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-8">
-                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="submit" id="submit">注册</button>
+                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="submit" id="submit">提交</button>
                     </div>
                 </div>
             </form>
@@ -216,7 +216,7 @@
         </script>
         <script>
             function printTest() {
-                var oSelect = document.getElementById('position');
+                var oSelect = document.getElementById('Position');
                 // alert($("option:selected", oSelect).val());
                 // alert($("option:selected", oSelect).parent().index());
                 var res = $("option:selected", oSelect)
@@ -247,6 +247,9 @@
                 // $("#position").bind("click", function() {
                 // });
                 console.log('sad');
+                /**
+                    初始化工位下拉框
+                */
                 // $.ajax({
                 //     url: "/control/showunit/",
                 //     dataType: "json",

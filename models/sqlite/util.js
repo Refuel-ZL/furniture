@@ -15,7 +15,21 @@ exports = module.exports = {
                     db.close()
                     if (err) {
                         reject(err)
-
+                    } else {
+                        resolve(res)
+                    }
+                })
+            })
+        })
+    },
+    select_: function(sql) {
+        return new Promise(function(resolve, reject) {
+            let db = new sqlite3.Database(sqlsrc)
+            db.serialize(function() {
+                db.all(sql, function(err, res) {
+                    db.close()
+                    if (err) {
+                        reject(err)
                     } else {
                         resolve(res)
                     }

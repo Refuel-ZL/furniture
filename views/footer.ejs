@@ -18,7 +18,7 @@
 </nav>
 
 <style>
-    body {
+    body .footer {
             min-width: 500px;
     }
     .footer .container {
@@ -53,7 +53,8 @@
 
 <script>
     function initsize() {
-        if (window.innerHeight==document.body.scrollHeight) {
+        console.log(window.innerHeight,document.body.scrollHeight)
+        if (window.innerHeight>=document.body.scrollHeight) {
             $(".footer").addClass("navbar-fixed-bottom");
         } else {
             $(".footer").removeClass("navbar-fixed-bottom");

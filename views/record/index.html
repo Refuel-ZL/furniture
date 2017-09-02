@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>产品信息查询</title>
+    <style>
+        .search {
+            max-width: 480px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("../header.ejs") %>
+        <div class="container">
+            <div class="row search">
+                <div class="col-lg-8">
+                    <form class="navbar-form navbar-right">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="wd" aria-label="请输入产品编号" placeholder="产品编号">
+                            <div class="input-group-btn">
+                                <!-- Button and dropdown menu -->
+                                <button type="button" class="btn btn-default" id="search">查询</button>
+                                <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="#">查询状态</a></li>
+                                <li><a href="#">查询流程</a></li>
+                                <li role="separator" class="divider"></li>
+                            </ul> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="jumbotron">
+                <div class="container">
+                    <div id="content">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include("../footer.ejs") %>
+            <script>
+                $(function() {
+                    $("#wd").keydown(function(e) {
+                        if (e.keyCode == 13) {
+                            $("#search").click();
+                            event.preventDefault();
+                        }
+                    });
+                    $('#search').click(function() {
+                        $('#content').empty()
+                        var wd = $('#wd').val();
+                        if (wd) {
+                            $.post('/record/getinfo', {
+                                id: wd
+                            }, function(data, status) {
+                                $('#content').html(JSON.stringify(data))
+
+
+                            })
+                        }
+
+                    })
+                })
+            </script>
+</body>
+
+</html>
