@@ -27,8 +27,6 @@
 
 <body>
     <%- include("./header.ejs") %>
-        <script src="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
-        <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
         <div class="container">
             <form class="form-horizontal reg-form" id="Form">
                 <h2 class="reg-form-heading">登记</h2>
@@ -38,7 +36,7 @@
                         <input type="text" class="form-control" name="Name" placeholder="Name">
                     </div>
                 </div>
-                <div class="form-group">
+                <!--  <div class="form-group">
                     <label for="inputPassword" class="col-sm-3 control-label">密码</label>
                     <div class="col-sm-8">
                         <input type="password" class="form-control" name="Password" placeholder="Password">
@@ -60,25 +58,25 @@
                                 </optgroup> 
                         </select>
                     </div>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="inputOpenid" class="col-sm-3 control-label">微信认证</label>
                     <div class="col-sm-8">
                         <div id="qrcode"></div>
-                        <input type="text" class="form-control" style="height:0px;border:0px;margin:0px;padding:0px;" name="Openid" id="Openid" placeholder="微信特征码">
+                        <img src="" id="Qrimg" class="img-thumbnail" title="扫描此二维码认证用户微信">
+                        <input type="text" class="form-control" style="display: none;" name="Openid" id="Openid" placeholder="微信特征码">
 
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-8">
-                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="submit" id="submit">提交</button>
+                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="buttom" id="submit">提交</button>
                     </div>
                 </div>
             </form>
         </div>
         <button onclick="makeqr()">生成</button>
         <button onclick="clearqr()">清除</button>
-        <button onclick="printTest()">获取</button>
         <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/language/zh_CN.min.js"></script>
         <link href="https://cdn.bootcss.com/bootstrap-validator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
@@ -111,8 +109,8 @@
                             },
                             remote: {
                                 url: '/user/check/name',
-                                delay: 2000,
-                                message: '用户名是不可用的'
+                                delay: 1000,
+                                message: '该账户名已被抢注'
                             }
                         }
                     },
@@ -144,25 +142,15 @@
                             notEmpty: {
                                 message: '认证码是必需的，不能是空的'
                             },
-                            callback: {
-                                message: 'sorry,特征码已失效，请重新获取二维码',
-                                callback: function(value, validator) {
-                                    var flag = false;
-                                    if (value != '已失效') {
-                                        flag = true;
-                                    }
-                                    return flag;
-                                }
-                            },
                             stringLength: {
                                 min: 6,
                                 max: 30,
                                 message: '认证码必须6~30个字符'
                             },
                             remote: {
-                                url: '/user/check/key',
-                                delay: 2000,
-                                message: '认证码已失效'
+                                url: '/user/check/id',
+                                delay: 1000,
+                                message: '认证码已使用'
                             }
                         }
                     }
@@ -179,14 +167,13 @@
                     $.ajax({
                         type: 'post',
                         url: '/user/registe',
-                        data: $("form").serialize(),
+                        data: $("#Form").serialize(),
                         async: false,
                         error: function(res) {
                             console.log(res.message)
                         },
                         success: function(res) {
                             if (res.code == 'ok') {
-                                // swal("Good!", "弹出了一个操作成功的提示框", "success");
                                 swal({
                                         title: "",
                                         text: "恭喜你注册成功",
@@ -206,47 +193,27 @@
                                         }
                                     });
                             } else {
-                                console.log(res.message)
+                                sweetAlert("注册失败", res.message, "error");
+                                $("#Form").data('bootstrapValidator').validate();
                             }
                         }
                     });
-                } else return;
+                } else return
 
             });
         </script>
-        <script>
-            function printTest() {
-                var oSelect = document.getElementById('Position');
-                // alert($("option:selected", oSelect).val());
-                // alert($("option:selected", oSelect).parent().index());
-                var res = $("option:selected", oSelect)
-                var ind = oSelect.selectedIndex;
-                var data = oSelect.options[oSelect.selectedIndex]
-                var val = data.value || res.val();
-                var tex = data.text || res.text();
-                var gname = data.parentNode.attributes["label"].value;
-                var gid = res.parent().index();
-                console.log({
-                    "id": ind,
-                    "val": val,
-                    "text": tex,
-                    "gname": gname,
-                    "gid": gid
-                });
-            }
-        </script>
-
         <script type="text/javascript" src="/js/eventsource-polyfill.js"></script>
         <script type="text/javascript" src="/js/jquery.qrcode.js"></script>
         <script>
             var evtSource = null
-            var lose = null
-            var t = 10 * 1000
             $(function() {
-                makeqr(); //初始化二维码
+                // makeqr(null, 'normal'); //初始化二维码
+                // qrupdate()
+                click("init")
+
                 // $("#position").bind("click", function() {
                 // });
-                console.log('sad');
+
                 /**
                     初始化工位下拉框
                 */
@@ -262,17 +229,14 @@
                 //         alert("error");
                 //     }
                 // });
-
-
-
             })
 
             function makeqr(key, status) {
                 clearqr()
+                document.getElementById("Openid").value = "" //清空输入
                     // var status = 'invalid' //normal、invalid、error 
                 var w = 256;
                 var h = 256;
-                // var key = (new Date()).valueOf();
                 var config = {
                     div: {
                         id: "qrcode"
@@ -289,17 +253,17 @@
                         width: w,
                         height: h,
                     },
-                    Qrimg: { //输出img格式二维码
+                    Qrimg: { //输出位置img格式二维码
                         'id': "Qrimg",
                     }
                 }
                 var QRcode = $('<div>');
+                var qrval = window.location.origin + '/user/qr?t=' + config.QRcode.text
                 QRcode.attr('id', config.QRcode.id); //为<div>添加属性id
-                // QRcode.css('float', "right"); //这里演示如何进行css操作
                 QRcode.qrcode({
                     width: config.QRcode.width,
                     height: config.QRcode.height,
-                    text: window.location.origin + '/user/qr?t=' + config.QRcode.text
+                    text: qrval
                 }).hide();
                 $('#' + config.div.id).append(QRcode); //将二维码元素添append到页面上id为‘qrcode’的元素上
 
@@ -311,10 +275,6 @@
                     }) //为<div>添加属性id
 
                 $('#' + config.div.id).append(Qrcanvas); //将画布元素添append到页面上id为‘qrcode’的元素上
-
-                var Qrimg = $('<img>');
-                Qrimg.attr('id', "Qrimg") //为<div>添加属性id
-                $('#' + config.div.id).append(Qrimg); //将画布元素添append到页面上id为‘qrcode’的元素上
 
 
                 var canvas = QRcode.find('canvas').get(0);
@@ -335,61 +295,89 @@
                     ctx.textBaseline = 'middle';
                     ctx.textAlign = 'center';
                     ctx.font = 'bolder 30px Helvetica';
-                    if (config.status == 'invalid') {
-                        text = "该二维码已失效"; //设置文字内容 
-                        document.getElementById("Openid").value = ''
-                    } else {
-                        text = key; //设置文字内容  
-                    }
+                    text = key; //设置文字内容 
+                    document.getElementById("Openid").value = ''
                     ctx.fillText(text, imgCanvas.width / 2, imgCanvas.height / 2);
                     ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height / 2);
-                    $('#' + config.Qrimg.id).on("click", function() {
-                        makeqr('hhh' + (new Date()).valueOf())
-                    })
-
-                    $('#' + config.Qrimg.id).css("cursor", "pointer")
-                } else {
-                    /**定时作废*/
-                    lose = setTimeout(nullify, t)
-                    evtSource = new EventSource("/user/fetch?t=" + config.QRcode.text);
-                    evtSource.addEventListener("ready", function(e) {
-                        try {
-                            var res = JSON.parse(e.data)
-                            console.log(e.data)
-                            document.getElementById("Openid").value = ""
-                            if (res.value) {
-                                evtSource.close();
-                                clearTimeout(lose)
-                                makeqr('已扫描', 'ok')
-                                $('#' + config.Qrimg.id).unbind("click");
-                                $("#Openid").val(res.value.openid).change(); //赋值并触发校验
-                            }
-                        } catch (error) {
-                            console.log(error)
-                        }
-                    }, false);
                 }
                 imgCanvas.style.display = 'none';
-                $('#' + config.Qrimg.id).attr('src', imgCanvas.toDataURL('image/png'))
+                $('#' + config.Qrimg.id).attr({
+                    'src': imgCanvas.toDataURL('image/png'),
+                    'class': "img-thumbnail",
+                    'data-value': qrval
+                })
                 $("#" + config.QRcode.id).remove();
                 $("#" + config.Qrcanvas.id).remove();
             }
 
             function clearqr() {
                 $('#qrcode').html("");
+
                 if (evtSource) {
                     evtSource.close();
                     evtSource = null
                 }
-                clearTimeout(lose)
             }
 
-            function nullify() {
-                makeqr('该二维码已失效', 'invalid')
+            function qrupdate() {
+                $('#Qrimg').on("click", function() {
+                    click(null)
+                })
+                $('#Qrimg').css("cursor", "pointer")
+            }
+
+            function click(at) {
+                $('#Qrimg').unbind("click");
+                $('#Qrimg').css("cursor", "default")
+                var val = 'hhh' + (new Date()).valueOf()
+                makeqr(val)
+                $.get({
+                    url: '/user/key?t=' + val,
+                    success: function(data) {
+                        //上传成功
+                        console.log(data)
+                        evtSource = new EventSource("/user/fetch?t=" + val);
+                        evtSource.addEventListener("ready", function(e) {
+                            try {
+                                var res = JSON.parse(e.data)
+                                console.log(res)
+                                document.getElementById("Openid").value = ""
+                                if (res.value) {
+                                    if (res.value.code == "error") {
+                                        evtSource.close();
+                                        makeqr('已失效', 'invalid')
+                                        qrupdate() //二维码获取更新事件
+                                    } else if (res.value.code == 'info') {
+                                        console.log("有效期内")
+                                        $('#Qrimg').css("cursor", "default")
+                                    } else if (res.value.openid) {
+                                        evtSource.close();
+                                        makeqr('已扫描', 'ok')
+                                        qrupdate() //二维码获取更新事件
+                                        $("#Openid").val(res.value.openid).change(); //赋值并触发校验
+                                    }
+                                }
+                            } catch (error) {
+                                console.log(error)
+                            }
+                        }, false);
+
+                    },
+                    error: function(params) {
+                        makeqr('该二维码已失效', 'invalid')
+                        console.log('error')
+                    }
+                })
+                if (!at) {
+                    $("#Openid").change(); //触发校验
+                }
+
             }
         </script>
+        <div>
+            <%- include("./footer.ejs") %>
 
-        <%- include("./footer.ejs") %>
+        </div>
 </body>
 
 </html>

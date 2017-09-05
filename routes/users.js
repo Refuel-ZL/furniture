@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-31 11:16:44
+ * @Last Modified time: 2017-09-04 14:33:31
  */
 const router = require('koa-router')()
 const urlencode = require('urlencode')
@@ -18,11 +18,16 @@ var Wechat = require('../wechat/wechat')
 
 var wechatApi = new Wechat(config.wechat)
 var val = {}
-var rt = 10 * 1000
+var rt = 12 * 1000
 
 router.get('/', async function(ctx, next) {
     await ctx.render('user')
 })
+
+router.get('/info', async function(ctx, next) {
+    await ctx.render('userinfo')
+})
+
 
 /**
  * 浏览器获取扫码结果
@@ -35,23 +40,38 @@ router.get('/fetch', async function(ctx, next) {
     })
     var t = ctx.query.t || ctx.request.body.t
     if (!t) { ctx.body = 'error'; return }
-
+    // console.log('值', _.has(val, t))
     if (_.has(val, t)) {
-        let v = JSON.stringify(val[t])
-        delete val[t]
-        ctx.body = `event:ready\ndata:{"value":${v}}\n\n` //自定义事件
+        if (val[t]) {
+            let v = JSON.stringify(val[t])
+            delete val[t]
+            ctx.body = `event:ready\ndata:{"value":${v}}\n\n` //自定义事件
+        } else {
+            let res = {
+                code: 'info',
+                massage: '未扫描'
+            }
+            res = JSON.stringify(res)
+            ctx.body = `event:ready\ndata:{"value":${res}}\n\n` //自定义事件
+        }
+
     } else {
-        ctx.body = `event:ready\ndata:{"value":"" }\n\n` //自定义事件
+        let res = {
+            code: 'error',
+            massage: '已失效'
+        }
+        res = JSON.stringify(res)
+        ctx.body = `event:ready\ndata:{"value":${res}}\n\n` //自定义事件
     }
     console.log(val)
 })
 
 /**
- * 微信扫码访问路由
+ * 网页微信扫码地址
  * 传递参数，重定向微信URL
  */
 router.get('/qr', async function(ctx, next) {
-    var t = ctx.query.t || ctx.request.body.t || '46465234668513465'
+    var t = ctx.query.t || ctx.request.body.t
     var params = {
         url: urlencode(`http://${ctx.host}/user/qrupreg`),
         scope: 'snsapi_base',
@@ -62,28 +82,31 @@ router.get('/qr', async function(ctx, next) {
 })
 
 /**
- * 绑定特征码
- * 接受微信转回的数据
+ * 获取绑定特征码
+ * 服务器得到openid
  * 
  */
 router.all('/qrupreg', async function(ctx, next) {
     try {
         var code = ctx.query.code
         var state = ctx.query.state
-        var params = {
-            code: code
+        var res = ''
+        if (_.has(val, state)) {
+            var params = {
+                code: code
+            }
+            var data = JSON.parse(await wechatApi.fetchwebaccess_token(params))
+            if (data.errcode) {
+                res = '关键字失效，请重新扫码'
+                logUtil.writeErr('QR获取id异常', data)
+            }
+            res = val[state] = {
+                openid: data.openid
+            }
+        } else {
+            res = '该二维码已失效'
         }
-        var data = JSON.parse(await wechatApi.fetchwebaccess_token(params))
-        if (data.errcode) {
-            ctx.body = '关键字失效，请重新扫码'
-            logUtil.writeErr('QR获取id异常', data)
-            return
-        }
-        val[state] = {
-            openid: data.openid
-        }
-        scheduleCronstyle(state)
-        ctx.body = val
+        ctx.body = res
     } catch (error) {
         ctx.body = 'error'
         logUtil.writeErr('QR获取id错误', error)
@@ -91,6 +114,22 @@ router.all('/qrupreg', async function(ctx, next) {
 
 })
 
+
+router.get('/key', async function(ctx, next) {
+    var t = ctx.query.t
+    val[t] = ''
+    scheduleCronstyle(t)
+    ctx.body = 'ok'
+})
+
+/**
+ * 页面表单提及路由
+ * 返回{
+ *      code:ok,error  
+ *      url/massage
+ * }
+ * 
+ */
 router.post('/registe', async function(ctx, next) {
     var res = {
         code: 'ok',
@@ -101,11 +140,24 @@ router.post('/registe', async function(ctx, next) {
         openid: data.Openid
     }
     try {
-
-        await userutil.reguser(param)
-
-        res.code = 'ok'
-        res.url = '/user/ok'
+        if (await userutil.verifyname(param.name)) {
+            if (await userutil.verifyid(param.openid)) {
+                let val = await userutil.reguser(param)
+                if (val.code == 'ok') {
+                    res.code = 'ok'
+                    res.url = '/user/ok'
+                } else {
+                    res.code = 'error'
+                    res.message = val.message
+                }
+            } else {
+                res.code = 'error'
+                res.message = '此微信已抢注'
+            }
+        } else {
+            res.code = 'error'
+            res.message = '此账户名已抢注'
+        }
     } catch (error) {
         console.dir(error)
         res.code = 'error'
@@ -114,21 +166,118 @@ router.post('/registe', async function(ctx, next) {
     ctx.body = res
 })
 
+/**
+ * 表单校验接口
+ * 
+ */
+
 router.all('/check/:conn', async function(ctx, next) {
     var conn = ctx.params.conn
     var res = ''
     switch (conn) {
-        case 'key':
-            res = true
+        case 'id':
+            let id = ctx.query.Openid
+            res = await userutil.verifyid(id)
             break
         case 'name':
-            res = true
+            let name = ctx.query.Name
+            res = await userutil.verifyname(name)
             break
         default:
             res = false
     }
     ctx.body = { 'valid': res }
 })
+
+
+/**
+ * 账户信息对外接口
+ * 
+ */
+router.all('/data', async function(ctx, next) {
+    var res = {
+        total: 0,
+        rows: {}
+    }
+    var limit = ctx.query.limit || ctx.request.body.limit || 10
+    var offset = ctx.query.offset || ctx.request.body.offset || 0
+    var search = ctx.query.search || ctx.request.body.search || ''
+
+    if (limit && offset) {
+        var option = {
+            limit: limit,
+            offset: offset,
+            search: search
+        }
+        res = await userutil.fetchwork(option)
+        res = {
+            total: res.length,
+            rows: res
+        }
+    }
+
+    ctx.body = res
+})
+
+
+/**
+ * 接受用户信息修改
+ *
+ */
+router.all('/reuserinfo', async function(ctx, next) {
+    var res = {
+        code: 'ok',
+        message: ''
+    }
+    var data = {}
+    if (Object.keys(ctx.query).length === 0) {
+        data = ctx.request.body
+    } else {
+        data = ctx.query
+    }
+    try {
+        res = await userutil.updateuserinfo(data)
+        if (res.code == 'ok') {
+            let param = {
+                id: data.Openid,
+                name: data.Name,
+                work: {}
+            }
+            for (var key in data) {
+                if (key.substring(0, 4) === 'Work') {
+                    param.work[key.substring(4)] = data[key]
+                }
+            }
+            if (Object.keys(param).length === 0) {
+                res = {
+                    code: 'error',
+                    message: '工序参数失败'
+                }
+            } else {
+                res = await userutil.updateuserwork(param)
+                if (res.code != 'ok') {
+                    res = {
+                        code: 'error',
+                        message: res.message
+                    }
+                }
+            }
+        } else {
+            res = {
+                code: 'error',
+                message: res.message
+            }
+        }
+    } catch (error) {
+        res = {
+            code: 'error',
+            message: error.message
+        }
+    }
+
+    ctx.body = res
+})
+
 
 function scheduleCronstyle(id) {
     setTimeout(function() { Rtask(id) }, rt)

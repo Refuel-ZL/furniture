@@ -1,5 +1,5 @@
 <nav class="navbar-fixed-bottom footer">
-    <div class="container">
+    <div class=" navbar-inner container">
         <p class="footer-links">
             <a href="#">关于UC</a>
             <span class="line">|</span>
@@ -54,7 +54,7 @@
 <script>
     function initsize() {
         console.log(window.innerHeight,document.body.scrollHeight)
-        if (window.innerHeight>=document.body.scrollHeight) {
+        if (window.innerHeight==document.body.scrollHeight) {
             $(".footer").addClass("navbar-fixed-bottom");
         } else {
             $(".footer").removeClass("navbar-fixed-bottom");

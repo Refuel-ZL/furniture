@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-31 16:45:09
+ * @Last Modified time: 2017-09-03 08:47:03
  */
 
 const router = require('koa-router')()
@@ -32,7 +32,6 @@ router.use('/record', record.routes(), record.allowedMethods())
 
 
 router.get('/', async(ctx, next) => {
-    // ctx.body = 'Hello World'
     ctx.state = {
         title: '用户操作',
         content: '恭喜你操作成功'
@@ -135,6 +134,7 @@ router.all('/submit', async(ctx, next) => {
 })
 
 /**
+ * 获取openid
  * 最终核对，写入数据
  */
 router.all('/submitItem', async(ctx, next) => {
