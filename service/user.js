@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-04 16:19:03
+ * @Last Modified time: 2017-09-07 08:43:35
  */
 const sqlutil = require('../models/mysql/util')
 const logUtil = require('../models/log4js/log_utils')
@@ -70,14 +70,76 @@ exports = module.exports = {
     },
 
     /**
-     * 获取当前用户所有工序
+     * 依据id 匹配用户名
      */
-    fetchuserwork: async function(user) {
+    fetchname: async function(openid) {
+        var res = {
+            code: 'ok'
+        }
+        let sql1 = 'SELECT userid FROM userinfo WHERE userinfo.openid=?'
+        try {
+            let res1 = await sqlutil.query(sql1, [openid])
+            if (res1.length <= 0) {
+                res.code = 'error'
+                res.message = '用户不存在'
+            } else {
+                res.data = {
+                    openid: openid,
+                    name: res1[0].userid
+                }
+            }
+        } catch (error) {
+            logUtil.writeErr('校验Openid异常', error.message)
+            res.code = 'error'
+            res.message = error.message
+        }
+        return res
+    },
+
+    /**
+     * 获取当前用户所有工序
+     *  @param {*} userid 
+     */
+    fetchuserwork: async function(userid) {
         //TODO 获取当前用户的所有默认工序接口
+        var res = {
+            code: 'ok'
+        }
+        try {
+            let sql1 = `SELECT ui.openid, ui.userid,uwi.userwork FROM  userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid WHERE ui.openid='${userid}'`
+            let data = await sqlutil.query(sql1)
+            if (data.length <= 0) {
+                res = {
+                    code: 'error',
+                    message: '此用户未获取默认工序或尚未登记'
+                }
+            } else {
+                let val = {
+                    name: data[0].userid,
+                    openid: data[0].openid,
+                    userwork: []
+                }
+                for (var i = 0; i < data.length; i++) {
+                    val.userwork.push(data[i].userwork)
+                }
+                res = {
+                    code: 'ok',
+                    data: val
+                }
+
+            }
+        } catch (error) {
+            res = {
+                code: 'error',
+                message: error.message
+            }
+        }
+        return res
     },
 
     /**
      * 获取所有用户所有工序
+     *
      */
     fetchwork: async function(params) {
         try {
@@ -85,7 +147,7 @@ exports = module.exports = {
             if (params.search) {
                 search = `where concat(uwi.userid,uwi.userwork,uwi.level) like '%${params.search}%' `
             }
-            let sql1 = `select uwi.userid,max(case when  uwi.level='1'  then uwi.userwork else '' end) as '1',max(case when   uwi.level ='2' then  uwi.userwork else '' end)  as '2',max(case when   uwi.level ='3' then  uwi.userwork else '' end)  as '3' ,ui.openid,ui.usercreatetime,ui.usermtime from userworkinfo AS uwi LEFT JOIN userinfo AS ui ON uwi.userid = ui.userid ${search} group by uwi.userid LIMIT ${params.offset},${params.limit}`
+            let sql1 = `select ui.userid,max(case when  uwi.level='1'  then uwi.userwork else '' end) as '1',max(case when   uwi.level ='2' then  uwi.userwork else '' end)  as '2',max(case when   uwi.level ='3' then  uwi.userwork else '' end)  as '3' ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by uwi.userid LIMIT ${params.offset},${params.limit}`
             return await sqlutil.query(sql1)
         } catch (error) {
             console.dir(error)

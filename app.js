@@ -3,11 +3,12 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-30 14:46:08
+ * @Last Modified time: 2017-09-07 14:24:25
  */
 const Koa = require('koa')
 const app = new Koa()
-
+const session = require('koa-session-minimal')
+const MysqlSession = require('koa-mysql-session')
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
@@ -20,6 +21,31 @@ const config = require('./config')
 const index = require('./routes/index')
 
 const port = process.env.PORT || config.port
+
+// 配置存储session信息的mysql
+const mysqlconf = require(path.join(__dirname, './models/mysql', 'config.js'))
+let store = new MysqlSession(mysqlconf)
+
+// 存放sessionId的cookie配置
+let cookie = {
+    maxAge: '', // cookie有效时长
+    expires: '', // cookie失效时间
+    path: '', // 写cookie所在的路径
+    domain: '', // 写cookie所在的域名
+    httpOnly: '', // 是否只用于http请求中获取
+    overwrite: '', // 是否允许重写
+    secure: '',
+    sameSite: '',
+    signed: '',
+
+}
+
+// 使用session中间件
+app.use(session({
+    key: 'Furniture',
+    store: store,
+    cookie: cookie
+}))
 
 app.use(async(ctx, next) => {
     //响应开始时间

@@ -3,21 +3,21 @@
  * @Author: ZhaoLei 
  * @Date: 2017-09-02 21:27:07 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-04 16:06:40
+ * @Last Modified time: 2017-09-06 18:59:46
  */
 var mysql = require('mysql')
 var config = require('./config')
 var pool = mysql.createPool(config)
 
 exports = module.exports = {
-    query: function(sql) {
+    query: function(sql, values) {
         return new Promise(function(resolve, reject) {
             pool.getConnection(function(err, connection) {
                 // Use the connection 
                 if (err) {
                     reject(err)
                 } else {
-                    connection.query(sql, function(err, results, fields) {
+                    connection.query(sql, values, function(err, results, fields) {
                         // And done with the connection. 
                         connection.release()
                         if (err) {
