@@ -54,7 +54,7 @@
 <script>
     function initsize() {
         console.log(window.innerHeight,document.body.scrollHeight)
-        if (window.innerHeight==document.body.scrollHeight) {
+        if (window.innerHeight>=document.body.scrollHeight) {
             $(".footer").addClass("navbar-fixed-bottom");
         } else {
             $(".footer").removeClass("navbar-fixed-bottom");

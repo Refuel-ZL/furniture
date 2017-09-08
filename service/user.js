@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-07 08:43:35
+ * @Last Modified time: 2017-09-08 10:11:11
  */
 const sqlutil = require('../models/mysql/util')
 const logUtil = require('../models/log4js/log_utils')
@@ -89,7 +89,7 @@ exports = module.exports = {
                 }
             }
         } catch (error) {
-            logUtil.writeErr('校验Openid异常', error.message)
+            logUtil.writeErr('依据openid拉取用户名异常', error.message)
             res.code = 'error'
             res.message = error.message
         }
@@ -97,16 +97,16 @@ exports = module.exports = {
     },
 
     /**
-     * 获取当前用户所有工序
-     *  @param {*} userid 
+     * 依据id 获取名下所有工序
+     * 
      */
-    fetchuserwork: async function(userid) {
+    fetchuserwork: async function(openid) {
         //TODO 获取当前用户的所有默认工序接口
         var res = {
             code: 'ok'
         }
         try {
-            let sql1 = `SELECT ui.openid, ui.userid,uwi.userwork FROM  userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid WHERE ui.openid='${userid}'`
+            let sql1 = `SELECT ui.userid, ui.openid,uwi.userwork ,uwi.level FROM  userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid WHERE ui.openid='${openid}'`
             let data = await sqlutil.query(sql1)
             if (data.length <= 0) {
                 res = {
@@ -114,25 +114,20 @@ exports = module.exports = {
                     message: '此用户未获取默认工序或尚未登记'
                 }
             } else {
-                let val = {
-                    name: data[0].userid,
-                    openid: data[0].openid,
-                    userwork: []
-                }
+                let item = {}
                 for (var i = 0; i < data.length; i++) {
-                    val.userwork.push(data[i].userwork)
+                    item[data[i].userwork] = data[i].level
                 }
-                res = {
-                    code: 'ok',
-                    data: val
+                res.data = {
+                    openid: openid,
+                    name: data[0].userid,
+                    workitem: item
                 }
-
             }
         } catch (error) {
-            res = {
-                code: 'error',
-                message: error.message
-            }
+            logUtil.writeErr('依据openid拉取用户默认工序异常', error.message)
+            res.code = 'error'
+            res.message = error.message
         }
         return res
     },

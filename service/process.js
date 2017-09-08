@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-07 15:29:24
+ * @Last Modified time: 2017-09-08 19:07:37
  */
 const logUtil = require('../models/log4js/log_utils')
 const Promise = require('bluebird')
@@ -39,12 +39,7 @@ var fun = {
                         workstage: st.data[0].workstage || '', //最近一个完成的工序
                         next: st.data[0].next, //将要提交的工序
                         status: st.data[0].status, //订单状态
-                        default: true,
                         details: st.data
-                    }
-                    let data = await userutil.fetchuserwork(param.openid)
-                    if (_.indexOf(data.data.userwork, st.data[0].next) == -1) { //具备默认工序
-                        res.data.default = false
                     }
                 } else {
                     res = {
@@ -86,7 +81,7 @@ var fun = {
                     wrd.userid,
                     wsi.workstage,
                     wsi.id,
-                    wrd.recordtime,
+                    DATE_FORMAT( wrd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,
                     wrd.kind,
                     wsi.index,
                 CASE
@@ -118,7 +113,7 @@ var fun = {
                     odif.pid,
                     wsi.orderinfo,
                     wrd.userid,
-                    wrd.recordtime,
+                    DATE_FORMAT( wrd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,
                     wrd.kind,
                     odif.status,
                     (SELECT id FROM workstageinfo AS s WHERE s.orderinfo = '${proid}' AND s.INDEX =0)as nextindex
@@ -168,7 +163,15 @@ var fun = {
                     let option = [
                         params.name, params.id, time, params.kind
                     ]
-                    let val = sqlutil.query(sql2, option)
+                    try {
+                        let val = sqlutil.query(sql2, option)
+                    } catch (error) {
+                        res = {
+                            code: 'error',
+                            message: error.message
+                        }
+                    }
+
                 }
             } catch (error) {
                 res = {
@@ -178,7 +181,38 @@ var fun = {
             }
         }
         return res
+    },
+    fetchprolog: async function(params) {
+        var res = {
+            code: 'ok'
+        }
+        if (!params) {
+            res = {
+                code: 'error',
+                message: '参数错误'
+            }
+        } else {
+            try {
+                var valsql = 'WHERE 1=1'
+                if (params.pid) {
+                    valsql += ` and odi.pid ='${params.pid}' `
+                }
+                if (params.search) {
+                    valsql += ` and concat(odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,wcd.recordtime,wcd.kind ) like '%${params.search}%'`
+                }
+                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, '%Y-%m-%d %H:%i:%s') as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime  LIMIT ?,?`
+                let val = await sqlutil.query(sql1, [params.offset, params.limit])
+                res.data = val
+            } catch (error) {
+                res = {
+                    code: 'error',
+                    message: error.message
+                }
+            }
+        }
+        return res
     }
+
 }
 
 exports = module.exports = fun

@@ -117,7 +117,6 @@ var ButtonInit = function() {
     var oInit = new Object()
     oInit.Init = function() {
         //初始化页面上面的按钮事件
-
         $('#btn_edit').click(function() {
             var arrselections = $('#table').bootstrapTable('getSelections')
             if (arrselections.length > 1) {

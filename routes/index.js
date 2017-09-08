@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-06 19:12:41
+ * @Last Modified time: 2017-09-08 18:54:51
  */
 
 const router = require('koa-router')()
@@ -12,13 +12,11 @@ var moment = require('moment-timezone')
 moment.tz.setDefault('Asia/Shanghai')
 const users = require('./users')
 const wx = require('./wx')
-const record = require('./record')
 const process = require('./process')
 
 
 router.use('/user', users.routes(), users.allowedMethods())
 router.use('/wx', wx.routes(), wx.allowedMethods())
-router.use('/record', record.routes(), record.allowedMethods())
 router.use('/process', process.routes(), process.allowedMethods())
 
 

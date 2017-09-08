@@ -35,7 +35,7 @@
 </head>
 
 <body>
-    <%- include("./header.ejs") %>
+    <%- include("../header.ejs") %>
         <div class="container">
             <div class="mypanel">
                 <div class="title">
@@ -73,12 +73,12 @@
         <script>
             var proitem = $(`<div class="radio" id='next-work'>
                 <label>
-                    <input type="radio"  name="workitem" value="<%- data.nextindex  %>" checked="checked"><%- data.next  %>
+                    <input type="radio"  name="workitem" value="<%- data.nextindex  %>" checked="checked"><span><%- data.next  %></span><%- data.nextindex  %>
                 </label> 
                 </div>
                 <div class="radio disabled" id='lately-work'>
                     <label>
-                        <input type="radio"  name="workitem" value="<%- data.id  %>" disabled="disabled"  ><%- data.workstage  %>
+                        <input type="radio"  name="workitem" value="<%- data.id  %>" disabled="disabled"  ><span><%- data.workstage  %></span><%- data.id  %>
                         </label>
                 </div>`)
             var status = false
@@ -154,14 +154,15 @@
                     var option = {
                         id: $('#proitem input[name="workitem"]:checked').val(),
                         no: "<%- data.orderinfo%>",
+                        work: $('#proitem input[name="workitem"]:checked').next("span").text(),
                         kind: 0
                     }　　
-                    if (option.id != '<%- data.nextindex  %>') {
-                        option.kind = 1
-                    }
                     if (!option.id) {
                         sweetAlert('失败', "没有选择", 'error')
                         return
+                    }
+                    if (option.id != '<%-data.nextindex%>') {
+                        option.kind = 1
                     }
                     $.ajax({
                         type: 'post',
@@ -173,6 +174,7 @@
                         success: function(res) {
                             if (res.code == 'ok') {
                                 sweetAlert('成功', '恭喜修改成功', 'success')
+                                window.location.href = 'http://' + window.location.host + '/process/search?pid=' + encodeURIComponent(option.no)
                             } else {
                                 sweetAlert('失败', res.message, 'error')
                             }

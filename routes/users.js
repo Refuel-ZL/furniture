@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-04 14:33:31
+ * @Last Modified time: 2017-09-08 16:28:57
  */
 const router = require('koa-router')()
 const urlencode = require('urlencode')
@@ -21,11 +21,11 @@ var val = {}
 var rt = 12 * 1000
 
 router.get('/', async function(ctx, next) {
-    await ctx.render('user')
+    await ctx.render('user/reguser')
 })
 
 router.get('/info', async function(ctx, next) {
-    await ctx.render('userinfo')
+    await ctx.render('user/userinfo')
 })
 
 
@@ -199,21 +199,19 @@ router.all('/data', async function(ctx, next) {
         total: 0,
         rows: {}
     }
-    var limit = ctx.query.limit || ctx.request.body.limit || 10
     var offset = ctx.query.offset || ctx.request.body.offset || 0
+    var limit = ctx.query.limit || ctx.request.body.limit || 10
     var search = ctx.query.search || ctx.request.body.search || ''
 
-    if (limit && offset) {
-        var option = {
-            limit: limit,
-            offset: offset,
-            search: search
-        }
-        res = await userutil.fetchwork(option)
-        res = {
-            total: res.length,
-            rows: res
-        }
+    var option = {
+        limit: limit,
+        offset: offset,
+        search: search
+    }
+    res = await userutil.fetchwork(option)
+    res = {
+        total: res.length,
+        rows: res
     }
 
     ctx.body = res
