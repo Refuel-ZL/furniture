@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-08 19:07:37
+ * @Last Modified time: 2017-09-09 16:36:11
  */
 const logUtil = require('../models/log4js/log_utils')
 const Promise = require('bluebird')
@@ -198,7 +198,7 @@ var fun = {
                     valsql += ` and odi.pid ='${params.pid}' `
                 }
                 if (params.search) {
-                    valsql += ` and concat(odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,wcd.recordtime,wcd.kind ) like '%${params.search}%'`
+                    valsql += ` and concat(odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, '' ),IFNULL( wcd.recordtime, '' ),IFNULL( wcd.kind, '' ) ) like '%${params.search}%'`
                 }
                 let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, '%Y-%m-%d %H:%i:%s') as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime  LIMIT ?,?`
                 let val = await sqlutil.query(sql1, [params.offset, params.limit])

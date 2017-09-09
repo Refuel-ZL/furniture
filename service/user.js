@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-08 10:11:11
+ * @Last Modified time: 2017-09-09 16:40:52
  */
 const sqlutil = require('../models/mysql/util')
 const logUtil = require('../models/log4js/log_utils')
@@ -140,7 +140,7 @@ exports = module.exports = {
         try {
             var search = ''
             if (params.search) {
-                search = `where concat(uwi.userid,uwi.userwork,uwi.level) like '%${params.search}%' `
+                search = `where concat(IFNULL( uwi.userid, '' ),IFNULL( uwi.userwork, '' ),IFNULL( uwi.level, '' )) like '%${params.search}%' `
             }
             let sql1 = `select ui.userid,max(case when  uwi.level='1'  then uwi.userwork else '' end) as '1',max(case when   uwi.level ='2' then  uwi.userwork else '' end)  as '2',max(case when   uwi.level ='3' then  uwi.userwork else '' end)  as '3' ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by uwi.userid LIMIT ${params.offset},${params.limit}`
             return await sqlutil.query(sql1)

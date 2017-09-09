@@ -27,16 +27,19 @@
 
 <body>
     <%- include("../header.ejs") %>
-        <div class="container">
-            <form class="form-horizontal reg-form" id="Form">
-                <h2 class="reg-form-heading">登记</h2>
-                <div class="form-group">
-                    <label for="inputName" class="col-sm-3 control-label">帐户名</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" name="Name" placeholder="Name">
-                    </div>
-                </div>
-                <!--  <div class="form-group">
+        <%- include("../static/bootstrap-validator.ejs") %>
+            <%- include("../static/qrcode.ejs") %>
+                <%- include("../static/eventsource.ejs") %>
+                    <div class="container">
+                        <form class="form-horizontal reg-form" id="Form">
+                            <h2 class="reg-form-heading">登记</h2>
+                            <div class="form-group">
+                                <label for="inputName" class="col-sm-3 control-label">帐户名</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="Name" placeholder="Name">
+                                </div>
+                            </div>
+                            <!--  <div class="form-group">
                     <label for="inputPassword" class="col-sm-3 control-label">密码</label>
                     <div class="col-sm-8">
                         <input type="password" class="form-control" name="Password" placeholder="Password">
@@ -59,324 +62,320 @@
                         </select>
                     </div>
                 </div> -->
-                <div class="form-group">
-                    <label for="inputOpenid" class="col-sm-3 control-label">微信认证</label>
-                    <div class="col-sm-8">
-                        <div id="qrcode"></div>
-                        <img src="" id="Qrimg" class="img-thumbnail" title="扫描此二维码认证用户微信">
-                        <input type="text" class="form-control" style="display: none;" name="Openid" id="Openid" placeholder="微信特征码">
+                            <div class="form-group">
+                                <label for="inputOpenid" class="col-sm-3 control-label">微信认证</label>
+                                <div class="col-sm-8">
+                                    <div id="qrcode"></div>
+                                    <img src="" id="Qrimg" class="img-thumbnail" title="扫描此二维码认证用户微信">
+                                    <input type="text" class="form-control" style="display: none;" name="Openid" id="Openid" placeholder="微信特征码">
 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-8">
+                                    <button class="btn btn-lg btn-primary btn-block col-sm-6" type="buttom" id="submit">提交</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-8">
-                        <button class="btn btn-lg btn-primary btn-block col-sm-6" type="buttom" id="submit">提交</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <button onclick="makeqr()">生成</button>
-        <button onclick="clearqr()">清除</button>
-        <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js"></script>
-        <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/language/zh_CN.min.js"></script>
-        <link href="https://cdn.bootcss.com/bootstrap-validator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-        <script>
-            $('#Form').bootstrapValidator({
-                message: '此值无效！',
-                verbose: false,
-                excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证  
-                feedbackIcons: {
-                    valid: 'glyphicon glyphicon-ok',
-                    invalid: 'glyphicon glyphicon-remove',
-                    validating: 'glyphicon glyphicon-refresh'
-                },
-                fields: {
-                    message: '该值是无效的',
-                    Name: {
-                        message: '用户名是无效的',
-                        validators: {
-                            notEmpty: {
-                                message: '用户名是必需的，不能是空的'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 10,
-                                message: '用户名必须2~10个字符'
-                            },
-                            different: {
-                                field: 'Password',
-                                message: '用户名和密码不可能是一样的'
-                            },
-                            remote: {
-                                url: '/user/check/name',
-                                delay: 1000,
-                                message: '该账户名已被抢注'
-                            }
-                        }
-                    },
-                    Password: {
-                        message: '密码是无效的',
-                        validators: {
-                            notEmpty: {
-                                message: '密码是必需的，不能是空的'
-                            },
-                            stringLength: {
-                                min: 6,
-                                max: 30,
-                                message: '密码必须6~30个字符'
-                            },
-                            regexp: {
-                                regexp: /^[a-zA-Z0-9_\.]+$/,
-                                message: '密码只能由字母，数字，点和下划线组成'
-                            },
-                            different: {
-                                field: 'Name',
-                                message: '用户名和密码不可能是一样的'
-                            }
-                        }
-                    },
-                    Openid: {
-                        message: '认证码是无效的',
-                        trigger: "change",
-                        validators: {
-                            notEmpty: {
-                                message: '认证码是必需的，不能是空的'
-                            },
-                            stringLength: {
-                                min: 6,
-                                max: 30,
-                                message: '认证码必须6~30个字符'
-                            },
-                            remote: {
-                                url: '/user/check/id',
-                                delay: 1000,
-                                message: '认证码已使用'
-                            }
-                        }
-                    }
-                }
-            })
+                    <button onclick="makeqr()">生成</button>
+                    <button onclick="clearqr()">清除</button>
 
-            $("#Form").submit(function(ev) {
-                ev.preventDefault();
-            });
-            $("#submit").on("click", function() {
-                var bootstrapValidator = $("#Form").data('bootstrapValidator');
-                bootstrapValidator.validate();
-                if (bootstrapValidator.isValid()) {
-                    $.ajax({
-                        type: 'post',
-                        url: '/user/registe',
-                        data: $("#Form").serialize(),
-                        async: false,
-                        error: function(res) {
-                            console.log(res.message)
-                        },
-                        success: function(res) {
-                            if (res.code == 'ok') {
-                                swal({
-                                        title: "",
-                                        text: "恭喜你注册成功",
-                                        type: "success",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#DD6B55",
-                                        confirmButtonText: "继续注册",
-                                        cancelButtonText: "返回主页",
-                                        closeOnConfirm: false,
-                                        closeOnCancel: false
-                                    },
-                                    function(isConfirm) {
-                                        if (isConfirm) {
-                                            window.location.replace(window.location.href);
-                                        } else {
-                                            window.location.href = "/"
+                    <script>
+                        $('#Form').bootstrapValidator({
+                            message: '此值无效！',
+                            verbose: false,
+                            excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证  
+                            feedbackIcons: {
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                message: '该值是无效的',
+                                Name: {
+                                    message: '用户名是无效的',
+                                    validators: {
+                                        notEmpty: {
+                                            message: '用户名是必需的，不能是空的'
+                                        },
+                                        stringLength: {
+                                            min: 2,
+                                            max: 10,
+                                            message: '用户名必须2~10个字符'
+                                        },
+                                        different: {
+                                            field: 'Password',
+                                            message: '用户名和密码不可能是一样的'
+                                        },
+                                        remote: {
+                                            url: '/user/check/name',
+                                            delay: 1000,
+                                            message: '该账户名已被抢注'
                                         }
-                                    });
-                            } else {
-                                sweetAlert("注册失败", res.message, "error");
-                                $("#Form").data('bootstrapValidator').validate();
-                            }
-                        }
-                    });
-                } else return
-
-            });
-        </script>
-        <script type="text/javascript" src="/js/eventsource-polyfill.js"></script>
-        <script type="text/javascript" src="/js/jquery.qrcode.js"></script>
-        <script>
-            var evtSource = null
-            $(function() {
-                // makeqr(null, 'normal'); //初始化二维码
-                // qrupdate()
-                click("init")
-
-                // $("#position").bind("click", function() {
-                // });
-
-                /**
-                    初始化工位下拉框
-                */
-                // $.ajax({
-                //     url: "/control/showunit/",
-                //     dataType: "json",
-                //     success: function(data) {
-                //         $.each(data, function(index, units) {
-                //             $("#unitItem").append("<option value=" + units.id + ">" + units.unit + "</option>");
-                //         });
-                //     },
-                //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-                //         alert("error");
-                //     }
-                // });
-            })
-
-            function makeqr(key, status) {
-                clearqr()
-                document.getElementById("Openid").value = "" //清空输入
-                    // var status = 'invalid' //normal、invalid、error 
-                var w = 256;
-                var h = 256;
-                var config = {
-                    div: {
-                        id: "qrcode"
-                    },
-                    status: status || 'normal',
-                    QRcode: { //原始二维码
-                        "id": "QRcode",
-                        width: w,
-                        height: h,
-                        text: key || (new Date()).valueOf()
-                    },
-                    Qrcanvas: { //处理二维码
-                        'id': "Qrcanvas",
-                        width: w,
-                        height: h,
-                    },
-                    Qrimg: { //输出位置img格式二维码
-                        'id': "Qrimg",
-                    }
-                }
-                var QRcode = $('<div>');
-                var qrval = window.location.origin + '/user/qr?t=' + config.QRcode.text
-                QRcode.attr('id', config.QRcode.id); //为<div>添加属性id
-                QRcode.qrcode({
-                    width: config.QRcode.width,
-                    height: config.QRcode.height,
-                    text: qrval
-                }).hide();
-                $('#' + config.div.id).append(QRcode); //将二维码元素添append到页面上id为‘qrcode’的元素上
-
-                var Qrcanvas = $('<canvas>');
-                Qrcanvas.attr({
-                        id: config.Qrcanvas.id,
-                        width: config.Qrcanvas.width,
-                        height: config.Qrcanvas.height,
-                    }) //为<div>添加属性id
-
-                $('#' + config.div.id).append(Qrcanvas); //将画布元素添append到页面上id为‘qrcode’的元素上
-
-
-                var canvas = QRcode.find('canvas').get(0);
-                var oldCtx = canvas.getContext('2d');
-
-                var imgCanvas = Qrcanvas.get(0);
-                var ctx = imgCanvas.getContext('2d');
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
-                ctx.putImageData(oldCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
-                if (config.status != 'normal') {
-                    let text = "失效"; //设置文字内容  
-                    ctx.fillStyle = 'rgba(96,96,96, 0.9)';
-                    ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
-                    ctx.fillStyle = '#000000';
-                    ctx.strokStyle = 'rgb(1,1,0)';
-                    ctx.stroke = 3;
-                    ctx.textBaseline = 'middle';
-                    ctx.textAlign = 'center';
-                    ctx.font = 'bolder 30px Helvetica';
-                    text = key; //设置文字内容 
-                    document.getElementById("Openid").value = ''
-                    ctx.fillText(text, imgCanvas.width / 2, imgCanvas.height / 2);
-                    ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height / 2);
-                }
-                imgCanvas.style.display = 'none';
-                $('#' + config.Qrimg.id).attr({
-                    'src': imgCanvas.toDataURL('image/png'),
-                    'class': "img-thumbnail",
-                    'data-value': qrval
-                })
-                $("#" + config.QRcode.id).remove();
-                $("#" + config.Qrcanvas.id).remove();
-            }
-
-            function clearqr() {
-                $('#qrcode').html("");
-
-                if (evtSource) {
-                    evtSource.close();
-                    evtSource = null
-                }
-            }
-
-            function qrupdate() {
-                $('#Qrimg').on("click", function() {
-                    click(null)
-                })
-                $('#Qrimg').css("cursor", "pointer")
-            }
-
-            function click(at) {
-                $('#Qrimg').unbind("click");
-                $('#Qrimg').css("cursor", "default")
-                var val = 'hhh' + (new Date()).valueOf()
-                makeqr(val)
-                $.get({
-                    url: '/user/key?t=' + val,
-                    success: function(data) {
-                        //上传成功
-                        console.log(data)
-                        evtSource = new EventSource("/user/fetch?t=" + val);
-                        evtSource.addEventListener("ready", function(e) {
-                            try {
-                                var res = JSON.parse(e.data)
-                                console.log(res)
-                                document.getElementById("Openid").value = ""
-                                if (res.value) {
-                                    if (res.value.code == "error") {
-                                        evtSource.close();
-                                        makeqr('已失效', 'invalid')
-                                        qrupdate() //二维码获取更新事件
-                                    } else if (res.value.code == 'info') {
-                                        console.log("有效期内")
-                                        $('#Qrimg').css("cursor", "default")
-                                    } else if (res.value.openid) {
-                                        evtSource.close();
-                                        makeqr('已扫描', 'ok')
-                                        qrupdate() //二维码获取更新事件
-                                        $("#Openid").val(res.value.openid).change(); //赋值并触发校验
+                                    }
+                                },
+                                Password: {
+                                    message: '密码是无效的',
+                                    validators: {
+                                        notEmpty: {
+                                            message: '密码是必需的，不能是空的'
+                                        },
+                                        stringLength: {
+                                            min: 6,
+                                            max: 30,
+                                            message: '密码必须6~30个字符'
+                                        },
+                                        regexp: {
+                                            regexp: /^[a-zA-Z0-9_\.]+$/,
+                                            message: '密码只能由字母，数字，点和下划线组成'
+                                        },
+                                        different: {
+                                            field: 'Name',
+                                            message: '用户名和密码不可能是一样的'
+                                        }
+                                    }
+                                },
+                                Openid: {
+                                    message: '认证码是无效的',
+                                    trigger: "change",
+                                    validators: {
+                                        notEmpty: {
+                                            message: '认证码是必需的，不能是空的'
+                                        },
+                                        stringLength: {
+                                            min: 6,
+                                            max: 30,
+                                            message: '认证码必须6~30个字符'
+                                        },
+                                        remote: {
+                                            url: '/user/check/id',
+                                            delay: 1000,
+                                            message: '认证码已使用'
+                                        }
                                     }
                                 }
-                            } catch (error) {
-                                console.log(error)
                             }
-                        }, false);
+                        })
 
-                    },
-                    error: function(params) {
-                        makeqr('该二维码已失效', 'invalid')
-                        console.log('error')
-                    }
-                })
-                if (!at) {
-                    $("#Openid").change(); //触发校验
-                }
+                        $("#Form").submit(function(ev) {
+                            ev.preventDefault();
+                        });
+                        $("#submit").on("click", function() {
+                            var bootstrapValidator = $("#Form").data('bootstrapValidator');
+                            bootstrapValidator.validate();
+                            if (bootstrapValidator.isValid()) {
+                                $.ajax({
+                                    type: 'post',
+                                    url: '/user/registe',
+                                    data: $("#Form").serialize(),
+                                    async: false,
+                                    error: function(res) {
+                                        console.log(res.message)
+                                    },
+                                    success: function(res) {
+                                        if (res.code == 'ok') {
+                                            swal({
+                                                    title: "",
+                                                    text: "恭喜你注册成功",
+                                                    type: "success",
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: "#DD6B55",
+                                                    confirmButtonText: "继续注册",
+                                                    cancelButtonText: "返回主页",
+                                                    closeOnConfirm: false,
+                                                    closeOnCancel: false
+                                                },
+                                                function(isConfirm) {
+                                                    if (isConfirm) {
+                                                        window.location.replace(window.location.href);
+                                                    } else {
+                                                        window.location.href = "/"
+                                                    }
+                                                });
+                                        } else {
+                                            sweetAlert("注册失败", res.message, "error");
+                                            $("#Form").data('bootstrapValidator').validate();
+                                        }
+                                    }
+                                });
+                            } else return
 
-            }
-        </script>
-        <div>
-            <%- include("../footer.ejs") %>
-        </div>
+                        });
+                    </script>
+                    <script>
+                        var evtSource = null
+                        $(function() {
+                            // makeqr(null, 'normal'); //初始化二维码
+                            // qrupdate()
+                            click("init")
+
+                            // $("#position").bind("click", function() {
+                            // });
+
+                            /**
+                                初始化工位下拉框
+                            */
+                            // $.ajax({
+                            //     url: "/control/showunit/",
+                            //     dataType: "json",
+                            //     success: function(data) {
+                            //         $.each(data, function(index, units) {
+                            //             $("#unitItem").append("<option value=" + units.id + ">" + units.unit + "</option>");
+                            //         });
+                            //     },
+                            //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            //         alert("error");
+                            //     }
+                            // });
+                        })
+
+                        function makeqr(key, status) {
+                            clearqr()
+                            document.getElementById("Openid").value = "" //清空输入
+                                // var status = 'invalid' //normal、invalid、error 
+                            var w = 256;
+                            var h = 256;
+                            var config = {
+                                div: {
+                                    id: "qrcode"
+                                },
+                                status: status || 'normal',
+                                QRcode: { //原始二维码
+                                    "id": "QRcode",
+                                    width: w,
+                                    height: h,
+                                    text: key || (new Date()).valueOf()
+                                },
+                                Qrcanvas: { //处理二维码
+                                    'id': "Qrcanvas",
+                                    width: w,
+                                    height: h,
+                                },
+                                Qrimg: { //输出位置img格式二维码
+                                    'id': "Qrimg",
+                                }
+                            }
+                            var QRcode = $('<div>');
+                            var qrval = window.location.origin + '/user/qr?t=' + config.QRcode.text
+                            QRcode.attr('id', config.QRcode.id); //为<div>添加属性id
+                            QRcode.qrcode({
+                                width: config.QRcode.width,
+                                height: config.QRcode.height,
+                                text: qrval
+                            }).hide();
+                            $('#' + config.div.id).append(QRcode); //将二维码元素添append到页面上id为‘qrcode’的元素上
+
+                            var Qrcanvas = $('<canvas>');
+                            Qrcanvas.attr({
+                                    id: config.Qrcanvas.id,
+                                    width: config.Qrcanvas.width,
+                                    height: config.Qrcanvas.height,
+                                }) //为<div>添加属性id
+
+                            $('#' + config.div.id).append(Qrcanvas); //将画布元素添append到页面上id为‘qrcode’的元素上
+
+
+                            var canvas = QRcode.find('canvas').get(0);
+                            var oldCtx = canvas.getContext('2d');
+
+                            var imgCanvas = Qrcanvas.get(0);
+                            var ctx = imgCanvas.getContext('2d');
+                            ctx.fillStyle = 'white';
+                            ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
+                            ctx.putImageData(oldCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
+                            if (config.status != 'normal') {
+                                let text = "失效"; //设置文字内容  
+                                ctx.fillStyle = 'rgba(96,96,96, 0.9)';
+                                ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
+                                ctx.fillStyle = '#000000';
+                                ctx.strokStyle = 'rgb(1,1,0)';
+                                ctx.stroke = 3;
+                                ctx.textBaseline = 'middle';
+                                ctx.textAlign = 'center';
+                                ctx.font = 'bolder 30px Helvetica';
+                                text = key; //设置文字内容 
+                                document.getElementById("Openid").value = ''
+                                ctx.fillText(text, imgCanvas.width / 2, imgCanvas.height / 2);
+                                ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height / 2);
+                            }
+                            imgCanvas.style.display = 'none';
+                            $('#' + config.Qrimg.id).attr({
+                                'src': imgCanvas.toDataURL('image/png'),
+                                'class': "img-thumbnail",
+                                'data-value': qrval
+                            })
+                            $("#" + config.QRcode.id).remove();
+                            $("#" + config.Qrcanvas.id).remove();
+                        }
+
+                        function clearqr() {
+                            $('#qrcode').html("");
+
+                            if (evtSource) {
+                                evtSource.close();
+                                evtSource = null
+                            }
+                        }
+
+                        function qrupdate() {
+                            $('#Qrimg').on("click", function() {
+                                click(null)
+                            })
+                            $('#Qrimg').css("cursor", "pointer")
+                        }
+
+                        function click(at) {
+                            $('#Qrimg').unbind("click");
+                            $('#Qrimg').css("cursor", "default")
+                            var val = 'hhh' + (new Date()).valueOf()
+                            makeqr(val)
+                            $.get({
+                                url: '/user/key?t=' + val,
+                                success: function(data) {
+                                    //上传成功
+                                    console.log(data)
+                                    evtSource = new EventSource("/user/fetch?t=" + val);
+                                    evtSource.addEventListener("ready", function(e) {
+                                        try {
+                                            var res = JSON.parse(e.data)
+                                            console.log(res)
+                                            document.getElementById("Openid").value = ""
+                                            if (res.value) {
+                                                if (res.value.code == "error") {
+                                                    evtSource.close();
+                                                    makeqr('已失效', 'invalid')
+                                                    qrupdate() //二维码获取更新事件
+                                                } else if (res.value.code == 'info') {
+                                                    console.log("有效期内")
+                                                    $('#Qrimg').css("cursor", "default")
+                                                } else if (res.value.openid) {
+                                                    evtSource.close();
+                                                    makeqr('已扫描', 'ok')
+                                                    qrupdate() //二维码获取更新事件
+                                                    $("#Openid").val(res.value.openid).change(); //赋值并触发校验
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.log(error)
+                                        }
+                                    }, false);
+
+                                },
+                                error: function(params) {
+                                    makeqr('该二维码已失效', 'invalid')
+                                    console.log('error')
+                                }
+                            })
+                            if (!at) {
+                                $("#Openid").change(); //触发校验
+                            }
+
+                        }
+                    </script>
+                    <div>
+                        <%- include("../footer.ejs") %>
+                    </div>
 </body>
 
 </html>
