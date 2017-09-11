@@ -166,7 +166,7 @@
                     }
                     $.ajax({
                         type: 'post',
-                        url: '/process/worksubmit',
+                        url: '/scanqr/worksubmit',
                         data: option,
                         error: function(res) {
                             sweetAlert('失败', res.message, 'error')
@@ -174,7 +174,7 @@
                         success: function(res) {
                             if (res.code == 'ok') {
                                 sweetAlert('成功', '恭喜修改成功', 'success')
-                                window.location.href = 'http://' + window.location.host + '/process/search?pid=' + encodeURIComponent(option.no)
+                                window.location.href = 'http://' + window.location.host + '/process/?pid=' + encodeURIComponent(option.no)
                             } else {
                                 sweetAlert('失败', res.message, 'error')
                             }

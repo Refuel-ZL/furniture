@@ -3,27 +3,26 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 15:14:35 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-08-23 10:55:17
+ * @Last Modified time: 2017-09-11 09:24:03
  */
 var moment = require('moment-timezone')
 
-var config = require('../config/index')
+var wxconfig = require('../config/wxconfig')
 var Wechat = require('../wechat/wechat')
-var rule = require('../config/rule')
 const logUtil = require('../models/log4js/log_utils')
 moment.tz.setDefault('Asia/Shanghai')
 var Reply = {
     reply: async function() {
-        var wechatApi = new Wechat(config.wechat)
+        var wechatApi = new Wechat(wxconfig.wechat)
         var message = this.weixin
-        var reply = config.greetings
+        var reply = wxconfig.greetings
         if (message.MsgType === 'event') {
             if (message.Event === 'subscribe') {
                 if (message.EventKey) {
                     // console.log('扫二维码进来：' + message.EventKey + ' ' + message.Ticket)
                 }
                 logUtil.writeInfo(message.FromUserName + '  事件——关注公众号')
-                reply = `${config.greetings}\n请点击菜单栏中：攻略-->指令列表获取当前已支持指令`
+                reply = `${wxconfig.greetings}\n请点击菜单栏中：攻略-->指令列表获取当前已支持指令`
 
             } else if (message.Event === 'CLICK') {
                 switch (message.EventKey) {

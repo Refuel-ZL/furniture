@@ -3,7 +3,7 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-07 14:24:25
+ * @Last Modified time: 2017-09-11 09:19:07
  */
 const Koa = require('koa')
 const app = new Koa()
@@ -17,7 +17,7 @@ const staticServer = require('koa-static')
 const path = require('path')
 
 const logUtil = require('./models/log4js/log_utils')
-const config = require('./config')
+const config = require('./config/wxconfig')
 const index = require('./routes/index')
 
 const port = process.env.PORT || config.port

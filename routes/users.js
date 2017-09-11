@@ -3,20 +3,20 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-08 16:28:57
+ * @Last Modified time: 2017-09-11 09:21:08
  */
 const router = require('koa-router')()
 const urlencode = require('urlencode')
 const _ = require('lodash')
 var moment = require('moment-timezone')
 moment.tz.setDefault('Asia/Shanghai')
-var config = require('../config/index')
+var wxconfig = require('../config/wxconfig')
 const logUtil = require('../models/log4js/log_utils')
 var userutil = require('../service/user')
 
 var Wechat = require('../wechat/wechat')
 
-var wechatApi = new Wechat(config.wechat)
+var wechatApi = new Wechat(wxconfig.wechat)
 var val = {}
 var rt = 12 * 1000
 

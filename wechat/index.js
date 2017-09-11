@@ -1,4 +1,4 @@
-var config = require('../config/index')
+var wxconfig = require('../config/wxconfig')
 
 var getRawBody = require('raw-body')
 var sha1 = require('sha1')
@@ -10,7 +10,7 @@ module.exports = function(opts, handler) {
     var wechat = new Wechat(opts)
     wechat.fetchAccessToken()
     return async(ctx, next) => {
-        var token = config.wechat.token
+        var token = wxconfig.wechat.token
         var signature = ctx.query.signature
         var nonce = ctx.query.nonce
         var timestamp = ctx.query.timestamp
