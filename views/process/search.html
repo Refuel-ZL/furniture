@@ -61,7 +61,6 @@
                     $("#search").click(function() {
                         var val = $("#wd").val()
                         if (val == "") return
-                        console.log('激活')
                         $.get('/process/data?pid=' + val, function(data) {
                             $('#table').bootstrapTable('load', data);
                         });

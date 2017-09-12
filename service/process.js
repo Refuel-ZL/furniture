@@ -3,12 +3,13 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-11 09:49:16
+ * @Last Modified time: 2017-09-12 16:43:17
  */
 const logUtil = require('../models/log4js/log_utils')
 const Promise = require('bluebird')
 const _ = require('lodash')
 var userutil = require('./user')
+var configutil = require('./config')
 const sqlutil = require('../models/mysql/util')
 
 var moment = require('moment-timezone')
@@ -125,8 +126,100 @@ var fun = {
             }
         }
         return res
-    }
+    },
 
+    /**配置的生产线
+     * 
+     */
+    fetchbeltlineitem: async function() {
+        var conf = await configutil.getconf()
+        var data = {}
+        if (conf) {
+            data = conf.beltline
+        }
+        return data
+    },
+    /**
+     * 核对产品编号是否可用
+     */
+    verifyPid: async function(pid) {
+        if (!pid) return false
+        let sql1 = 'SELECT orderinfo.pid FROM orderinfo WHERE orderinfo.pid=?'
+        try {
+            let res1 = await sqlutil.query(sql1, [pid])
+            if (res1.length <= 0) {
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            logUtil.writeErr('校验产品编号异常', error.message)
+            return false
+        }
+    },
+    submit: async function(params) {
+        var res = {
+            code: 'ok'
+        }
+
+        if (!params) {
+            res = {
+                code: 'error',
+                message: '参数错误！'
+            }
+        } else if (!await this.verifyPid(params.Pid)) {
+            res = {
+                code: 'error',
+                message: `${params.Pid}已存在`
+            }
+        } else if (!(params.Position in await configutil.getconf().beltline)) {
+            res = {
+                code: 'error',
+                message: `${params.Position}不存在`
+            }
+        } else {
+            let workitem = _.keys(await configutil.getconf().beltline[params.Position])
+
+            var sqls = []
+            let time = moment().format('YYYY-MM-DD HH:mm:ss')
+            let sql1 = {
+                sql: 'INSERT INTO orderinfo (pid, regtime,status,category) VALUES (?,?,?,?)',
+                param: [params.Pid, time, 0, params.Position]
+            }
+            sqls.push(sql1)
+
+            let _params = []
+            let sql2 = {
+                sql: 'INSERT INTO workstageinfo (workstage, orderinfo,workstageinfo.index) VALUES (?,?,?)',
+                param: _params
+            }
+            for (var i = 1; i <= workitem.length; i++) {
+                var n = i - 1
+                _params.push(workitem[n], params.Pid, i.toString())
+                if (i < workitem.length) {
+                    sql2.sql += ',(?,?,?)'
+                }
+            }
+            sql2.param = _params
+            sqls.push(sql2)
+            try {
+                await sqlutil.sqlaffair(sqls)
+            } catch (error) {
+                res = {
+                    code: 'error',
+                    message: `录入数据错误${error.message}`
+                }
+            }
+
+
+        }
+
+
+
+
+
+        return res
+    }
 }
 
 exports = module.exports = fun

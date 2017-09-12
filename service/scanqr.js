@@ -3,11 +3,9 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-11 09:53:22
+ * @Last Modified time: 2017-09-12 16:14:59
  */
 const logUtil = require('../models/log4js/log_utils')
-const Promise = require('bluebird')
-const _ = require('lodash')
 var userutil = require('./user')
 const sqlutil = require('../models/mysql/util')
 var processutil = require('./process')
@@ -81,12 +79,12 @@ var fun = {
                     }
                 } else {
                     let time = moment().format('YYYY-MM-DD HH:mm:ss')
-                    let sql2 = `INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)`
+                    let sql2 = 'INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)'
                     let option = [
                         params.name, params.id, time, params.kind
                     ]
                     try {
-                        let val = sqlutil.query(sql2, option)
+                        sqlutil.query(sql2, option)
                     } catch (error) {
                         res = {
                             code: 'error',

@@ -39,29 +39,6 @@
                                     <input type="text" class="form-control" name="Name" placeholder="Name">
                                 </div>
                             </div>
-                            <!--  <div class="form-group">
-                    <label for="inputPassword" class="col-sm-3 control-label">密码</label>
-                    <div class="col-sm-8">
-                        <input type="password" class="form-control" name="Password" placeholder="Password">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputOpenid" class="col-sm-3 control-label">工位</label>
-                    <div class="col-sm-8">
-                        <select class="form-control" id="Position" name="Position" placeholder="Position">
-                                <optgroup label="A生产线">
-                                        <option value="1">下料</option>
-                                        <option value="2">拼版</option>
-                                        <option value="3">刨方</option>
-                                </optgroup>
-                                <optgroup label="B生产线">
-                                        <option value="1">下料</option>
-                                        <option value="2">封边</option>
-                                        <option value="3">排钻</option>
-                                </optgroup> 
-                        </select>
-                    </div>
-                </div> -->
                             <div class="form-group">
                                 <label for="inputOpenid" class="col-sm-3 control-label">微信认证</label>
                                 <div class="col-sm-8">
@@ -206,28 +183,7 @@
                     <script>
                         var evtSource = null
                         $(function() {
-                            // makeqr(null, 'normal'); //初始化二维码
-                            // qrupdate()
                             click("init")
-
-                            // $("#position").bind("click", function() {
-                            // });
-
-                            /**
-                                初始化工位下拉框
-                            */
-                            // $.ajax({
-                            //     url: "/control/showunit/",
-                            //     dataType: "json",
-                            //     success: function(data) {
-                            //         $.each(data, function(index, units) {
-                            //             $("#unitItem").append("<option value=" + units.id + ">" + units.unit + "</option>");
-                            //         });
-                            //     },
-                            //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            //         alert("error");
-                            //     }
-                            // });
                         })
 
                         function makeqr(key, status) {
@@ -370,7 +326,6 @@
                             if (!at) {
                                 $("#Openid").change(); //触发校验
                             }
-
                         }
                     </script>
                     <div>
