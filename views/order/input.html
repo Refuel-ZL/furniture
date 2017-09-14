@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%- title %>
+    </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .pro-form {
+            max-width: 480px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        
+        .pro-form-heading {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("../header.ejs") %>
+        <%- include("../static/bootstrap-validator.ejs") %>
+            <%- include("../static/qrcode.ejs") %>
+                <%- include("../static/eventsource.ejs") %>
+                    <div class="container">
+                        <form class="form-horizontal pro-form" id="pro-form">
+                            <h2 class="pro-form-heading">录入产品</h2>
+                            <div class="form-group">
+                                <label for="inputPid" class="col-sm-3 control-label">编号</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="Pid" placeholder="编号">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputLine" class="col-sm-3 control-label">生产线</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" id="Position" name="Position" placeholder="Position"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-8">
+                                    <button class="btn btn-lg btn-primary btn-block col-sm-6" type="button" id="submit">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <%- include("../footer.ejs") %>
+                        <script>
+                            $('#pro-form').bootstrapValidator({
+                                message: '此值无效！',
+                                verbose: false,
+                                excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证
+                                feedbackIcons: {
+                                    valid: 'glyphicon glyphicon-ok',
+                                    invalid: 'glyphicon glyphicon-remove',
+                                    validating: 'glyphicon glyphicon-refresh'
+                                },
+                                fields: {
+                                    message: '该值是无效的',
+                                    Pid: {
+                                        message: '用户名是无效的',
+                                        validators: {
+                                            notEmpty: {
+                                                message: '用户名是必需的，不能是空的'
+                                            },
+                                            regexp: {
+                                                regexp: /^[^\s][\w\s-]+$/,
+                                                message: '编号只能由字母、数字、下划线、点和 - 组成'
+                                            },
+                                            stringLength: {
+                                                min: 2,
+                                                max: 16,
+                                                message: '用户名必须2~10个字符'
+                                            },
+                                            remote: {
+                                                url: '/order/check/pid',
+                                                delay: 1000,
+                                                message: '该编号已存在'
+                                            }
+                                        }
+                                    }
+                                }
+                            })
+
+                            $("#pro-form").submit(function(ev) {
+                                ev.preventDefault();
+                            });
+                            $("#pro-form").keydown(function(event) {
+                                if (event.keyCode == 13) {
+                                    $("#submit").click()
+                                    event.preventDefault();
+                                }
+                            })
+                            $("#submit").on("click", function() {
+                                var bootstrapValidator = $("#pro-form").data('bootstrapValidator');
+                                bootstrapValidator.validate();
+                                if (bootstrapValidator.isValid()) {
+                                    swal({
+                                        title: "",
+                                        text: "提交中！请稍后。",
+                                        // timer: 5000,
+                                        showConfirmButton: false,
+                                        imageUrl: "/images/timg.gif"
+                                    });
+                                    $.ajax({
+                                        type: 'post',
+                                        url: '/order/submit',
+                                        data: $("#pro-form").serialize(),
+                                        error: function(res) {
+                                            console.log(res.message)
+                                        },
+                                        success: function(res) {
+                                            if (res.code == 'ok') {
+                                                swal({
+                                                        title: "",
+                                                        html: true,
+                                                        text: `<p>恭喜你录入成功<p></br><img src='/order/qrcode?pid=${res.Pid}' alt='${res.Pid}' height='256px' width='260px'/> </br><a href="/order/qrcode?pid=${res.Pid}" download='${res.Pid}.png' class="RoleOfB btn btn-default btn-sm" style="margin-right:15px;">二维码下载</a>`,
+                                                        type: "success",
+                                                        // imageUrl: '/order/qrcode?Pid=' + res.Pid,
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: "#DD6B55",
+                                                        confirmButtonText: "继续录入",
+                                                        cancelButtonText: "订单管理",
+                                                        closeOnConfirm: false,
+                                                        closeOnCancel: false
+                                                    },
+                                                    function(isConfirm) {
+                                                        if (isConfirm) {
+                                                            window.location.replace(window.location.href);
+                                                        } else {
+                                                            window.location.href = "/order"
+                                                        }
+                                                    });
+                                            } else {
+                                                $("#pro-form").data('bootstrapValidator').validate();
+                                                swal("注册失败", res.message, "error");
+
+                                            }
+                                        }
+                                    });
+                                } else return
+
+                            });
+                        </script>
+                        <script>
+                            $(function() {
+                                $.get({
+                                    url: '/order/beltline',
+                                    success: function(data) {
+                                        $.each(data.item, function(index, units) {
+                                            $("#Position").append("<option value=" + units + ">" + units + "</option>");
+                                        });
+                                    },
+                                    error: function(error) {
+                                        console.log('error')
+                                        swal("获取生产线失败", error.message, "error");
+                                    }
+                                })
+                            })
+                        </script>
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%- title %>
+    </title>
+    <style>
+        #table thead {
+            background-color: rgba(60, 48, 48, 0.5)
+        }
+        
+        #table .popover-content {
+            padding: 9px 0px !important
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("../header.ejs") %>
+        <%- include("../static/bootstrap-table.ejs") %>
+            <%- include("../static/bootstrap-validator.ejs") %>
+                <%- include("../static/bootstrap-editable.ejs")%>
+                    <div class="container">
+                        <!--  <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Panel title</h3>
+                            </div>
+                            <div class="panel-body">
+                                Panel content
+                            </div>
+                        </div> -->
+                        <table id="table"></table>
+                    </div>
+                    <%- include("../footer.ejs") %>
+                        <script src="/home/orderinfo.js"></script>
+</body>
+
+</html>

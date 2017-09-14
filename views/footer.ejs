@@ -1,13 +1,15 @@
 <nav class="navbar-fixed-bottom footer">
     <div class=" navbar-inner container">
         <p class="footer-links">
-            <a href="/user/info">用户管理</a>
+            <a href="/order/">订单管理</a>
             <span class="line">|</span>
-            <a href="#">订单管理</a>
+            <a href="/order/input">录入订单</a>
             <span class="line">|</span>
-            <a href="/user/">登记用户</a>
+            <a href="/user/">用户管理</a>
             <span class="line">|</span>
-            <a href="#">关于</a>
+            <a href="/user/reguser">登记用户</a>
+            <span class="line">|</span>
+            <a href="/help">帮助</a>
         </p>
         <p>
             <span class="copyright">湖南康森韦尔电子科技有限公司技术支持</span>
@@ -19,8 +21,9 @@
 
 <style>
     body .footer {
-            min-width: 500px;
+        min-width: 500px;
     }
+    
     .footer .container {
         padding: 30px 0;
         border-top: 1px solid #ddd;
@@ -53,18 +56,15 @@
 
 <script>
     function initsize() {
-        console.log(window.innerHeight,document.body.scrollHeight)
-        if (window.innerHeight>=document.body.scrollHeight) {
+        console.log(window.innerHeight, document.body.scrollHeight)
+        if (window.innerHeight >= document.body.scrollHeight) {
             $(".footer").addClass("navbar-fixed-bottom");
         } else {
             $(".footer").removeClass("navbar-fixed-bottom");
         }
     }
-
-    window.onload=function(){
-        initsize();
-    }
-    window.onresize = function() {
+    document.body.setAttribute('onresize', 'initsize()')
+    window.onload = function() {
         initsize();
     }
 </script>

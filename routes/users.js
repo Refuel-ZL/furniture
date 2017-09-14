@@ -21,11 +21,18 @@ var val = {}
 var rt = 12 * 1000
 
 router.get('/', async function(ctx, next) {
-    await ctx.render('user/reguser')
+    ctx.state = {
+        title: '用户信息'
+    }
+    await ctx.render('user/userinfo')
+
 })
 
-router.get('/info', async function(ctx, next) {
-    await ctx.render('user/userinfo')
+router.get('/reguser', async function(ctx, next) {
+    ctx.state = {
+        title: '用户登记'
+    }
+    await ctx.render('user/reguser')
 })
 
 

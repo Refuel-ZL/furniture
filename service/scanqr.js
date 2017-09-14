@@ -3,12 +3,12 @@
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
  * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-12 16:14:59
+ * @Last Modified time: 2017-09-12 17:07:11
  */
 const logUtil = require('../models/log4js/log_utils')
 var userutil = require('./user')
 const sqlutil = require('../models/mysql/util')
-var processutil = require('./process')
+var orderutil = require('./order')
 var moment = require('moment-timezone')
 moment.tz.setDefault('Asia/Shanghai')
 
@@ -26,13 +26,13 @@ var fun = {
                     message: userinfo.message
                 }
             } else {
-                let st = await processutil.fetchprostatus(param.itemno)
+                let st = await orderutil.fetchprostatus(param.itemno)
                 if (st.code == 'ok') {
                     res.data = {
                         name: userinfo.data.name,
                         id: st.data[0].id, //工序表id
                         nextindex: st.data[0].nextindex, //工序表下一工序的id
-                        orderinfo: st.data[0].orderinfo, //型号
+                        orderutilinfo: st.data[0].orderutilinfo, //型号
                         workstage: st.data[0].workstage || '', //最近一个完成的工序
                         next: st.data[0].next, //将要提交的工序
                         status: st.data[0].status, //订单状态

@@ -1,54 +1,58 @@
 var utils = {}
-var fs = require('fs')
+var path = require('path')
 var qr = require('qr-image')
-var images = require('images')
+var PImage = require('pureimage')
+var concat = require('concat-stream')
+var PNG = require('pngjs').PNG
+var Bitmap = require('./bitmap')
 
 /**
  * 根据地址生成二维码
- * 参数 url(string) 地址
- * 参数 callback(Function)
+ * 参数 url(string) 地址 option.text 文本
  */
-utils.createQr = function(url) {
-    var qr_png = qr.imageSync(url, {
-        type: 'png',
-        margin: 1,
-        parse_url: true,
-        size: 6
-    })
+utils.createQr = function(url, option) {
 
-    return qr_png
-        /*
-         var imgName = +(new Date()) + '' + Math.ceil(Math.random() * 89 + 10)
-            imgName = `${imgName}.png`
-            var qr_pipe = qr_png.pipe(fs.createWriteStream(imgName))
-            qr_pipe.on('error', function(err) {
-                console.log(err)
-                callback(err, null)
-                return
-            })
-            qr_pipe.on('finish', function() {
-                callback(null, imgName)
-            }) */
-}
-
-/**
- * 给图片添加水印
- * 参数 sourceImg(string) 原图片路径
- * 参数 waterImg(string) 水印图片路径
- * 参数 callback(Function)
- */
-utils.addWater = function(sourceImg, waterImg, callback) {
-    var lastput = '2.jpg'
-    images(sourceImg) //Load image from file 
-        //加载图像文件
-        .size(400) //Geometric scaling the image to 400 pixels width
-        //等比缩放图像到400像素宽
-        .draw(images(waterImg), 70, 260) //Drawn logo at coordinates (70,260)//为了遮住不该看的东西..
-        //在(10,10)处绘制Logo
-        .save(lastput, { //Save the image to a file,whih quality 50
-            quality: 50 //保存图片到文件,图片质量为50
+    return new Promise((res, rej) => {
+        var qr_png = qr.image(url, {
+            type: 'png',
+            margin: 1,
+            parse_url: true,
+            size: 6
         })
-    callback(lastput)
+        let w = option['width'] || 256
+        let h = option['height'] || 256
+        let text = option['text'] || ''
+        try {
+            qr_png.pipe(new PNG()).on('parsed', function() {
+                var bitmap = new Bitmap(this.width, this.height)
+                for (var i = 0; i < bitmap.data.length; i++) {
+                    bitmap.data[i] = this.data[i]
+                }
+                var img = bitmap
+                var img2 = PImage.make(w, h)
+                var fnt = PImage.registerFont(path.join(__dirname, '../../public/font/msyh.ttf'));
+                fnt.load(function() {
+                    var c = img2.getContext('2d')
+                    c.fillStyle = '#FFFFFF'
+                    c.fillRect(0, 0, w, h)
+                    c.font = "18pt";
+                    c.fillStyle = '#000000';
+                    c.fillText(text, (w - text.length * 15) / 2, img.height + 35);
+                    c.drawImage(img, 0, 0, img.width, img.height, (w - img.width) / 2, 10, img.width, img.height)
+                    c.textAlign = 'center'
+                    c.textBaseline = 'middle'
+                    PImage.encodePNGToStream(img2, concat(function(text) {
+                        res(text)
+                    }))
+                })
+
+            })
+        } catch (error) {
+            rej(error)
+        }
+
+    })
 }
 
-module.exports = utils
+
+exports = module.exports = utils

@@ -134,4 +134,4 @@ var formatReqLog = function(req, resTime) {
     return logText
 }
 
-module.exports = logUtil
+exports = module.exports = logUtil

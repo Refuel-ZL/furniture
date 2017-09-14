@@ -2,109 +2,104 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="/js/moment.min.js"></script>
-    <title>
-        <%=title%>
-    </title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0
-        }
-        
-        .mypanel {
-            width: 100%;
-            margin: 0px auto;
-        }
-        
-        #btn {
-            text-align: center;
-        }
-        
-        .mypanel .title {
-            text-align: center;
-        }
-        
-        .font-user {
-            color: red
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="/js/moment.min.js"></script>
+  <title>
+    <%=title%>
+  </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0
+    }
+
+    .mypanel {
+      width: 100%;
+      margin: 0px auto;
+    }
+
+    #btn {
+      text-align: center;
+    }
+
+    .mypanel .title {
+      text-align: center;
+    }
+
+    .font-user {
+      color: red
+    }
+  </style>
 </head>
 
 <body>
-    <%- include("../header.ejs") %>
-        <div class="container">
-            <div class="mypanel">
-                <div class="title">
-                    <h1>
-                        <span class="font-user"><%- data.name %> </span> 工序操作</h1>
-                    <h3 style="margin-top: 5px;">
-                        <%=title%>
-                    </h3>
-                </div>
-                <div class="content" id="content">
-                    <% if(!data ) { %>
-                        <%- content  -%>
-                            <% } else { %>
-                                <div class="panel panel-default" id="div-work">
-
-                                </div>
-                                <div class="panel panel-default">
-
-                                    <div class="panel-body ">
-
-                                        <div id="proitem">
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="btn">
-                                    <button type="button" class="btn btn-primary" id="sub-btn">提交</button>
-                                    <button type="button" class="btn btn-danger" id="danger">越界</button>
-                                </div>
-                                <% } %>
-                </div>
-            </div>
+  <%- include("../header.ejs") %>
+    <div class="container">
+      <div class="mypanel">
+        <div class="title">
+          <h1><span class="font-user"><%- data.name %></span> 工序操作</h1>
+          <h3 style="margin-top: 5px;"><%=title%></h3>
         </div>
-        <script>
-            var proitem = $(`<div class="radio" id='next-work'>
+        <div class="content" id="content">
+          <% if(!data ) { %>
+            <%- content  -%>
+              <% } else { %>
+                <div class="panel panel-default" id="div-work"></div>
+                <div class="panel panel-default">
+                  <div class="panel-body ">
+                    <div id="proitem">
+                    </div>
+                  </div>
+                </div>
+                <div id="btn">
+                  <button type="button" class="btn btn-primary" id="sub-btn">提交</button>
+                  <button type="button" class="btn btn-danger" id="danger">越界</button>
+                </div>
+                <% } %>
+        </div>
+      </div>
+    </div>
+    <script>
+      var proitem = $(
+        `<div class="radio" id='next-work'>
                 <label>
                     <input type="radio"  name="workitem" value="<%- data.nextindex  %>" checked="checked"><span><%- data.next  %></span><%- data.nextindex  %>
-                </label> 
+                </label>
                 </div>
                 <div class="radio disabled" id='lately-work'>
                     <label>
                         <input type="radio"  name="workitem" value="<%- data.id  %>" disabled="disabled"  ><span><%- data.workstage  %></span><%- data.id  %>
                         </label>
-                </div>`)
-            var status = false
-            $(function() {
-                todiv()
-                let id = "<%- data.id  %>"
-                if (!id) {
-                    $("#lately-work").remove();
-                }
-                status = <%- data.default%>
-                $(' <div class="panel-heading"><%- data.orderinfo %> 产品情况： </div>').appendTo($('#div-work'))
-                let details = JSON.parse('<%- JSON.stringify(data.details)%>');
-                if (details.length > 0) {
-                    var html = `<table id="worktable" class="table table-hover table-bordered table-striped table-condensed"><tbody><th>编号</th><th>状态</th>
+                </div>`
+      )
+      var status = false
+      $(function() {
+        todiv()
+        let id = "<%- data.id  %>"
+        if (!id) {
+          $("#lately-work").remove();
+        }
+        status = <%- data.default%>
+        $(' <div class="panel-heading"><%- data.orderinfo %> 产品情况： </div>').appendTo($('#div-work'))
+        let details = JSON.parse('<%- JSON.stringify(data.details)%>');
+        if (details.length > 0) {
+          var html =
+            `<table id="worktable" class="table table-hover table-bordered table-striped table-condensed"><tbody><th>编号</th><th>状态</th>
                                             <th>上次完成的工序</th>
                                             <th>完成账户</th>
                                             <th>完成事件</th>
                                             <th>权限</th>
                                             <th>本次应提交工序</th>`
-                    for (var i = 0; i < details.length; i++) {
-                        var time = '无';
-                        if (details[i].recordtime) {
-                            time = moment(details[i].recordtime).format('YYYY-MM-DD HH:mm:ss')
-                        }
+          for (var i = 0; i < details.length; i++) {
+            var time = '无';
+            if (details[i].recordtime) {
+              time = moment(details[i].recordtime).format('YYYY-MM-DD HH:mm:ss')
+            }
 
-                        html += `<tr> 
+            html +=
+              `<tr>
                         <td>${details[i].pid}</td>
                         <td>${details[i].status}</td>
                         <td>${ details[i].workstage||'无'}</td>
@@ -113,84 +108,84 @@
                         <td>${details[i].kind||'无'}</td>
                         <td>${details[i].next}</td>
                         </tr>`
-                    }
-                    html += `</tbody></table>`
+          }
+          html += `</tbody></table>`
 
-                    $(html).appendTo($('#div-work'))
-                }
-                if ('<%- data.next%>' == 'ok') {
-                    $("#next-work").remove();
-                }
+          $(html).appendTo($('#div-work'))
+        }
+        if ('<%- data.next%>' == 'ok') {
+          $("#next-work").remove();
+        }
 
+      })
+      $('#danger').click(function() {
+        swal({
+          title: "您确定要越权吗",
+          text: "您确定要临时启用权限吗？",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          closeOnCancel: false,
+          cancelButtonText: '是的，我需要',
+          confirmButtonText: "取消",
+          confirmButtonColor: "#337ab7"
+        }, function(isConfirm) {
+          if (!isConfirm) {
+            $('.radio :radio').attr({
+              "disabled": false
             })
-            $('#danger').click(function() {
-                swal({
-                    title: "您确定要越权吗",
-                    text: "您确定要临时启用权限吗？",
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    closeOnCancel: false,
-                    cancelButtonText: '是的，我需要',
-                    confirmButtonText: "取消",
-                    confirmButtonColor: "#337ab7"
-                }, function(isConfirm) {
-                    if (!isConfirm) {
-                        $('.radio :radio').attr({
-                            "disabled": false
-                        })
-                        $('#proitem .radio').removeClass("disabled");
-                        $('#sub-btn').get(0).removeAttribute('disabled')
-                        status = true
-                        swal.close()
-                    } else {
-                        swal.close()
-                    }
+            $('#proitem .radio').removeClass("disabled");
+            $('#sub-btn').get(0).removeAttribute('disabled')
+            status = true
+            swal.close()
+          } else {
+            swal.close()
+          }
 
-                });
-            })
-            $('#sub-btn').click(function() {
-                if (status == "true") {
-                    var option = {
-                        id: $('#proitem input[name="workitem"]:checked').val(),
-                        no: "<%- data.orderinfo%>",
-                        work: $('#proitem input[name="workitem"]:checked').next("span").text(),
-                        kind: 0
-                    }　　
-                    if (!option.id) {
-                        sweetAlert('失败', "没有选择", 'error')
-                        return
-                    }
-                    if (option.id != '<%-data.nextindex%>') {
-                        option.kind = 1
-                    }
-                    $.ajax({
-                        type: 'post',
-                        url: '/scanqr/worksubmit',
-                        data: option,
-                        error: function(res) {
-                            sweetAlert('失败', res.message, 'error')
-                        },
-                        success: function(res) {
-                            if (res.code == 'ok') {
-                                sweetAlert('成功', '恭喜修改成功', 'success')
-                                window.location.href = 'http://' + window.location.host + '/process/?pid=' + encodeURIComponent(option.no)
-                            } else {
-                                sweetAlert('失败', res.message, 'error')
-                            }
-                        }
-                    })
-
-                } else {
-                    sweetAlert('失败', '对不起您没有默认权限', 'error')
-                }
-
-            })
-
-            function todiv() {
-                $(proitem).appendTo($('#proitem'));
+        });
+      })
+      $('#sub-btn').click(function() {
+        if (status == "true") {
+          var option = {
+            id: $('#proitem input[name="workitem"]:checked').val(),
+            no: "<%- data.orderinfo%>",
+            work: $('#proitem input[name="workitem"]:checked').next("span").text(),
+            kind: 0
+          }　　
+          if (!option.id) {
+            sweetAlert('失败', "没有选择", 'error')
+            return
+          }
+          if (option.id != '<%-data.nextindex%>') {
+            option.kind = 1
+          }
+          $.ajax({
+            type: 'post',
+            url: '/scanqr/worksubmit',
+            data: option,
+            error: function(res) {
+              sweetAlert('失败', res.message, 'error')
+            },
+            success: function(res) {
+              if (res.code == 'ok') {
+                sweetAlert('成功', '恭喜修改成功', 'success')
+                window.location.href = 'http://' + window.location.host + '/order/?pid=' + encodeURIComponent(option.no)
+              } else {
+                sweetAlert('失败', res.message, 'error')
+              }
             }
-        </script>
+          })
+
+        } else {
+          sweetAlert('失败', '对不起您没有默认权限', 'error')
+        }
+
+      })
+
+      function todiv() {
+        $(proitem).appendTo($('#proitem'));
+      }
+    </script>
 </body>
 
 </html>
