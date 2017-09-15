@@ -67,7 +67,7 @@ var fun = {
                 res.data = await sqlutil.query(sql2)
             } else {
                 let sql3 = `SELECT
-                    0 'index' ,
+                    1 'index' ,
                     null workstage,
                     wsi.workstage as next,
                     odif.pid,
@@ -76,12 +76,12 @@ var fun = {
                     DATE_FORMAT( wrd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,
                     wrd.kind,
                     odif.status,
-                    (SELECT id FROM workstageinfo AS s WHERE s.orderinfo = '${proid}' AND s.INDEX =0)as nextindex
+                    (SELECT id FROM workstageinfo AS s WHERE s.orderinfo = '${proid}' AND s.INDEX =1)as nextindex
                     FROM
                     workstageinfo AS wsi
                     left JOIN workrecord AS wrd ON wrd.workstageid = wsi.id
                     LEFT JOIN orderinfo as odif on  wsi.orderinfo=odif.pid
-                    WHERE wsi.orderinfo='${proid}' AND  wsi.index=0`
+                    WHERE wsi.orderinfo='${proid}' AND  wsi.index=1`
                 res.data = await sqlutil.query(sql3)
             }
         } catch (error) {

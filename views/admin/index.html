@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%- title %>
+    </title>
+    <style>
+        .cell {
+            margin: 0 auto;
+            max-width: 500px
+        }
+        
+        .cell>.panel-heading {
+            height: 60px;
+            text-align: center
+        }
+        
+        .cell>.panel-heading>.panel-title {
+            font-size: 18pt
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("../header.ejs") %>
+        <div class="container">
+            <div class="panel panel-primary cell">
+                <div class="panel-heading">
+                    <span class="panel-title">
+                        <%- title %>
+                    </span>
+                </div>
+                <div class="panel-body">
+                    <div id="div-form"></div>
+                </div>
+            </div>
+        </div>
+        <%- include("../footer.ejs") %>
+            <script>
+                $(function() {
+                    if (<%- status %>) {
+                        console.log("登陆")
+                    } else {
+                        console.log("注册")
+                    }
+                })
+            </script>
+</body>
+
+</html>

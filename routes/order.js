@@ -14,6 +14,14 @@ moment.tz.setDefault('Asia/Shanghai')
 const logUtil = require('../models/log4js/log_utils')
 var orderutil = require('../service/order')
 
+router.use(async(ctx, next) => {
+
+    // if (!ctx.session.user) {
+    //     await ctx.redirect('/admin/')
+    // } else {
+    await next()
+        // }
+})
 
 router.all('/', async(ctx, next) => {
     ctx.state = {
@@ -131,7 +139,7 @@ router.all('/qrcode', async(ctx, next) => {
         ctx.body = '非法访问'
         return
     }
-    url = confg.host || ctx.host + '/scanqr/qrform?t=' + pid
+    url = confg.host || ('http://' + ctx.host) + '/scanqr/qrform?t=' + pid
 
     ctx.set({
         'Content-Type': 'image/png'

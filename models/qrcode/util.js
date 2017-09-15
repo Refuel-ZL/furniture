@@ -35,9 +35,14 @@ utils.createQr = function(url, option) {
                     var c = img2.getContext('2d')
                     c.fillStyle = '#FFFFFF'
                     c.fillRect(0, 0, w, h)
-                    c.font = "18pt";
-                    c.fillStyle = '#000000';
-                    c.fillText(text, (w - text.length * 15) / 2, img.height + 35);
+                    c.font = '18pt'
+                    c.fillStyle = '#000000'
+                    try {
+                        c.fillText(text, (w - text.length * 15) / 2, img.height + 35)
+                    } catch (error) {
+
+                    }
+
                     c.drawImage(img, 0, 0, img.width, img.height, (w - img.width) / 2, 10, img.width, img.height)
                     c.textAlign = 'center'
                     c.textBaseline = 'middle'

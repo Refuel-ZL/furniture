@@ -14,11 +14,14 @@ const users = require('./users')
 const wx = require('./wx')
 const scanqr = require('./scanqr')
 const order = require('./order')
+const admin = require('./admin')
 
 router.use('/user', users.routes(), users.allowedMethods())
 router.use('/wx', wx.routes(), wx.allowedMethods())
 router.use('/scanqr', scanqr.routes(), scanqr.allowedMethods())
 router.use('/order', order.routes(), order.allowedMethods())
+router.use('/admin', admin.routes(), admin.allowedMethods())
+
 
 router.get('/', async(ctx, next) => {
     ctx.state = {

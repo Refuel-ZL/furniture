@@ -29,14 +29,14 @@ var TableInit = function() {
             },
             'mouseover .RoleOfB': function(e, value, row, index) {
                 var $pElem = $(this);
-                $(this).get(0).setAttribute("download", row.pid);
+                $(this).get(0).setAttribute("download", row.pid + '.png');
                 $pElem.popover({
                     html: true,
                     trigger: "hover", //hover 
-                    title: "",
+                    title: `二维码【${row.pid}】`,
                     content: `<img src='/order/qrcode?pid=${row.pid}' alt='${row.pid}' height='256px' width='260px'/>`,
                     container: '#table',
-                    placement: 'top',
+                    placement: 'left',
                     animation: false
                 });
                 $pElem.popover("show")

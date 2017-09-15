@@ -76,6 +76,7 @@ app.use(async(ctx, next) => {
 })
 
 
+
 // error handler
 onerror(app)
 
@@ -103,6 +104,7 @@ app.use(async(ctx) => {
     }
 
 })
+
 
 // app.on('error', async function(err, ctx) {
 //     // logUtil.writeErr('server error', err)

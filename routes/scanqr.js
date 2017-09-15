@@ -16,6 +16,8 @@ var scanqrutil = require('../service/scanqr')
 var userutil = require('../service/user')
 var Wechat = require('../wechat/wechat')
 
+var configUtil = require('../service/config')
+
 var wechatApi = new Wechat(wxconfig.wechat)
 
 /**
@@ -86,6 +88,9 @@ router.get('/qrupinfo', async(ctx, next) => {
                     val.data.default = true
                 }
                 ctx.state.data = val.data
+                ctx.state.data.workitem = ctx.session.workitem
+                ctx.state.data.pid = option.itemno
+                ctx.state.config = configUtil.getconf()
             }
         } else {
             ctx.session = ''
@@ -97,41 +102,79 @@ router.get('/qrupinfo', async(ctx, next) => {
         ctx.state.content = '用户提交工作异常!请重试'
         logUtil.writeErr(`【用户提交${state}工作】拉取用户信息异常`, error)
     }
+
     await ctx.render('scanqr/index', ctx.state)
-    console.log(ctx.state)
+    console.dir(JSON.stringify(ctx.state))
 })
-router.get('/form', async(ctx, next) => {
+
+router.get('/test', async(ctx, next) => {
+    /*  ctx.state = {
+         'content': '提示语',
+         'data': {
+             workitem: {
+                 '下料': '1',
+                 '': '3'
+             },
+             details: [{
+                 index: 1,
+                 kind: null,
+                 next: '下料',
+                 nextindex: null,
+                 orderinfo: 'kay',
+                 pid: 'kay',
+                 recordtime: null,
+                 status: '0',
+                 userid: null,
+                 workstage: null,
+             }],
+             id: null,
+             name: '赵磊',
+             next: '下料',
+             nextindex: null,
+             orderutilinfo: null,
+             status: '0',
+             workstage: '',
+         },
+         config: configUtil.getconf(),
+         title: 'kay'
+     } */
     ctx.state = {
-        title: '单号：【kt-9-002】',
-        content: '提示语',
-        data: {
-            name: '赵磊',
-            details: [{
-                id: 14,
-                index: 1,
-                kind: '0',
-                next: 'ok',
-                nextindex: null,
-                orderinfo: 'kt-9-001',
-                pid: 'kt-9-001',
-                recordtime: '2017-09-07 16:56:37',
-                status: '0',
-                userid: '赵磊',
-                workstage: '封边',
+        "title": "kay",
+
+        "config": configUtil.getconf(),
+        "content": "提示语",
+        "data": {
+            "name": "赵磊",
+            "pid": "kay",
+            "id": 323,
+            "nextindex": 324,
+            "workstage": "下料",
+            "next": "拼版",
+            "status": "0",
+            "details": [{
+                "pid": "kay",
+                "status": "0",
+                "orderinfo": "kay",
+                "userid": "赵磊",
+                "workstage": "下料",
+                "id": 323,
+                "recordtime": "2017-09-15 17:07:15",
+                "kind": "0",
+                "index": 1,
+                "next": "拼版",
+                "nextindex": 324
             }],
-            default: false,
-            next: 'ok',
-            nextindex: null,
-            orderinfo: 'kt-9-001',
-            status: '0',
-            workstage: '封边',
-            id: 14
+            "default": false,
+            "workitem": {
+                "下料": "1",
+                "拼版": "3"
+            }
         }
     }
-    await ctx.render('scanqr/index', ctx.state)
-    console.log(ctx.state)
 
+    await ctx.render('scanqr/index', ctx.state)
 })
+
 
 router.post('/worksubmit', async(ctx, next) => {
     var res = {
@@ -155,7 +198,7 @@ router.post('/worksubmit', async(ctx, next) => {
         }
     } else {
         res.code = 'error'
-        res.message = '很抱歉！您没有登陆，请扫描产品编号进入此页面'
+        res.message = '很抱歉！请用微信扫描产品编号进入此页面'
     }
     ctx.body = res
 
