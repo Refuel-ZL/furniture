@@ -1,5 +1,5 @@
-<nav class="navbar-fixed-bottom footer">
-    <div class=" navbar-inner container">
+<nav class=" footer">
+    <div class="  container">
         <p class="footer-links">
             <a href="/order/">订单管理</a>
             <span class="line">|</span>
@@ -20,8 +20,24 @@
 </nav>
 
 <style>
+    html {
+        height: 100%;
+    }
+    
+    body {
+        min-height: 100%;
+        position: relative;
+    }
+    
+    body>.container {
+        padding-bottom: 150px;
+    }
+    
     body .footer {
-        min-width: 500px;
+        height: 131px;
+        position: absolute;
+        width: 100%;
+        bottom: 0px;
     }
     
     .footer .container {
@@ -56,15 +72,16 @@
 
 <script>
     function initsize() {
-        console.log(window.innerHeight, document.body.scrollHeight)
-        if (window.innerHeight >= document.body.scrollHeight) {
-            $(".footer").addClass("navbar-fixed-bottom");
-        } else {
-            $(".footer").removeClass("navbar-fixed-bottom");
-        }
+        // console.log(window.innerHeight, document.body.scrollHeight)
+        // if (window.innerHeight >= document.body.scrollHeight) {
+        //     $(".footer").addClass("navbar-fixed-bottom");
+        // } else {
+        $(".footer").removeClass("navbar-fixed-bottom");
+        // }
     }
-    document.body.setAttribute('onresize', 'initsize()')
-    window.onload = function() {
-        initsize();
-    }
+    // document.body.setAttribute('onresize', 'initsize()')
+    // window.onload = function() {
+    initsize();
+
+    // }
 </script>

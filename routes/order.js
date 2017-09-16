@@ -63,7 +63,7 @@ router.all('/pid_data', async function(ctx, next) {
         res = await orderutil.fetchprolog(option)
         if (res.code == 'ok') {
             res = {
-                total: res.data.length,
+                total: res.total,
                 rows: res.data
             }
         } else {

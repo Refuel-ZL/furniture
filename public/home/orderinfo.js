@@ -15,7 +15,7 @@ var TableInit = function() {
         function operateFormatter(value, row, index) {
             return [
                 '<button type="button" class="RoleOfA btn btn-default  btn-sm" style="margin-right:15px;">进度</button>',
-                '<a href="/order/qrcode" class="RoleOfB btn btn-default btn-sm" style="margin-right:15px;">二维码</a>',
+                `<a href="/order/qrcode?pid=${row.pid}" class="RoleOfB btn btn-default btn-sm" style="margin-right:15px;">二维码</a>`,
                 // '<button type="button" class="RoleOfB btn btn-default  btn-sm" style="margin-right:15px;">二维码</button>',
                 // '<button type="button" class="RoleOfC btn btn-default  btn-sm" style="margin-right:15px;">C权限</button>',
                 // '<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>',
@@ -64,7 +64,7 @@ var TableInit = function() {
             toolbar: '#toolbar', //工具按钮用哪个容器
             singleSelect: true, //单选
             striped: true, //是否显示行间隔色
-            cache: true, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             pagination: true, //是否显示分页（*）
             sortable: true, //是否启用排序
             sortStable: false,

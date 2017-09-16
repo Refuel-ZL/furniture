@@ -206,19 +206,25 @@ router.all('/data', async function(ctx, next) {
         total: 0,
         rows: {}
     }
-    var offset = ctx.query.offset || ctx.request.body.offset || 0
-    var limit = ctx.query.limit || ctx.request.body.limit || 10
-    var search = ctx.query.search || ctx.request.body.search || ''
+    try {
+        var offset = ctx.query.offset || ctx.request.body.offset || 0
+        var limit = ctx.query.limit || ctx.request.body.limit || 10
+        var search = ctx.query.search || ctx.request.body.search || ''
 
-    var option = {
-        limit: limit,
-        offset: offset,
-        search: search
-    }
-    res = await userutil.fetchwork(option)
-    res = {
-        total: res.length,
-        rows: res
+        var option = {
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            search: search
+        }
+        let data = await userutil.fetchwork(option)
+        if (data.code == 'ok') {
+            res = {
+                total: data.total,
+                rows: data.rows
+            }
+        }
+    } catch (error) {
+        console.log(error.massage)
     }
 
     ctx.body = res

@@ -115,9 +115,11 @@ var fun = {
                 if (params.search) {
                     valsql += ` and concat_ws(' ' ,odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, '' ),IFNULL( wcd.recordtime, '' ),IFNULL( wcd.kind, '' ) ) like '%${params.search}%'`
                 }
-                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, '%Y-%m-%d %H:%i:%s') as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime  LIMIT ?,?`
+                let sql1 = `SELECT SQL_CALC_FOUND_ROWS	odi.pid,DATE_FORMAT( odi.regtime, '%Y-%m-%d %H:%i:%s') as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, '%Y-%m-%d %H:%i:%s') as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime  LIMIT ?,?`
                 let val = await sqlutil.query(sql1, [params.offset, params.limit])
+                let num = await sqlutil.query('SELECT FOUND_ROWS() num')
                 res.data = val
+                res.total = num[0].num
             } catch (error) {
                 res = {
                     code: 'error',
@@ -278,7 +280,65 @@ var fun = {
             }
         }
         return res
+    },
+    /**更新订单状态 */
+    updateorderstatus: async function(params) {
+        var res = {
+            code: 'ok'
+        }
+        if (!params) {
+            res = {
+                code: 'error',
+                message: '参数错误'
+            }
+        }
+        let sql1 = 'update orderinfo set status=? where pid= ?'
+        try {
+            await sqlutil.query(sql1, [params.status, params.pid])
+        } catch (error) {
+            res = {
+                code: 'error',
+                message: `改变订单状态异常：${JSON.stringify(error.message)}`
+            }
+        }
+        return res
+    },
+    /**
+     * 核对工序是不是最后一道
+     */
+    finallywork: async function(pid, workid) {
+        try {
+            let sql1 = 'SELECT wif.id,wif.workstage,wif.orderinfo,wif.index as num FROM workstageinfo AS wif WHERE wif.orderinfo=? order by wif.index DESC  limit 1;'
+            let res1 = await sqlutil.query(sql1, [pid])
+            if (res1[0].id == workid) {
+                return true
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        return false
+    },
+    /**
+     * 核对提交的工序是否有效
+     * 
+     */
+    fetchorderusableswork: async function(pid, work, workid) {
+        var res = await this.fetchprostatus(pid)
+        if (res.code == 'ok') {
+            res = res.data
+            if ((res[0].id == workid || res[0].nextindex == workid) && (res[0].next == work || res[0].workstage == work)) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
+
+
     }
+
+
 
 }
 

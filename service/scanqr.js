@@ -68,7 +68,6 @@ var fun = {
                 message: '参数错误'
             }
         } else {
-            // userid,workstageid,recordtime,kind
             try {
                 let sql1 = 'SELECT wrd.userid,wrd.workstageid,wrd.recordtime FROM workrecord AS wrd WHERE wrd.userid=? AND wrd.workstageid=?'
                 let val = await sqlutil.query(sql1, [params.name, params.id])
@@ -78,20 +77,32 @@ var fun = {
                         message: '请勿重新提交'
                     }
                 } else {
-                    let time = moment().format('YYYY-MM-DD HH:mm:ss')
-                    let sql2 = 'INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)'
-                    let option = [
-                        params.name, params.id, time, params.kind
-                    ]
-                    try {
+                    var item = await orderutil.fetchorderusableswork(params.no, params.work, params.id)
+                    if (item) { //是否是当前订单的适合工序
+                        let time = moment().format('YYYY-MM-DD HH:mm:ss')
+                        let sql2 = 'INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)'
+                        let option = [
+                            params.name, params.id, time, params.kind
+                        ]
                         sqlutil.query(sql2, option)
-                    } catch (error) {
+                        if (await orderutil.finallywork(params.no, params.id)) { //最后一道程序改变订单状态
+                            let res3 = await orderutil.updateorderstatus({
+                                status: '1',
+                                pid: params.no
+                            })
+                            if (res3.code == 'error') {
+                                res = {
+                                    code: 'error',
+                                    message: res3.message
+                                }
+                            }
+                        }
+                    } else {
                         res = {
                             code: 'error',
-                            message: error.message
+                            message: '提交的工序非法'
                         }
                     }
-
                 }
             } catch (error) {
                 res = {
@@ -102,6 +113,9 @@ var fun = {
         }
         return res
     }
+
+
+
 }
 
 
