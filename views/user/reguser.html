@@ -155,25 +155,29 @@
                                     success: function(res) {
                                         if (res.code == 'ok') {
                                             swal({
-                                                    title: "",
-                                                    text: "恭喜你注册成功",
-                                                    type: "success",
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: "#DD6B55",
-                                                    confirmButtonText: "继续注册",
-                                                    cancelButtonText: "返回主页",
-                                                    closeOnConfirm: false,
-                                                    closeOnCancel: false
-                                                },
+                                                title: "",
+                                                text: "恭喜你注册成功",
+                                                type: "success",
+                                                showCancelButton: true,
+                                                confirmButtonColor: "#DD6B55",
+                                                confirmButtonText: "继续注册",
+                                                cancelButtonText: "返回主页",
+                                                closeOnConfirm: false,
+                                                closeOnCancel: false
+                                            }).then(
                                                 function(isConfirm) {
-                                                    if (isConfirm) {
-                                                        window.location.replace(window.location.href);
-                                                    } else {
+                                                    window.location.replace(window.location.href);
+                                                },
+                                                function(dismiss) {
+                                                    if (dismiss === 'cancel' || dismiss === 'close') {
                                                         window.location.href = "/"
+                                                    } else {
+                                                        return true
                                                     }
+
                                                 });
                                         } else {
-                                            sweetAlert("注册失败", res.message, "error");
+                                            swal("注册失败", res.message, "error");
                                             $("#Form").data('bootstrapValidator').validate();
                                         }
                                     }
