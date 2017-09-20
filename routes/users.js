@@ -79,7 +79,7 @@ router.get("/fetch", async function(ctx, next) {
 router.get("/qr", async function(ctx, next) {
     var t = ctx.query.t || ctx.request.body.t
     var params = {
-        url: urlencode(`http://${ctx.host}/user/qrupreg`),
+        url: urlencode(`http://${ctx.hostname}/user/qrupreg`),
         scope: "snsapi_base",
         param: t,
     }

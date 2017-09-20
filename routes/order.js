@@ -139,7 +139,8 @@ router.all('/qrcode', async(ctx, next) => {
         ctx.body = '非法访问'
         return
     }
-    url = confg.host || ('http://' + ctx.host) + '/scanqr/qrform?t=' + pid
+    url = confg.host || ('http://' + ctx.host);
+    url += '/scanqr/qrform?t=' + pid
 
     ctx.set({
         'Content-Type': 'image/png'

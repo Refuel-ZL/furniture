@@ -2,7 +2,7 @@
     /**二维码加密*/
     "qrencryption": false,
     /* 二维码域名 http:// **/
-    "host": "",
+    "host": "http://my.ngrok.zltcloud.com",
     /**特殊工序(有合作的)提交间隔**/
     "gap": 1000,
     "orserstutas": {

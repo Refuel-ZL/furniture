@@ -26,7 +26,7 @@ var wechatApi = new Wechat(wxconfig.wechat)
 router.get("/qrform", async(ctx, next) => {
     var no = ctx.query.t || ctx.request.body.t //获取提交的型号
     var params = {
-        url: urlencode(`http://${ctx.host}/scanqr/qrupinfo`),
+        url: urlencode(`http://${ctx.hostname}/scanqr/qrupinfo`),
         scope: "snsapi_base",
         param: no,
     }
