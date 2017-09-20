@@ -115,9 +115,13 @@ var fun = {
                 if (params.search) {
                     valsql += ` and concat_ws(" " ,odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ) ) like "%${params.search}%"`
                 }
-                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime  LIMIT ?,?`
-                let val = await sqlutil.query(sql1, [params.offset, params.limit])
-                let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime`
+                let page = ""
+                if (params.limit) {
+                    page = `LIMIT  ${params.offset}, ${params.limit}`
+                }
+                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} order by odi.pid,wsi.${params.sortName} ${params.sortOrder}  ${page}`
+                let val = await sqlutil.query(sql1)
+                let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS odi LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime`
                 let num = await sqlutil.query(sql2)
                 res.data = val
                 res.total = num[0].num
@@ -146,13 +150,16 @@ var fun = {
         } else {
             try {
                 var valsql = "WHERE 1=1"
-                var LIMIT = "LIMIT ?,?"
                 if (params.search) {
                     valsql += ` and concat_ws(" " ,oif.pid,oif.regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
                 }
-                let sql1 = `SELECT  oif.pid,DATE_FORMAT( oif.regtime, "%Y-%m-%d %H:%i:%s") as regtime,oif.status,oif.category FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} ${LIMIT} `
+                let page = ""
+                if (params.limit) {
+                    page = `LIMIT  ${params.offset}, ${params.limit}`
+                }
+                let sql1 = `SELECT  oif.pid,DATE_FORMAT( oif.regtime, "%Y-%m-%d %H:%i:%s") as regtime,oif.status,oif.category FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} ${page} `
 
-                let val = await sqlutil.query(sql1, [params.offset, params.limit])
+                let val = await sqlutil.query(sql1)
                 let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} `
 
                 let num = await sqlutil.query(sql2)

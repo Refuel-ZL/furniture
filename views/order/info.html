@@ -25,14 +25,26 @@
             <%- include("../static/bootstrap-validator.ejs") %>
                 <%- include("../static/bootstrap-editable.ejs")%>
                     <div class="container">
-                        <!--  <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Panel title</h3>
-                            </div>
-                            <div class="panel-body">
-                                Panel content
-                            </div>
-                        </div> -->
+                        <div id="toolbar" class="btn-group">
+                            <!-- <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" autocomplete="off" id="wd" aria-label="请输入产品编号" placeholder="产品编号">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-default" id="search">查询</button>
+                                </div>
+                                <div class="col-md-4"> -->
+
+                            <select class="form-control">
+                                            <option value="basic">导出当前</option>
+                                            <option value="all">导出所有</option>
+                                            <!-- <option value="selected">导出选中</option> //服务器分页暂不处理-->
+                                         </select>
+
+
+                            <!-- </div> -->
+                            <!-- </div> -->
+                        </div>
                         <table id="table"></table>
                     </div>
                     <%- include("../footer.ejs") %>

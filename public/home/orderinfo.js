@@ -1,5 +1,4 @@
 $(function() {
-
     //1.初始化Table
     var oTable = new TableInit()
     oTable.Init()
@@ -7,6 +6,13 @@ $(function() {
     //2.初始化Button的点击事件
     var oButtonInit = new ButtonInit()
     oButtonInit.Init()
+    $('#toolbar').find('select').change(function() {
+        $("#table").bootstrapTable('refreshOptions', {
+            exportDataType: $(this).val()
+        });
+    });
+
+
 })
 var TableInit = function() {
     var oTableInit = new Object()
@@ -75,7 +81,7 @@ var TableInit = function() {
             sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
             pageNumber: 1, //初始化加载第一页，默认第一页
             pageSize: 10, //每页的记录行数（*）
-            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            pageList: [10, 25, 50, 100, 200, 500, 'ALL'], //可供选择的每页的行数（*）
             search: true, //是否显示表格搜索
             strictSearch: true,
             showColumns: true, //是否显示所有的列
@@ -87,8 +93,11 @@ var TableInit = function() {
             showToggle: true, //是否显示详细视图和列表视图的切换按钮
             cardView: false, //是否显示详细视图
             detailView: false, //是否显示父子表
-            // showExport: true, //是否显示导出
-            // exportDataType: "basic", //basic", "all", "selected".
+            showExport: true, //是否显示导出
+            exportTypes: ['txt', 'doc', 'excel'],
+            exportOptions: {
+                fileName: '文件名',
+            },
             rowStyle: function(row, index) {
                 /* var classes = ["active", "success", "info", "warning", "danger"]*/
                 let value = row.status
@@ -132,15 +141,7 @@ var TableInit = function() {
                 }
             }, {
                 field: "pid",
-                title: "编号",
-                // sortable: true
-                /*  editable: {
-                     type: "text",
-                     title: "编号",
-                     validate: function(v) {
-                         if (!v) return "用户名不能为空"
-                     }
-                 } */
+                title: "编号"
             }, {
                 field: "category",
                 title: "生产线"
@@ -151,27 +152,36 @@ var TableInit = function() {
             }, {
                 field: "status",
                 title: "状态",
-                editable: {
-                    type: "select",
-                    title: "状态",
-                    source: [{
-                            value: "0",
-                            text: "进行中",
-                            // disabled: "disabled" //不能返工
-                        },
-                        {
-                            value: "1",
-                            text: "已完成",
-                            disabled: "disabled" //不能返工
-                        }, {
-                            value: "2",
-                            text: "已取消"
+                formatter: function(value, row, index) {
+                        if (value == 0) {
+                            return "进行中"
+                        } else if (value == 1) {
+                            return "完成"
+                        } else if (value == 2) {
+                            return "已取消"
                         }
-                    ],
-                    validate: function(v) {
-                        if (!v) return "不能为空"
                     }
-                }
+                    // editable: {
+                    //     type: "select",
+                    //     title: "状态",
+                    //     source: [{
+                    //             value: "0",
+                    //             text: "进行中",
+                    //             // disabled: "disabled" //不能返工
+                    //         },
+                    //         {
+                    //             value: "1",
+                    //             text: "已完成",
+                    //             disabled: "disabled" //不能返工
+                    //         }, {
+                    //             value: "2",
+                    //             text: "已取消"
+                    //         }
+                    //     ],
+                    //     validate: function(v) {
+                    //         if (!v) return "不能为空"
+                    //     }
+                    // }
             }, {
                 field: "operate",
                 title: "操作",

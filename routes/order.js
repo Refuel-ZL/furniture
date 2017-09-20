@@ -52,14 +52,18 @@ router.all('/pid_data', async function(ctx, next) {
         rows: []
     }
     try {
-        var limit = ctx.query.limit || ctx.request.body.limit || 10
-        var offset = ctx.query.offset || ctx.request.body.offset || 0
+        var limit = ctx.query.limit || ctx.request.body.limit || null
+        var offset = ctx.query.offset || ctx.request.body.offset || null
         var search = ctx.query.search || ctx.request.body.search || ''
         var pid = ctx.query.pid || ctx.request.body.pid || ''
+        var sortName = ctx.query.sortName || ctx.request.body.sortName || 'index'
+        var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'esc'
         var option = {
             limit: parseInt(limit),
             offset: parseInt(offset),
             search: search,
+            sortName: sortName,
+            sortOrder: sortOrder,
             pid: pid
         }
         if (pid == '') { return ctx.body = res }
@@ -99,8 +103,8 @@ router.all('/data', async(ctx, next) => {
         rows: []
     }
     try {
-        var limit = ctx.query.limit || ctx.request.body.limit || 10
-        var offset = ctx.query.offset || ctx.request.body.offset || 0
+        var limit = ctx.query.limit || ctx.request.body.limit || null
+        var offset = ctx.query.offset || ctx.request.body.offset || null
         var search = ctx.query.search || ctx.request.body.search || ''
         var sortName = ctx.query.sortName || ctx.request.body.sortName || 'regtime'
         var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'desc'
