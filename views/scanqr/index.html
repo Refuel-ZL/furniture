@@ -107,11 +107,17 @@
                 $('#temp-btn').click(function() {
                     var rediodata = {}
                     rediodata[data.nextindex] = data.next
-                    rediodata[data.id] = data.workstage
-
+                    if (data.index != 0 && !data.timeout.status) {
+                        rediodata[data.id] = data.workstage
+                    }
+                    let message = ""
+                    if (data.timeout.status) {
+                        message = `据上一工序已超过允许范围:超时【${data.timeout.timer}】`
+                    }
                     swal({
                         title: '临时操作',
                         input: 'radio',
+                        text: message,
                         type: 'warning',
                         inputValue: '',
                         inputOptions: rediodata,

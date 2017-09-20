@@ -34,6 +34,7 @@ var fun = {
                         nextindex: st.data[0].nextindex, //工序表下一工序的id
                         orderutilinfo: st.data[0].orderutilinfo, //型号
                         workstage: st.data[0].workstage || "", //最近一个完成的工序
+                        index: st.data[0].index, //完成工序的序号
                         next: st.data[0].next, //将要提交的工序
                         status: st.data[0].status, //订单状态
                         details: st.data
@@ -52,6 +53,7 @@ var fun = {
             }
             logUtil.writeErr("拉取扫描订单信息异常", JSON.stringify(error))
         }
+        console.dir(res.data)
         return res
     },
     /**

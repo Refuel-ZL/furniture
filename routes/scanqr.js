@@ -91,6 +91,26 @@ router.get("/qrupinfo", async(ctx, next) => {
                 ctx.state.data.workitem = userwork.data.workitem
                 ctx.state.data.pid = option.itemno
                 ctx.state.config = configUtil.getconf()
+
+                ctx.state.data.timeout = {
+                    status: false,
+                    timer: 0, //时间差值
+                    conf: ctx.state.config.workgap
+                }
+                if (ctx.state.data.index != 0) { //是否超时 非首道工序
+                    try {
+                        let t1 = moment(ctx.state.data.details[0].recordtime).valueOf()
+                        let t2 = moment().valueOf()
+                        ctx.state.data.timeout.timer = t2 - t1
+                        ctx.state.data.timeout.status = ctx.state.data.timeout.timer > ctx.state.data.timeout.conf
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
+
+
+
+
             }
         } else {
             ctx.session = ""
@@ -109,37 +129,53 @@ router.get("/qrupinfo", async(ctx, next) => {
 
 router.get("/test", async(ctx, next) => {
     ctx.state = {
-        "title": "kay",
-
-        "config": configUtil.getconf(),
+        "title": "kt-9-002",
         "content": "提示语",
         "data": {
-            "name": "赵磊",
-            "pid": "kay",
-            "id": 323,
-            "nextindex": 324,
-            "workstage": "下料",
-            "next": "拼版",
+            "name": "赵磊2",
+            "id": 342,
+            "nextindex": 343,
+            "workstage": "刨方",
+            "index": 3,
+            "next": "立铣",
             "status": "0",
-            "details": [{
-                "pid": "kay",
-                "status": "0",
-                "orderinfo": "kay",
-                "userid": "赵磊",
-                "workstage": "下料",
-                "id": 323,
-                "recordtime": "2017-09-15 17:07:15",
-                "kind": "0",
-                "index": 1,
-                "next": "拼版",
-                "nextindex": 324
-            }],
+            "details": [{ "pid": "kt-9-002", "status": "0", "orderinfo": "kt-9-002", "userid": "赵磊2", "workstage": "刨方", "id": 342, "recordtime": "2017-09-20 10:16:09", "kind": "1", "index": 3, "next": "立铣", "nextindex": 343 }],
             "default": false,
-            "workitem": {
-                "下料": "1",
-                "拼版": "3"
+            "workitem": { "null": null },
+            "pid": "kt-9-002"
+        },
+        "config": {
+            "qrencryption": false,
+            "host": "http://my.ngrok.zltcloud.com",
+            "workgap": 1000,
+            "orserstutas": { "0": "进行中", "1": "已完成", "2": "已取消" },
+            "beltline": {
+                "柜门": { "下料": "", "拼版": "", "刨方": "", "立铣": "", "出榫": "", "组装": "", "定尺": "", "边型铰孔": "", "装线条": "", "白胚质检": "", "打磨": "", "底油": "", "底油质栓": "", "面油": "", "成品质检": "", "成品包装": "", "发货": "" },
+                "柜体": { "下料": "", "封边": "", "排钻": "", "打磨": "", "底油": "", "质检": "", "面油": "", "包装": "", "发货": "" },
+                "房门": {
+                    "下料": "",
+                    "刨方": "",
+                    "立铣": "",
+                    "出榫": "",
+                    "组装": "",
+                    "定尺": "",
+                    "面线造型": "",
+                    "雕花": "",
+                    "门套": "",
+                    "套线": "",
+                    "白胚质检": "",
+                    "底油": "",
+                    "打磨": "",
+                    "面油": "",
+                    "成品质检": "",
+                    "包装": "",
+                    "发货": ""
+                }
             }
-        }
+        },
+        "settings": { "views": "d:\\Empolder\\WebWorkspaces\\furniture\\views" },
+        "partials": {},
+        "filename": "d:\\Empolder\\WebWorkspaces\\furniture\\views\\scanqr\\index.html"
     }
 
     await ctx.render("scanqr/index", ctx.state)
@@ -157,7 +193,6 @@ router.post("/worksubmit", async(ctx, next) => {
             params.name = userwork.data.name
             if (!userwork.data.workitem[params.work]) {
                 console.log(`危险${params.name}使用自身以外的【${params.work}】权限`)
-                params.kind = 1
             }
             let val = await scanqrutil.recordwork(params)
             if (val.code == "error") {
@@ -170,7 +205,7 @@ router.post("/worksubmit", async(ctx, next) => {
         }
     } else {
         res.code = "error"
-        res.message = "很抱歉！请用微信扫描产品编号进入此页面"
+        res.message = "很抱歉！您的身份信息已过期请重新用微信扫描产品二维码"
     }
     ctx.body = res
 

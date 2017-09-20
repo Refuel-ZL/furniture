@@ -65,7 +65,7 @@ var fun = {
                 res.data = await sqlutil.query(sql2)
             } else {
                 let sql3 = `SELECT
-                    1 "index" ,
+                    0 "index" ,
                     null workstage,
                     wsi.workstage as next,
                     odif.pid,
@@ -89,6 +89,7 @@ var fun = {
             }
             logUtil.writeErr(`获取${proid}最近一道工序异常：`, JSON.stringify(error))
         }
+        console.log(res.data)
         return res
 
     },
@@ -344,8 +345,11 @@ var fun = {
         } else {
             return false
         }
-
-
+    },
+    fetchpidlist: async function() {
+        let sql = "SELECT oif.pid,oif.status,oif.category,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime FROM orderinfo AS oif"
+        let res1 = await sqlutil.query(sql)
+        return res1
     }
 
 

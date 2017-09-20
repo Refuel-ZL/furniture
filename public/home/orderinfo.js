@@ -157,11 +157,12 @@ var TableInit = function() {
                     source: [{
                             value: "0",
                             text: "进行中",
-                            disabled: "disabled" //不能返工
+                            // disabled: "disabled" //不能返工
                         },
                         {
                             value: "1",
-                            text: "已完成"
+                            text: "已完成",
+                            disabled: "disabled" //不能返工
                         }, {
                             value: "2",
                             text: "已取消"

@@ -42,6 +42,10 @@ router.all('/search', async(ctx, next) => {
     }
     await ctx.render('order/search', ctx.state)
 })
+
+/**
+ * 获取pid 的记录
+ */
 router.all('/pid_data', async function(ctx, next) {
     var res = {
         total: 0,
@@ -86,6 +90,9 @@ router.all('/exit', async(ctx, next) => {
     ctx.body = ctx.session
 })
 
+/**
+ * 获取所有订单
+ */
 router.all('/data', async(ctx, next) => {
     var res = {
         total: 0,
@@ -125,7 +132,18 @@ router.all('/data', async(ctx, next) => {
 
 })
 
-
+/**
+ * 获取所有订单id
+ */
+router.all('/pidlist', async(ctx, next) => {
+    var res = []
+    try {
+        res = await orderutil.fetchpidlist()
+    } catch (error) {
+        console.log(error)
+    }
+    ctx.body = res
+})
 
 /**
  * TODO GET二维码
