@@ -43,7 +43,7 @@ var tableconf = {
     showExport: true, //是否显示导出
     exportTypes: ['txt', 'doc', 'excel'],
     exportOptions: {
-        fileName: '文件名',
+        fileName: '订单管理' + moment().format("YYYY-MM-DD"),
     },
     rowStyle: function(row, index) {
         /* var classes = ["active", "success", "info", "warning", "danger"]*/
@@ -132,6 +132,7 @@ var tableconf = {
     }, {
         field: "operate",
         title: "操作",
+        width: 200,
         align: "center",
         events: {
             "click .RoleOfA": function(e, value, row, index) {
@@ -144,13 +145,12 @@ var tableconf = {
         },
         formatter: function operateFormatter(value, row, index) {
             return [
-                `<button type="button" class="RoleOfA btn btn-primary  btn-sm" style="margin-right:15px;">进度</button>`,
-                `<a href="#" class="RoleOfB btn btn-info btn-sm" style="margin-right:15px;"
+                `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
+                `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfBbtn btn glyphicon glyphicon-save" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                 data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
                 data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
-                data-trigger="hover">二维码</a>`,
-                `<button type="button" class="RoleOfC btn  btn-danger  btn-sm" style="margin-right:15px;">删除</button>`,
-                // "<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>",
+                data-trigger="hover"></a>`,
+                `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
             ].join("")
         }
     }],
@@ -209,6 +209,7 @@ $(function() {
     $('#toolbar').find('select').change(function() {
         $("#table").bootstrapTable('destroy')
         tableconf.exportDataType = $(this).val()
+        tableconf.exportOptions.fileName = '订单管理' + moment().format("YYYY-MM-DD")
         $("#table").bootstrapTable(tableconf)
     })
 })

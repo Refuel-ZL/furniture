@@ -21,12 +21,13 @@
 
 <body>
     <%- include("../header.ejs") %>
-        <%- include("../static/bootstrap-table.ejs") %>
-            <%- include("../static/bootstrap-validator.ejs") %>
-                <%- include("../static/bootstrap-editable.ejs")%>
-                    <div class="container">
-                        <div id="toolbar" class="btn-group">
-                            <!-- <div class="row">
+        <%- include("../static/moment.ejs") %>
+            <%- include("../static/bootstrap-table.ejs") %>
+                <%- include("../static/bootstrap-validator.ejs") %>
+                    <%- include("../static/bootstrap-editable.ejs")%>
+                        <div class="container">
+                            <div id="toolbar" class="btn-group">
+                                <!-- <div class="row">
                                 <div class="col-md-6">
                                     <input type="text" class="form-control" autocomplete="off" id="wd" aria-label="请输入产品编号" placeholder="产品编号">
                                 </div>
@@ -35,20 +36,20 @@
                                 </div>
                                 <div class="col-md-4"> -->
 
-                            <select class="form-control">
-                                            <option value="basic">导出当前</option>
+                                <select class="form-control">
+                                            <option value="basic">导出当前页</option>
                                             <option value="all">导出所有</option>
                                             <!-- <option value="selected">导出选中</option> //服务器分页暂不处理-->
                                          </select>
 
 
-                            <!-- </div> -->
-                            <!-- </div> -->
+                                <!-- </div> -->
+                                <!-- </div> -->
+                            </div>
+                            <table id="table"></table>
                         </div>
-                        <table id="table"></table>
-                    </div>
-                    <%- include("../footer.ejs") %>
-                        <script src="/home/orderinfo.js"></script>
+                        <%- include("../footer.ejs") %>
+                            <script src="/home/orderinfo.js"></script>
 </body>
 
 </html>

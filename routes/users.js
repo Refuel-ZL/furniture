@@ -206,8 +206,8 @@ router.all("/data", async function(ctx, next) {
         rows: {}
     }
     try {
+        var limit = ctx.query.limit || ctx.request.body.limit || null
         var offset = ctx.query.offset || ctx.request.body.offset || 0
-        var limit = ctx.query.limit || ctx.request.body.limit || 10
         var search = ctx.query.search || ctx.request.body.search || ""
 
         var option = {
@@ -288,6 +288,36 @@ router.all("/reuserinfo", async function(ctx, next) {
     ctx.body = res
 })
 
+
+/**
+ * 删除用户路由
+ * 
+ */
+router.post('/delet', async(ctx, next) => {
+    var list = ctx.request.body.uidlist
+    var res = {
+            code: 'ok'
+        }
+        // if (ctx.session.user) {
+    if (true) {
+        if (list) {
+            await userutil.deletuser(list)
+
+        } else {
+            res = {
+                code: 'error',
+                message: '参数错误'
+            }
+        }
+    } else {
+        res = {
+            code: 'error',
+            message: '对不起，你没有登录或登录信息已过期，请重新登录'
+        }
+    }
+
+    ctx.body = res
+})
 
 function scheduleCronstyle(id) {
     setTimeout(function() { Rtask(id) }, rt)

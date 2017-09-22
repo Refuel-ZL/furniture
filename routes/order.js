@@ -53,7 +53,7 @@ router.all('/pid_data', async function(ctx, next) {
     }
     try {
         var limit = ctx.query.limit || ctx.request.body.limit || null
-        var offset = ctx.query.offset || ctx.request.body.offset || null
+        var offset = ctx.query.offset || ctx.request.body.offset || 0
         var search = ctx.query.search || ctx.request.body.search || ''
         var pid = ctx.query.pid || ctx.request.body.pid || ''
         var sortName = ctx.query.sortName || ctx.request.body.sortName || 'index'
@@ -104,7 +104,7 @@ router.all('/data', async(ctx, next) => {
     }
     try {
         var limit = ctx.query.limit || ctx.request.body.limit || null
-        var offset = ctx.query.offset || ctx.request.body.offset || null
+        var offset = ctx.query.offset || ctx.request.body.offset || 0
         var search = ctx.query.search || ctx.request.body.search || ''
         var sortName = ctx.query.sortName || ctx.request.body.sortName || 'regtime'
         var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'desc'

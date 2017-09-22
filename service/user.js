@@ -145,8 +145,12 @@ exports = module.exports = {
             if (params.search) {
                 search = `where concat(IFNULL( uwi.userid, "" ),IFNULL( uwi.userwork, "" ),IFNULL( uwi.level, "" )) like "%${params.search}%" `
             }
-            let sql1 = `select  ui.userid,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime LIMIT ?,?`
-            let data = await sqlutil.query(sql1, [params.offset, params.limit])
+            var page = ""
+            if (params.limit) {
+                page = `LIMIT ${params.offset}, ${params.limit}`
+            }
+            let sql1 = `select  ui.userid,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime ${page}`
+            let data = await sqlutil.query(sql1)
 
             let sql2 = `SELECT COUNT(*)as num FROM (select  ui.userid,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime)as table1`
             let num = await sqlutil.query(sql2)
@@ -237,7 +241,31 @@ exports = module.exports = {
         }
         return res
     },
-
+    /**
+     * 根据用户名删除指定用户（数组）
+     */
+    deletuser: async function(list) {
+        var res = {
+            code: "ok"
+        }
+        if (!list) {
+            res = {
+                code: "error",
+                message: "参数错误"
+            }
+        } else {
+            try {
+                let sql = `DELETE FROM userinfo WHERE userid in ('${list.join("','")}')`
+                let res1 = await sqlutil.query(sql)
+            } catch (error) {
+                res = {
+                    code: "error",
+                    message: error.message
+                }
+            }
+        }
+        return res
+    },
     getuser: function(openid) {
         return "get"
     },
