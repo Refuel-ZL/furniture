@@ -150,13 +150,15 @@ router.all('/pidlist', async(ctx, next) => {
 })
 
 /**
- * TODO GET二维码
+ * GET二维码
  * 
  */
 router.all('/qrcode', async(ctx, next) => {
     var confg = configUtil.getconf()
     var url = ''
     let pid = ctx.query.pid || ctx.request.body.pid
+    let width = ctx.query.width || ctx.request.body.width
+    let height = ctx.query.height || ctx.request.body.height
     if (!pid) {
         ctx.body = '非法访问'
         return
@@ -167,9 +169,16 @@ router.all('/qrcode', async(ctx, next) => {
     ctx.set({
         'Content-Type': 'image/png'
     })
-    ctx.body = await qrcodeutil.createQr(url, {
-        text: "产品编号：" + pid
-    })
+    try {
+        ctx.body = await qrcodeutil.createQr(url, {
+            text: "编号：" + pid,
+            width: width,
+            height: height
+        })
+    } catch (error) {
+        ctx.body = error.message
+    }
+
 })
 
 
@@ -222,6 +231,35 @@ router.post('/edit', async(ctx, next) => {
     }
     var req = ctx.request.body
     res = await orderutil.updateorder(req)
+    ctx.body = res
+})
+
+/**
+ * 删除订单路由
+ */
+router.post('/delet', async(ctx, next) => {
+    var list = ctx.request.body.pidlist
+    var res = {
+            code: 'ok'
+        }
+        // if (ctx.session.user) {
+    if (true) {
+        if (list) {
+            await orderutil.deletorder(list)
+
+        } else {
+            res = {
+                code: 'error',
+                message: '参数错误'
+            }
+        }
+    } else {
+        res = {
+            code: 'error',
+            message: '对不起，你没有登录或登录信息已过期，请重新登录'
+        }
+    }
+
     ctx.body = res
 })
 exports = module.exports = router

@@ -353,14 +353,41 @@ var fun = {
             return false
         }
     },
+
+    /**
+     *返回所有订单基本信息的数组
+     */
     fetchpidlist: async function() {
         let sql = "SELECT oif.pid,oif.status,oif.category,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime FROM orderinfo AS oif"
         let res1 = await sqlutil.query(sql)
         return res1
+    },
+
+    /**
+     *删除订单 
+     */
+    deletorder: async function(list) {
+        var res = {
+            code: "ok"
+        }
+        if (!list) {
+            res = {
+                code: "error",
+                message: "参数错误"
+            }
+        } else {
+            try {
+                let sql = `DELETE FROM orderinfo WHERE pid in ('${list.join("','")}')`
+                let res1 = await sqlutil.query(sql)
+            } catch (error) {
+                res = {
+                    code: "error",
+                    message: error.message
+                }
+            }
+        }
+        return res
     }
-
-
-
 }
 
 exports = module.exports = fun
