@@ -78,6 +78,10 @@
                                         notEmpty: {
                                             message: '用户名是必需的，不能是空的'
                                         },
+                                        regexp: {
+                                            regexp: /^[^\s]+[^\s]$/,
+                                            message: '用户名首尾不能为空格'
+                                        },
                                         stringLength: {
                                             min: 2,
                                             max: 10,

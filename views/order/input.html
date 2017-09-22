@@ -74,8 +74,8 @@
                                                 message: '用户名是必需的，不能是空的'
                                             },
                                             regexp: {
-                                                regexp: /^[^\s][\w\s-]+$/,
-                                                message: '编号只能由字母、数字、下划线、点和 - 组成'
+                                                regexp: /^[^\s][\w\s-]+[^\s]$/,
+                                                message: '编号只能由字母、数字、下划线、点和 - 组成且首尾不能为空格'
                                             },
                                             stringLength: {
                                                 min: 2,

@@ -33,7 +33,9 @@
             $("#navbar-search-form :text").keydown(function(event) {
                 if (event.keyCode == 13) {
                     let val = $("#navbar-search-form :text").val()
-                    if (val) {
+                    var regu = "^[ ]+$";
+                    var re = new RegExp(regu);
+                    if (val.length > 0 && !re.test(val)) {
                         window.location.href = 'http://' + window.location.host + '/order/search?pid=' +
                             encodeURIComponent(val)
                     }
