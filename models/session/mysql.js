@@ -83,8 +83,8 @@ class MysqlStore extends Store {
             try {
                 pool.getConnection(function(err, connection) {
                     connection.query(DELETE_STATEMENT, [sid], function(err) {
-                        console.log(ctx.cookies)
-                        ctx.cookies.set("")
+                        // console.log(ctx.cookies)
+                        // ctx.cookies.set("")
                         resolve()
                     })
                 })

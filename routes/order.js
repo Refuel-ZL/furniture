@@ -15,30 +15,36 @@ const logUtil = require('../models/log4js/log_utils')
 var orderutil = require('../service/order')
 
 router.use(async(ctx, next) => {
-
-    // if (!ctx.session.user) {
-    //     await ctx.redirect('/admin/')
-    // } else {
-    await next()
-        // }
+    if (!ctx.session.user) {
+        if (ctx.session.openid && (ctx.URL.pathname == "/order/search" || ctx.URL.pathname == "/order/pid_data" || ctx.URL.pathname == "/order/pidlist")) {
+            await next()
+        } else {
+            await ctx.redirect('/admin/')
+        }
+    } else {
+        await next()
+    }
 })
 
 router.all('/', async(ctx, next) => {
     ctx.state = {
-        title: '订单管理'
+        title: '订单管理',
+        user: ctx.session.user || ''
     }
     await ctx.render('order/info')
 })
 
 router.all('/input', async(ctx, next) => {
     ctx.state = {
-        title: '订单录入'
+        title: '订单录入',
+        user: ctx.session.user || ''
     }
     await ctx.render('order/input')
 })
 router.all('/search', async(ctx, next) => {
     ctx.state = {
-        title: '订单搜索'
+        title: '订单搜索',
+        user: ctx.session.user || ''
     }
     await ctx.render('order/search', ctx.state)
 })

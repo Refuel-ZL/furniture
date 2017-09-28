@@ -51,16 +51,17 @@ app.use(session({
 app.use(async(ctx, next) => {
     //响应开始时间
     const start = new Date()
-
-    //响应间隔时间
+        //响应间隔时间
     var ms
     try {
         //开始进入到下一个中间件
+        if (JSON.stringify(ctx.session) != "{}") {
+            ctx.session.time = new Date().getTime()
+        }
         await next()
         ms = new Date() - start
-
-        //记录响应日志
-        // logUtil.logResponse(ctx, ms)
+            //记录响应日志
+            // logUtil.logResponse(ctx, ms)
         logUtil.writeInfo(`${ctx.ip} ${ctx.method} ${ctx.url} - ${ms}ms`)
     } catch (error) {
         ms = new Date() - start
@@ -70,6 +71,7 @@ app.use(async(ctx, next) => {
         ctx.state = {
             title: "网页错误",
             code: "500",
+            user: ctx.session.user || '',
             content: formatError(ctx, error, ms)
         }
         await ctx.render("500")
@@ -100,10 +102,12 @@ app.use(index.routes(), index.allowedMethods())
 
 app.use(async(ctx) => {
     if (ctx.status === 404) {
-        await ctx.render("404")
+        ctx.state = {
+            user: ctx.session.user || ''
+        }
+        await ctx.render("404", ctx.state)
     }
 })
-
 
 // app.on("error", async function(err, ctx) {
 //     // logUtil.writeErr("server error", err)

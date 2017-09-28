@@ -26,13 +26,15 @@ router.use('/admin', admin.routes(), admin.allowedMethods())
 router.get('/', async(ctx, next) => {
     ctx.state = {
         title: '首页',
-        content: '恭喜你操作成功'
+        content: '恭喜你操作成功',
+        user: ctx.session.user || ''
     }
     await ctx.render('index', ctx.state)
 })
 router.all('/help', async(ctx, next) => {
     ctx.state = {
-        title: '帮助'
+        title: '帮助',
+        user: ctx.session.user || ''
     }
     await ctx.render('help', ctx.state)
 })

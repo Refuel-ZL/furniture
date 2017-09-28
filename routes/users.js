@@ -20,9 +20,17 @@ var wechatApi = new Wechat(wxconfig.wechat)
 var val = {}
 var rt = 60 * 1000
 
+router.use(async(ctx, next) => {
+    if (!ctx.session.user) {
+        await ctx.redirect('/admin/')
+    } else {
+        await next()
+    }
+})
 router.get("/", async function(ctx, next) {
     ctx.state = {
-        title: "用户信息"
+        title: "用户信息",
+        user: ctx.session.user || ''
     }
     await ctx.render("user/userinfo")
 

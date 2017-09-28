@@ -162,7 +162,7 @@ $("#re-submit").on("click", function() {
         type: "post",
         url: "/user/reuserinfo",
         data: $("#re_Form").serialize(),
-        async: false,
+        async: true,
         error: function(res) {
             // console.log(res)
             swal("失败", res.message, "error")

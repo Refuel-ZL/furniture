@@ -9,6 +9,16 @@
         <%- title %>
     </title>
     <style>
+        body {
+            padding-top: 150px !important;
+            background: url("/images/1.jpg")
+        }
+        
+        .footer .container {
+            border-top: 0px !important;
+            background-color: transparent !important;
+        }
+        
         .cell {
             margin: 0 auto;
             max-width: 500px
@@ -23,32 +33,550 @@
             font-size: 18pt
         }
     </style>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+            color: #888;
+            line-height: 30px;
+            text-align: center;
+        }
+        
+        strong {
+            font-weight: 500;
+        }
+        
+        a,
+        a:hover,
+        a:focus {
+            color: #de615e;
+            text-decoration: none;
+            -o-transition: all .3s;
+            -moz-transition: all .3s;
+            -webkit-transition: all .3s;
+            -ms-transition: all .3s;
+            transition: all .3s;
+        }
+        
+        h1,
+        h2 {
+            margin-top: 10px;
+            font-size: 38px;
+            font-weight: 100;
+            color: #555;
+            line-height: 50px;
+        }
+        
+        h3 {
+            font-size: 22px;
+            font-weight: 300;
+            color: #555;
+            line-height: 30px;
+        }
+        
+        img {
+            max-width: 100%;
+        }
+        
+         ::-moz-selection {
+            background: #de615e;
+            color: #fff;
+            text-shadow: none;
+        }
+        
+         ::selection {
+            background: #de615e;
+            color: #fff;
+            text-shadow: none;
+        }
+        
+        .btn-link-1 {
+            display: inline-block;
+            height: 50px;
+            margin: 5px;
+            padding: 16px 20px 0 20px;
+            background: #de615e;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 16px;
+            color: #fff;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+        }
+        
+        .btn-link-1:hover,
+        .btn-link-1:focus,
+        .btn-link-1:active {
+            outline: 0;
+            opacity: 0.6;
+            color: #fff;
+        }
+        
+        .btn-link-1.btn-link-1-facebook {
+            background: #4862a3;
+        }
+        
+        .btn-link-1.btn-link-1-twitter {
+            background: #55acee;
+        }
+        
+        .btn-link-1.btn-link-1-google-plus {
+            background: #dd4b39;
+        }
+        
+        .btn-link-1 i {
+            padding-right: 5px;
+            vertical-align: middle;
+            font-size: 20px;
+            line-height: 20px;
+        }
+        
+        .btn-link-2 {
+            display: inline-block;
+            height: 50px;
+            margin: 5px;
+            padding: 15px 20px 0 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #fff;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 16px;
+            color: #fff;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+        }
+        
+        .btn-link-2:hover,
+        .btn-link-2:focus,
+        .btn-link-2:active,
+        .btn-link-2:active:focus {
+            outline: 0;
+            opacity: 0.6;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+        /***** Top content *****/
+        
+        .inner-bg {
+            padding: 100px 0 170px 0;
+        }
+        
+        .top-content .text {
+            color: #fff;
+        }
+        
+        .top-content .text h1 {
+            color: #fff;
+        }
+        
+        .top-content .description {
+            margin: 20px 0 10px 0;
+        }
+        
+        .top-content .description p {
+            opacity: 0.8;
+        }
+        
+        .top-content .description a {
+            color: #fff;
+        }
+        
+        .top-content .description a:hover,
+        .top-content .description a:focus {
+            border-bottom: 1px dotted #fff;
+        }
+        
+        .form-box {
+            margin-top: 35px;
+        }
+        
+        .form-top {
+            overflow: hidden;
+            padding: 0 25px 15px 25px;
+            background: #444;
+            background: rgba(0, 0, 0, 0.35);
+            -moz-border-radius: 4px 4px 0 0;
+            -webkit-border-radius: 4px 4px 0 0;
+            border-radius: 4px 4px 0 0;
+            text-align: left;
+        }
+        
+        .form-top-left {
+            float: left;
+            width: 75%;
+            padding-top: 25px;
+        }
+        
+        .form-top-left h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+        
+        .form-top-left p {
+            opacity: 0.8;
+            color: #fff;
+        }
+        
+        .form-top-right {
+            float: left;
+            width: 25%;
+            padding-top: 5px;
+            font-size: 66px;
+            color: #fff;
+            line-height: 100px;
+            text-align: right;
+            opacity: 0.3;
+        }
+        
+        .form-bottom {
+            padding: 25px 25px 30px 25px;
+            background: #444;
+            background: rgba(0, 0, 0, 0.3);
+            -moz-border-radius: 0 0 4px 4px;
+            -webkit-border-radius: 0 0 4px 4px;
+            border-radius: 0 0 4px 4px;
+            text-align: left;
+        }
+        
+        .form-bottom form textarea {
+            height: 100px;
+        }
+        
+        .form-bottom form button.btn {
+            width: 100%;
+        }
+        
+        .form-bottom form .input-error {
+            border-color: #de615e;
+        }
+        
+        .social-login {
+            margin-top: 35px;
+        }
+        
+        .social-login h3 {
+            color: #fff;
+        }
+        
+        .social-login-buttons {
+            margin-top: 25px;
+        }
+        /***** Media queries *****/
+        
+        @media (min-width: 992px) and (max-width: 1199px) {}
+        
+        @media (min-width: 768px) and (max-width: 991px) {}
+        
+        @media (max-width: 767px) {
+            .inner-bg {
+                padding: 60px 0 110px 0;
+            }
+        }
+        
+        @media (max-width: 415px) {
+            h1,
+            h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
+    <style>
+        .form-bottom input[type="text"],
+        .form-bottom input[type="password"] {
+            height: 50px;
+            margin: 0;
+            padding: 0 20px;
+            vertical-align: middle;
+            background: #fff;
+            border: 3px solid #fff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 50px;
+            color: #888;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            -o-transition: all .3s;
+            -moz-transition: all .3s;
+            -webkit-transition: all .3s;
+            -ms-transition: all .3s;
+            transition: all .3s;
+        }
+        
+        .form-bottom input[type="text"]:focus,
+        .form-bottom input[type="password"]:focus,
+        {
+            outline: 0;
+            background: #fff;
+            border: 3px solid #fff;
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        
+        .form-bottom input[type="text"]:-moz-placeholder,
+        .form-bottom input[type="password"]:-moz-placeholder {
+            color: #888;
+        }
+        
+        .form-bottom input[type="text"]:-ms-input-placeholder,
+        .form-bottom input[type="password"]:-ms-input-placeholder,
+        {
+            color: #888;
+        }
+        
+        .form-bottom input[type="text"]::-webkit-input-placeholder,
+        .form-bottom input[type="password"]::-webkit-input-placeholde {
+            color: #888;
+        }
+        
+        .form-bottom button.btn {
+            height: 50px;
+            margin: 0;
+            padding: 0 20px;
+            vertical-align: middle;
+            background: #4aaf51;
+            border: 0;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 50px;
+            color: #fff;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            text-shadow: none;
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            -o-transition: all .3s;
+            -moz-transition: all .3s;
+            -webkit-transition: all .3s;
+            -ms-transition: all .3s;
+            transition: all .3s;
+        }
+        
+        .form-bottom button.btn:hover {
+            opacity: 0.6;
+            color: #fff;
+        }
+        
+        .form-bottom button.btn:active {
+            outline: 0;
+            opacity: 0.6;
+            color: #fff;
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        
+        .form-bottom button.btn:focus {
+            outline: 0;
+            opacity: 0.6;
+            background: #de615e;
+            color: #fff;
+        }
+        
+        .form-bottom button.btn:active:focus,
+        .form-bottom button.btn.active:focus {
+            outline: 0;
+            opacity: 0.6;
+            background: #de615e;
+            color: #fff;
+        }
+        /***** Media queries *****/
+        
+        @media (min-width: 992px) and (max-width: 1199px) {}
+        
+        @media (min-width: 768px) and (max-width: 991px) {}
+        
+        @media (max-width: 767px) {
+            .inner-bg {
+                padding: 60px 0 110px 0;
+            }
+        }
+        
+        @media (max-width: 415px) {
+            h1,
+            h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <%- include("../header.ejs") %>
-        <div class="container">
-            <div class="panel panel-primary cell">
-                <div class="panel-heading">
-                    <span class="panel-title">
-                        <%- title %>
-                    </span>
+        <%- include("../static/bootstrap-validator.ejs") %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 form-box">
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3>
+                                    <%- title %>
+                                </h3>
+                                <p>输入您的用户名和密码:</p>
+                            </div>
+                        </div>
+                        <div class="form-bottom">
+                            <form role="form" class="login-form" id="adminform">
+                                <% if(1==1){ %>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="form-username">Username</label>
+                                        <input type="text" name="username" placeholder="用户名" class="form-username form-control" id="form-username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="form-password">Password</label>
+                                        <input type="password" name="password" placeholder="密码" class="form-password form-control" id="form-password">
+                                    </div>
+
+                                    <% }else{ %>
+                                        <!-- 注册 -->
+                                        <div class="form-group">
+                                            <label class="sr-only" for="form-username">Username</label>
+                                            <input type="text" name="form-username" placeholder="用户名" class="form-username form-control" id="form-username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="sr-only" for="form-password">Password</label>
+                                            <input type="password" name="form-password" placeholder="密码" class="form-password form-control" id="form-password">
+                                        </div>
+                                        <a href="" class="btn">登录!</a>
+                                        <% } %>
+                                            <button type="button" class="btn" id="submit">提交!</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <div id="div-form"></div>
-                </div>
+
             </div>
-        </div>
-        <%- include("../footer.ejs") %>
-            <script>
-                $(function() {
-                    if (<%- status %>) {
-                        console.log("登陆")
-                    } else {
-                        console.log("注册")
-                    }
-                })
-            </script>
+            </div>
+            <%- include("../footer.ejs") %>
+                <script>
+                    var st = <%- status %>
+                    $(function() {
+                        if (st) {
+                            console.log("登录")
+                        } else {
+                            console.log("注册")
+                        }
+                    })
+
+                    $('#adminform').bootstrapValidator({
+                            message: '此值无效！',
+                            verbose: false,
+                            excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证  
+                            feedbackIcons: {
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                message: '该值无效',
+                                username: {
+                                    message: '用户名无效',
+                                    validators: {
+                                        notEmpty: {
+                                            message: '用户名是必需的，不能是空的'
+                                        },
+                                        regexp: {
+                                            regexp: /^[^\s]+[^\s]$/,
+                                            message: '用户名首尾不能为空格'
+                                        },
+                                        stringLength: {
+                                            min: 2,
+                                            max: 10,
+                                            message: '用户名必须2~10个字符'
+                                        },
+                                        different: {
+                                            field: 'Password',
+                                            message: '用户名和密码不可能是一样的'
+                                        }
+                                    }
+                                },
+                                password: {
+                                    message: '密码是无效的',
+                                    validators: {
+                                        notEmpty: {
+                                            message: '密码是必需的，不能是空的'
+                                        },
+                                        stringLength: {
+                                            min: 6,
+                                            max: 30,
+                                            message: '密码必须6~30个字符'
+                                        },
+                                        regexp: {
+                                            regexp: /^[a-zA-Z0-9_\.]+$/,
+                                            message: '密码只能由字母，数字，点和下划线组成'
+                                        },
+                                        different: {
+                                            field: 'Name',
+                                            message: '用户名和密码不可能是一样的'
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        // $("#adminform").submit(function(ev) {
+                        //     ev.preventDefault();
+                        // });
+                    $("#adminform").keydown(function(event) {
+                        if (event.keyCode == 13) {
+                            event.preventDefault();
+                            $("#submit").trigger("click")
+                        }
+                    })
+
+                    $("#submit").on("click", function(event) {
+                        var bootstrapValidator = $("#adminform").data('bootstrapValidator');
+                        bootstrapValidator.validate();
+                        if (bootstrapValidator.isValid()) {
+                            swal({
+                                title: "",
+                                text: "提交中！请稍后。",
+                                showConfirmButton: false,
+                                imageUrl: "/images/timg.gif"
+                            });
+                            $.ajax({
+                                type: "post",
+                                url: "/admin",
+                                data: $("#adminform").serialize() + `&status=${st}`,
+                                async: true,
+                                error: function(res) {
+                                    swal("失败", res.message, "error")
+                                },
+                                success: function(res) {
+                                    if (res.code == "ok") {
+                                        swal({
+                                            title: '提交成功!',
+                                            text: '这在跳转到首页.',
+                                            timer: 2000,
+                                            onOpen: function() {
+                                                swal.showLoading()
+                                            }
+                                        }).then(
+                                            function() {},
+                                            function(dismiss) {
+                                                if (dismiss === 'timer') {
+                                                    window.location.href = window.location.origin
+                                                }
+                                            }
+                                        )
+                                    } else {
+                                        swal("失败", res.message, "error")
+                                    }
+                                }
+                            })
+                        }
+                    })
+                </script>
 </body>
 
 </html>

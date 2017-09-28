@@ -125,8 +125,12 @@ var tableconf = {
                     text: "已取消"
                 }
             ],
-            validate: function(v) {
+            validate: function(v, a, b) {
+                console.log(v, a, b)
                 if (!v) return "不能为空"
+            },
+            success: function(a, b, c) {
+                console.log(a, b, c)
             }
         }
     }, {
@@ -146,7 +150,7 @@ var tableconf = {
         formatter: function operateFormatter(value, row, index) {
             return [
                 `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
-                `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfBbtn btn glyphicon glyphicon-save" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
+                `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-save" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                 data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
                 data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
                 data-trigger="hover"></a>`,
@@ -154,7 +158,20 @@ var tableconf = {
             ].join("")
         }
     }],
+    onEditableInit: function() {
+        console.log("初始化")
+    },
     onEditableSave: function(field, row, oldValue, $el) {
+        $("#table").bootstrapTable("resetView")
+        if (oldValue == 1) {
+            swal({
+                title: "错误",
+                text: "该订单已经完成，拒绝修改",
+                type: "success",
+                confirmButtonText: "确认"
+            })
+            return
+        }
         $.ajax({
             type: "post",
             url: "/order/edit",
@@ -189,6 +206,14 @@ var tableconf = {
                 })
             }
         })
+    },
+    onEditableHidden: function(field, row, $el, reason) {
+        return false
+        console.log(field, row, $el, reason)
+    },
+    onEditableShown: function(field, row, $el, editable) {
+        return false
+        console.log(field, row, $el, editable)
     },
     onPostBody: function() {
         $('.RoleOfB').popover({ html: true })

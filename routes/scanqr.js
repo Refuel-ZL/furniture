@@ -23,11 +23,12 @@ var wechatApi = new Wechat(wxconfig.wechat)
 /**
  * 提交产品
  */
+var iplist = []
 router.get("/qrform", async(ctx, next) => {
     var no = ctx.query.t || ctx.request.body.t //获取提交的型号
     var params = {
         url: urlencode(`http://${ctx.hostname}/scanqr/qrupinfo`),
-        scope: "snsapi_base",
+        scope: "snsapi_userinfo",
         param: no,
     }
     var url = await wechatApi.fetchcode(params)
@@ -39,6 +40,10 @@ router.get("/qrform", async(ctx, next) => {
  * 获取产品详情 返回前台
  */
 router.get("/qrupinfo", async(ctx, next) => {
+    ctx.set("Access-Control-Allow-Origin", "*")
+    ctx.set("Access-Control-Allow-Methods", "OPTIONS, GET, PUT, POST, DELETE")
+    ctx.set("Access-Control-Allow-Credentials", true)
+    ctx.set("Access-Control-Max-Age", 300)
     var code = ctx.query.code
     var state = ctx.query.state
     ctx.state = {
@@ -122,9 +127,7 @@ router.get("/qrupinfo", async(ctx, next) => {
         ctx.state.content = "用户提交工作异常!请重试"
         logUtil.writeErr(`【用户提交${state}工作】拉取用户信息异常`, error)
     }
-
     await ctx.render("scanqr/index", ctx.state)
-    console.dir(JSON.stringify(ctx.state))
 })
 
 router.get("/test", async(ctx, next) => {
