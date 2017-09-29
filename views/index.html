@@ -9,18 +9,79 @@
         .web {
             text-align: center;
         }
+        
+        #content {
+            margin: 50px auto;
+            width: 80%;
+        }
+        
+        .ico>a>span {
+            font-size: 40px;
+            padding: 30px;
+        }
+        
+        .ico,
+        .btn {
+            height: 120px;
+        }
+        
+        .btn {
+            cursor: pointer;
+            color: #000000 !important
+        }
+        
+        .btn:hover {
+            background-color: #666666 !important
+        }
+        
+        #content .col-md-6 {
+            padding: 0 !important;
+        }
+        /*
+        #content .col-md-6:hover {
+            background-color: blue
+        } */
     </style>
 </head>
 
 <body>
     <%- include("./header.ejs") %>
         <div class="container web">
-            <h1>
-                <%= title %>
-            </h1>
-            <p>EJS Welcome to
-                <%= title %>
-            </p>
+            <div id="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ico">
+                            <a href="/order" class="btn btn-link btn-block" title="订单管理">
+                                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ico">
+                            <a href="/order/input" class="btn btn-link btn-block" title="订单录入">
+                                <span class="glyphicon glyphicon-import" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ico">
+                            <a href="/user" class="btn btn-link btn-block" title="员工管理">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ico">
+                            <a href="/user/reguser" class="btn btn-link btn-block" title="员工录入">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <%- include("./footer.ejs") %>
 </body>

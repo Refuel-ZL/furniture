@@ -150,7 +150,7 @@ var tableconf = {
         formatter: function operateFormatter(value, row, index) {
             return [
                 `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
-                `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-save" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
+                `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                 data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
                 data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
                 data-trigger="hover"></a>`,
