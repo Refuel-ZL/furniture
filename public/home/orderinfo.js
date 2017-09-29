@@ -1,3 +1,72 @@
+var filename = ""
+$("#starttime").datetimepicker({
+    format: "yyyy-mm-dd hh:ii:ss",
+    language: 'zh-CN',
+    weekStart: 1,
+    todayBtn: 1,
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 2,
+    minView: 0,
+    forceParse: 0
+}).on("changeDate", function(ev) {
+    var starttime = $("#starttime :text").val();
+    $("#endtime").datetimepicker("setStartDate", starttime)
+    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+})
+$("#endtime").datetimepicker({
+    format: "yyyy-mm-dd hh:ii:ss",
+    language: 'zh-CN',
+    weekStart: 1,
+    todayBtn: 'linked',
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 2,
+    minView: 0,
+    forceParse: 0
+}).on("changeDate", function(ev) {
+    var starttime = $("#starttime :text").val();
+    var endtime = $("#endtime :text").val();
+    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+    $("#starttime").datetimepicker("setEndDate", endtime)
+})
+$("#starttime :text").val(moment(1483200000000).format("YYYY-MM-DD HH:mm:ss"))
+$("#endtime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
+$("#endtime").datetimepicker("setStartDate", $("#starttime :text").val());
+$("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+$("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+$.get({
+    url: '/order/beltline',
+    success: function(data) {
+        $.each(data.item, function(index, units) {
+            $("#Position").append("<option value=" + units + ">" + units + "</option>")
+        })
+    },
+    error: function(error) {
+        swal("获取生产线失败", error.message, "error")
+    },
+    complete: function() {
+        $("#Position").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+    }
+})
+$.get({
+    url: '/order/status',
+    success: function(data) {
+        $.each(data.data, function(index, units) {
+            $("#status").append("<option value=" + units + ">" + index + "</option>")
+        })
+    },
+    error: function(error) {
+        swal("获取生产线失败", error.message, "error")
+    },
+    complete: function() {
+        $("#status").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+    }
+})
+
+
+
+filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#Position").val() || "ALL" } - ${$("#status").val() || "ALL"} `
 var tableconf = {
     classes: "table table-hover", //加载的样式
     url: "/order/data", //请求后台的URL（*）
@@ -20,7 +89,11 @@ var tableconf = {
             statu: $("#txt_search_statu").val(),
             search: params.search,
             sortOrder: params.order, //排序
-            sortName: params.sort //排序字段
+            sortName: params.sort, //排序字段
+            starttime: $("#starttime :text").val(),
+            endtime: $("#endtime :text").val(),
+            position: $("#Position").val() || "ALL",
+            status: $("#status").val() || "ALL",
         }
         return temp
     }, //传递参数（*）
@@ -43,7 +116,7 @@ var tableconf = {
     showExport: true, //是否显示导出
     exportTypes: ['txt', 'doc', 'excel'],
     exportOptions: {
-        fileName: '订单管理' + moment().format("YYYY-MM-DD"),
+        fileName: filename,
     },
     rowStyle: function(row, index) {
         /* var classes = ["active", "success", "info", "warning", "danger"]*/
@@ -209,11 +282,9 @@ var tableconf = {
     },
     onEditableHidden: function(field, row, $el, reason) {
         return false
-        console.log(field, row, $el, reason)
     },
     onEditableShown: function(field, row, $el, editable) {
         return false
-        console.log(field, row, $el, editable)
     },
     onPostBody: function() {
         $('.RoleOfB').popover({ html: true })
@@ -228,13 +299,22 @@ var tableconf = {
 }
 
 $(function() {
+
+    $("#search").on('click', function() {
+        filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#Position").val() || "ALL" } - ${$("#status").val() || "ALL"} `
+        $("#table").bootstrapTable('destroy')
+        tableconf.exportDataType = $("#toolbar .form-control").val()
+        tableconf.exportOptions.fileName = filename + "_" + $("#toolbar .form-control").val()
+        $("#table").bootstrapTable(tableconf)
+    })
+
     //1.初始化Table
     $("#table").bootstrapTable(tableconf)
 
     $('#toolbar').find('select').change(function() {
         $("#table").bootstrapTable('destroy')
         tableconf.exportDataType = $(this).val()
-        tableconf.exportOptions.fileName = '订单管理' + moment().format("YYYY-MM-DD")
+        tableconf.exportOptions.fileName = filename + "_" + $(this).val()
         $("#table").bootstrapTable(tableconf)
     })
 })

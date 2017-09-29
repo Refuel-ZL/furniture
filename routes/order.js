@@ -114,12 +114,22 @@ router.all('/data', async(ctx, next) => {
         var search = ctx.query.search || ctx.request.body.search || ''
         var sortName = ctx.query.sortName || ctx.request.body.sortName || 'regtime'
         var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'desc'
+
+        var starttime = ctx.query.starttime || ctx.request.body.starttime || moment(1483200000000).format("YYYY-MM-DD HH:mm:ss")
+        var endtime = ctx.query.endtime || ctx.request.body.endtime || moment().format("YYYY-MM-DD HH:mm:ss")
+        var position = ctx.query.position || ctx.request.body.position || 'ALL'
+        var status = ctx.query.status || ctx.request.body.status || 'ALL'
+
         var option = {
             limit: parseInt(limit),
             offset: parseInt(offset),
             search: search,
             sortName: sortName,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
+            starttime: starttime,
+            endtime: endtime,
+            position: position,
+            status: status,
         }
         res = await orderutil.fetchproall(option)
         if (res.code == 'ok') {
@@ -197,6 +207,19 @@ router.get('/beltline', async(ctx, next) => {
         data: {}
     }
     res.data = await orderutil.fetchbeltlineitem()
+    res.item = Object.keys(res.data)
+    ctx.body = res
+})
+
+/**
+ * 请求配置的产品类型
+ */
+router.get('/status', async(ctx, next) => {
+    var res = {
+        item: [],
+        data: {}
+    }
+    res.data = await orderutil.fetchstatus()
     res.item = Object.keys(res.data)
     ctx.body = res
 })

@@ -265,11 +265,5 @@ exports = module.exports = {
             }
         }
         return res
-    },
-    getuser: function(openid) {
-        return "get"
-    },
-    deluser: function(openid) {
-        return "删除"
     }
 }

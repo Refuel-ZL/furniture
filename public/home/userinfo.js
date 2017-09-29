@@ -75,53 +75,56 @@ var tableconf = {
     exportOptions: {
         fileName: '用户管理' + moment().format("YYYY-MM-DD"),
     },
-    columns: [{
-        title: "",
-        formatter: function(value, row, index) {
-            return index + 1
-        }
-    }, {
-        field: "userid",
-        title: "账户名",
-    }, {
-        field: "1",
-        title: "工序1"
-    }, {
-        field: "2",
-        title: "工序2"
-    }, {
-        field: "3",
-        title: "工序3"
-    }, {
-        field: "operate",
-        title: "操作",
-        width: 150,
-        align: "center",
-        formatter: function operateFormatter(value, row, index) {
-            return [
-                `<span  class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
-                // `<button type="button" class="RoleOfA btn  btn-primary  btn-sm " style="margin-right:15px;">修改</button>`,//
-                // `<button type="button" class="RoleOfB  glyphicon glyphicon-remove" style="margin-right:15px;">删除</button>`,
-                `<span  class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.userid}"></span>`,
-                // "<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>",
-            ].join("")
-        },
-        events: {
-            "click .RoleOfA": function(e, value, row, index) {
-                $("#reModalLabel").text("编辑")
-                $("#re_Name").val(row.userid)
-                $("#re_Work1").val(row["1"])
-                $("#re_Work2").val(row["2"])
-                $("#re_Work3").val(row["3"])
-                $("#re_openid").val(row.openid)
-                $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
-                $("#reModal").modal({ keyboard: true }) //esc退出
+    columns: [
+        //     {
+        //     title: "",
+        //     formatter: function(value, row, index) {
+        //         return index + 1
+        //     }
+        // },
+        {
+            field: "userid",
+            title: "账户名",
+        }, {
+            field: "1",
+            title: "工序1"
+        }, {
+            field: "2",
+            title: "工序2"
+        }, {
+            field: "3",
+            title: "工序3"
+        }, {
+            field: "operate",
+            title: "操作",
+            width: 150,
+            align: "center",
+            formatter: function operateFormatter(value, row, index) {
+                return [
+                    `<span  class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
+                    // `<button type="button" class="RoleOfA btn  btn-primary  btn-sm " style="margin-right:15px;">修改</button>`,//
+                    // `<button type="button" class="RoleOfB  glyphicon glyphicon-remove" style="margin-right:15px;">删除</button>`,
+                    `<span  class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.userid}"></span>`,
+                    // "<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>",
+                ].join("")
             },
-            "click .RoleOfB": function(e, value, row, index) {
-                DeleteUser([row.userid])
+            events: {
+                "click .RoleOfA": function(e, value, row, index) {
+                    $("#reModalLabel").text("编辑")
+                    $("#re_Name").val(row.userid)
+                    $("#re_Work1").val(row["1"])
+                    $("#re_Work2").val(row["2"])
+                    $("#re_Work3").val(row["3"])
+                    $("#re_openid").val(row.openid)
+                    $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
+                    $("#reModal").modal({ keyboard: true }) //esc退出
+                },
+                "click .RoleOfB": function(e, value, row, index) {
+                    DeleteUser([row.userid])
+                }
             }
         }
-    }],
+    ],
     onLoadSuccess: function(data) {
         if (data.rows.length === 0) {
             if (this.pageNumber > 1) {

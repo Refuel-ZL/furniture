@@ -151,12 +151,22 @@ var fun = {
             try {
                 var valsql = "WHERE 1=1"
                 if (params.search) {
-                    valsql += ` and concat_ws(" " ,oif.pid,oif.regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
+                    valsql += ` AND concat_ws(" " ,oif.pid,oif.regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
+                }
+                if (params.starttime && params.endtime) {
+                    valsql += ` AND  oif.regtime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
+                }
+                if (params.position && params.position != "ALL") {
+                    valsql += ` AND oif.category ='${params.position}'`
+                }
+                if (params.status && params.status != "ALL") {
+                    valsql += ` AND oif.status ='${params.status}'`
                 }
                 let page = ""
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
+
                 let sql1 = `SELECT  oif.pid,DATE_FORMAT( oif.regtime, "%Y-%m-%d %H:%i:%s") as regtime,oif.status,oif.category FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} ${page} `
 
                 let val = await sqlutil.query(sql1)
@@ -188,6 +198,14 @@ var fun = {
         var data = {}
         if (conf) {
             data = conf.beltline
+        }
+        return data
+    },
+    fetchstatus: async function() {
+        var conf = await configutil.getconf()
+        var data = {}
+        if (conf) {
+            data = conf.orserstutas
         }
         return data
     },

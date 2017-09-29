@@ -25,31 +25,49 @@
             <%- include("../static/bootstrap-table.ejs") %>
                 <%- include("../static/bootstrap-validator.ejs") %>
                     <%- include("../static/bootstrap-editable.ejs")%>
-                        <div class="container">
-                            <div id="toolbar" class="btn-group">
-                                <!-- <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" autocomplete="off" id="wd" aria-label="请输入产品编号" placeholder="产品编号">
+                        <%- include("../static/bootstrap-datetimepicker.ejs")%>
+                            <div class="container">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">过滤条件</div>
+                                    <div class="panel-body">
+                                        <form class="form-inline" id="orderform">
+                                            <div class="form-group">
+                                                <label>时间段：</label>
+                                                <div class="input-group date " id="starttime">
+                                                    <input class="form-control" size="16" name="starttime" type="text" value="" readonly>
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                </div>
+                                                <label>~</label>
+                                                <div class="input-group date endtime" id="endtime">
+                                                    <input class="form-control" size="16" name="endtime" type="text" value="" readonly>
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail2">&nbsp;&nbsp; 产品类型：</label>
+                                                <select class="form-control" id="Position" name="Position" placeholder="Position"></select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail2">&nbsp;&nbsp; 产品状态：</label>
+                                                <select class="form-control" id="status" name="status" placeholder="status"></select>
+                                            </div>
+                                            <button type="button" class="btn btn-default" id="search">查询</button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-default" id="search">查询</button>
-                                </div>
-                                <div class="col-md-4"> -->
 
-                                <select class="form-control">
+                                <div id="toolbar">
+                                    <select class="form-control">
                                             <option value="basic">导出当前页</option>
                                             <option value="all">导出所有</option>
                                             <!-- <option value="selected">导出选中</option> //服务器分页暂不处理-->
-                                         </select>
-
-
-                                <!-- </div> -->
-                                <!-- </div> -->
+                                </select>
+                                </div>
+                                <table id="table"></table>
                             </div>
-                            <table id="table"></table>
-                        </div>
-                        <%- include("../footer.ejs") %>
-                            <script src="/home/orderinfo.js"></script>
+
+                            <%- include("../footer.ejs") %>
+                                <script src="/home/orderinfo.js"></script>
 </body>
 
 </html>
