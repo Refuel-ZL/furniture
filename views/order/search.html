@@ -22,7 +22,7 @@
                 <div class="container">
                     <div id="toolbar" class="btn-group">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-4">
+                            <div class="col-xs-8 col-sm-6">
                                 <input type="text" class="form-control" autocomplete="off" id="wd" aria-label="请输入产品编号" placeholder="产品编号">
                             </div>
                             <div class="col-xs-4 col-sm-2">
@@ -194,6 +194,14 @@
                                     field: 'workstage',
                                     title: '工序',
                                     width: '100px',
+                                    formatter: function(value, row, index) {
+                                        var val = ""
+                                        if (value) {
+                                            val = value
+                                        }
+                                        return val
+                                    }
+
                                     // footerFormatter: function(value) {
                                     //     var count;
                                     //     for (var i in value) {
@@ -205,6 +213,14 @@
                                     field: 'userid',
                                     title: '员工',
                                     width: '120px',
+                                    formatter: function(value, row, index) {
+                                        var val = ""
+                                        if (value) {
+                                            val = value
+                                        }
+                                        return val
+                                    }
+
                                     // footerFormatter: function(value) {
                                     //     var count;
                                     //     for (var i in value) {
@@ -223,6 +239,13 @@
                                     field: 'recordtime',
                                     title: '操作时间',
                                     width: '180px',
+                                    formatter: function(value, row, index) {
+                                        var val = ""
+                                        if (value) {
+                                            val = value
+                                        }
+                                        return val
+                                    }
                                 }, {
                                     field: 'kind',
                                     title: '操作类别',
@@ -232,6 +255,8 @@
                                             return '<span style="color:#000000">默认</span>';
                                         } else if (value == 1) {
                                             return '<span style="color:#00ff00">临时</span>';
+                                        } else {
+                                            return ""
                                         }
                                     }
                                 }]

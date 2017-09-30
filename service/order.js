@@ -167,10 +167,17 @@ var fun = {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
 
-                let sql1 = `SELECT  oif.pid,DATE_FORMAT( oif.regtime, "%Y-%m-%d %H:%i:%s") as regtime,oif.status,oif.category FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} ${page} `
+                let sql1 = ` SELECT * FROM
+                orderinfo AS oif
+                LEFT JOIN  
+               (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+               ON oif.pid = info.orderinfo ${valsql} order by ${params.sortName} ${params.sortOrder} ${page} `
 
                 let val = await sqlutil.query(sql1)
-                let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS oif ${valsql} order by oif.${params.sortName} ${params.sortOrder} `
+                let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS oif
+                LEFT JOIN  
+                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+                ON oif.pid = info.orderinfo  ${valsql} order by ${params.sortName} ${params.sortOrder} `
 
                 let num = await sqlutil.query(sql2)
                 res = {

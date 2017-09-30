@@ -156,83 +156,112 @@ $(function() {
             return false
         },
         columns: [{
-            // checkbox: false
-            formatter: function(value, row, index) {
-                return index + 1
-            }
-        }, {
-            field: "pid",
-            title: "编号"
-        }, {
-            field: "category",
-            title: "生产线"
-        }, {
-            field: "regtime",
-            title: "录入时间",
-            sortable: true
-        }, {
-            field: "status",
-            title: "状态",
-            sortable: true,
-            // formatter: function(value, row, index) {
-            //         if (value == 0) {
-            //             return "进行中"
-            //         } else if (value == 1) {
-            //             return "完成"
-            //         } else if (value == 2) {
-            //             return "已取消"
-            //         }
-            //     }
-            editable: {
-                type: "select",
+                // checkbox: false
+                formatter: function(value, row, index) {
+                    return index + 1
+                }
+            }, {
+                field: "pid",
+                title: "编号"
+            }, {
+                field: "category",
+                title: "生产线"
+            }, {
+                field: "regtime",
+                title: "录入时间",
+                sortable: true,
+                formatter: function(value, row, index) {
+                    return moment(value).format("YYYY-MM-DD HH:mm:ss")
+                }
+            }, {
+                field: "status",
                 title: "状态",
-                source: [{
-                        value: "0",
-                        text: "进行中",
-                        disabled: "disabled" //不能返工
+                sortable: true,
+                // formatter: function(value, row, index) {
+                //         if (value == 0) {
+                //             return "进行中"
+                //         } else if (value == 1) {
+                //             return "完成"
+                //         } else if (value == 2) {
+                //             return "已取消"
+                //         }
+                //     }
+                editable: {
+                    type: "select",
+                    title: "状态",
+                    source: [{
+                            value: "0",
+                            text: "进行中",
+                            disabled: "disabled" //不能返工
+                        },
+                        {
+                            value: "1",
+                            text: "已完成",
+                            disabled: "disabled" //不能返工
+                        }, {
+                            value: "2",
+                            text: "已取消"
+                        }
+                    ],
+                    validate: function(v, a, b) {
+                        console.log(v, a, b)
+                        if (!v) return "不能为空"
                     },
-                    {
-                        value: "1",
-                        text: "已完成",
-                        disabled: "disabled" //不能返工
-                    }, {
-                        value: "2",
-                        text: "已取消"
+                    success: function(a, b, c) {
+                        console.log(a, b, c)
                     }
-                ],
-                validate: function(v, a, b) {
-                    console.log(v, a, b)
-                    if (!v) return "不能为空"
-                },
-                success: function(a, b, c) {
-                    console.log(a, b, c)
                 }
-            }
-        }, {
-            field: "operate",
-            title: "操作",
-            width: 200,
-            align: "center",
-            events: {
-                "click .RoleOfA": function(e, value, row, index) {
-                    let val = encodeURIComponent(row.pid)
-                    window.open("http://" + window.location.host + "/order/search?pid=" + val)
-                },
-                "click .RoleOfC": function(e, value, row, index) {
-                    Deleteorder([row.pid])
+            }, {
+                field: "workstage",
+                title: "最近完成的工序",
+                width: '100px',
+                formatter: function(value, row, index) {
+                    var val = ""
+                    if (value) {
+                        val = value
+                    }
+                    return val
                 }
+
             },
-            formatter: function operateFormatter(value, row, index) {
-                return [
-                    `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
-                    `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
+            {
+                field: "recordtime",
+                title: "最近完成工序的时间",
+                width: "200px",
+                sortable: true,
+                formatter: function(value, row, index) {
+                    var date = ""
+                    if (value) {
+                        date = moment(value).format("YYYY-MM-DD HH:mm:ss")
+                    }
+                    return date
+                }
+            }, {
+                field: "operate",
+                title: "操作",
+                width: 200,
+                align: "center",
+                events: {
+                    "click .RoleOfA": function(e, value, row, index) {
+                        let val = encodeURIComponent(row.pid)
+                        window.open("http://" + window.location.host + "/order/search?pid=" + val)
+                    },
+                    "click .RoleOfC": function(e, value, row, index) {
+                        Deleteorder([row.pid])
+                    }
+                },
+                formatter: function operateFormatter(value, row, index) {
+                    return [
+                        `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
+                        `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                     data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
                     data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
                     data-trigger="hover"></a>`,
-                    `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
-                ].join("")
+                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
+                    ].join("")
+                }
             }
-        }],
+        ],
         onEditableInit: function() {
             console.log("初始化")
         },
