@@ -43,6 +43,7 @@ var tableconf = {
     singleSelect: true, //单选
     striped: true, //是否显示行间隔色
     cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+    showPaginationSwitch: true,
     pagination: true, //是否显示分页（*）
     sortable: true, //是否启用排序
     sortName: "userid",
@@ -58,7 +59,7 @@ var tableconf = {
     sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
     pageNumber: 1, //初始化加载第一页，默认第一页
     pageSize: 10, //每页的记录行数（*）
-    pageList: [10, 15, 50, 100], //可供选择的每页的行数（*）
+    pageList: [15, 20, 50, 100, 200, 'ALL'], //可供选择的每页的行数（*）
     search: true, //是否显示表格搜索
     strictSearch: true,
     showColumns: true, //是否显示所有的列
