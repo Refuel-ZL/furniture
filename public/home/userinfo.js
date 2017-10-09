@@ -211,7 +211,7 @@ function DeleteUser(uidlist) {
                 success: function(res) {
                     $("#table").bootstrapTable("refresh")
                     if (res.code == 'ok') {
-                        swal('成功', "速度非常", 'success')
+                        swal('成功', "删除成功", 'success')
                     } else {
                         swal('失败', res.message, 'error')
                     }

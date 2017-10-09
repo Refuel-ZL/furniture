@@ -22,9 +22,14 @@ var rt = 60 * 1000
 
 router.use(async(ctx, next) => {
     if (!ctx.session.user) {
-        await ctx.redirect('/admin/')
+        if (ctx.URL.pathname == "/user/qr" || ctx.URL.pathname == "/user/fetch" || ctx.URL.pathname == "/user/qr" || ctx.URL.pathname == "/user/qrupreg") {
+            return await next()
+        } else {
+            await ctx.redirect('/admin/')
+
+        }
     } else {
-        await next()
+        return await next()
     }
 })
 router.get("/", async function(ctx, next) {
@@ -48,11 +53,7 @@ router.get("/reguser", async function(ctx, next) {
  * 浏览器获取扫码结果
  */
 router.get("/fetch", async function(ctx, next) {
-    ctx.res.writeHead(200, {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive"
-    })
+    ctx.set("Content-Type", "text/event-stream")
     var t = ctx.query.t || ctx.request.body.t
     if (!t) { ctx.body = "error"; return }
     // console.log("值", _.has(val, t))
@@ -69,7 +70,6 @@ router.get("/fetch", async function(ctx, next) {
             res = JSON.stringify(res)
             ctx.body = `event:ready\ndata:{"value":${res}}\n\n` //自定义事件
         }
-
     } else {
         let res = {
             code: "error",
