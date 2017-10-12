@@ -113,7 +113,7 @@ var fun = {
                     valsql += ` and odi.pid ="${params.pid}" `
                 }
                 if (params.search) {
-                    valsql += ` and concat_ws(" " ,odi.pid,odi.regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ) ) like "%${params.search}%"`
+                    valsql += ` and concat_ws(" " ,odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime ,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ) ) like "%${params.search}%"`
                 }
                 let page = ""
                 if (params.limit) {
@@ -151,7 +151,7 @@ var fun = {
             try {
                 var valsql = "WHERE 1=1"
                 if (params.search) {
-                    valsql += ` AND concat_ws(" " ,oif.pid,oif.regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
+                    valsql += ` AND concat_ws(" " ,oif.pid,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
                 }
                 if (params.starttime && params.endtime) {
                     valsql += ` AND  oif.regtime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
@@ -167,16 +167,16 @@ var fun = {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
 
-                let sql1 = ` SELECT * FROM
+                let sql1 = ` SELECT oif.pid,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime,oif.status,oif.category,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
                 orderinfo AS oif
                 LEFT JOIN  
-               (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+               (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage, wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
                ON oif.pid = info.orderinfo ${valsql} order by ${params.sortName} ${params.sortOrder} ${page} `
 
                 let val = await sqlutil.query(sql1)
                 let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS oif
                 LEFT JOIN  
-                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage, wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
                 ON oif.pid = info.orderinfo  ${valsql} order by ${params.sortName} ${params.sortOrder} `
 
                 let num = await sqlutil.query(sql2)

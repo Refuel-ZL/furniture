@@ -177,40 +177,40 @@ $(function() {
                 field: "status",
                 title: "状态",
                 sortable: true,
-                // formatter: function(value, row, index) {
-                //         if (value == 0) {
-                //             return "进行中"
-                //         } else if (value == 1) {
-                //             return "完成"
-                //         } else if (value == 2) {
-                //             return "已取消"
-                //         }
-                //     }
-                editable: {
-                    type: "select",
-                    title: "状态",
-                    source: [{
-                            value: "0",
-                            text: "进行中",
-                            disabled: "disabled" //不能返工
-                        },
-                        {
-                            value: "1",
-                            text: "已完成",
-                            disabled: "disabled" //不能返工
-                        }, {
-                            value: "2",
-                            text: "已取消"
+                formatter: function(value, row, index) {
+                        if (value == 0) {
+                            return "进行中"
+                        } else if (value == 1) {
+                            return "完成"
+                        } else if (value == 2) {
+                            return "已取消"
                         }
-                    ],
-                    validate: function(v, a, b) {
-                        console.log(v, a, b)
-                        if (!v) return "不能为空"
-                    },
-                    success: function(a, b, c) {
-                        console.log(a, b, c)
                     }
-                }
+                    // editable: {
+                    //     type: "select",
+                    //     title: "状态",
+                    //     source: [{
+                    //             value: "0",
+                    //             text: "进行中",
+                    //             disabled: "disabled" //不能返工
+                    //         },
+                    //         {
+                    //             value: "1",
+                    //             text: "已完成",
+                    //             disabled: "disabled" //不能返工
+                    //         }, {
+                    //             value: "2",
+                    //             text: "已取消"
+                    //         }
+                    //     ],
+                    //     validate: function(v, a, b) {
+                    //         console.log(v, a, b)
+                    //         if (!v) return "不能为空"
+                    //     },
+                    //     success: function(a, b, c) {
+                    //         console.log(a, b, c)
+                    //     }
+                    // }
             }, {
                 field: "workstage",
                 title: "最近完成的工序",
@@ -239,7 +239,7 @@ $(function() {
             }, {
                 field: "operate",
                 title: "操作",
-                width: 200,
+                width: 300,
                 align: "center",
                 events: {
                     "click .RoleOfA": function(e, value, row, index) {
@@ -248,10 +248,14 @@ $(function() {
                     },
                     "click .RoleOfC": function(e, value, row, index) {
                         Deleteorder([row.pid])
+                    },
+                    "click .RoleOfD": function(e, value, row, index) {
+                        edit(row)
                     }
                 },
                 formatter: function operateFormatter(value, row, index) {
                     return [
+                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 修改"></span>`,
                         `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
                         `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                     data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
@@ -395,4 +399,91 @@ var Deleteorder = function(pidlist) {
         console.log("销毁弹窗")
 
     })
+}
+var edit = function(row) {
+    console.log(row)
+    if (row.status == 1) {
+        swal({
+            title: "无法修改",
+            text: "产品完成所有工序后，不可修改",
+            type: "error",
+            confirmButtonText: "确认"
+        })
+    } else {
+        swal({
+            title: `修改${row.pid}订单状态`,
+            input: 'select',
+            inputOptions: {
+                '0': '进行中',
+                '2': '已取消',
+            },
+            inputPlaceholder: '请选择状态',
+            showCancelButton: true,
+            inputValidator: function(value) {
+                return new Promise(function(resolve, reject) {
+                    if (value === '0' || value === '1' || value === '2') {
+                        resolve();
+                    } else {
+                        reject('请正确选择 :)');
+                    }
+                });
+            }
+        }).then(function(result) {
+            if (result) {
+                // swal({
+                //     type: 'success',
+                //     html: 'You selected: ' + result
+                // });
+                if (row.status == result) {
+                    swal({
+                        type: 'success',
+                        html: '状态已为修改状态 :)'
+                    });
+                    return
+                }
+                row.status = result
+                $.ajax({
+                    type: "post",
+                    url: "/order/edit",
+                    data: row,
+                    dataType: "JSON",
+                    success: function(data, status) {
+                        if (status == "success" && data.code == "ok") {
+                            swal({
+                                title: "信息已提交成功",
+                                text: "信息已提交成功！",
+                                type: "success",
+                                confirmButtonText: "确认"
+                            }).then(function() {
+                                $("#table").bootstrapTable("refresh")
+                            })
+
+                        } else {
+                            swal({
+                                title: "信息已提交失败",
+                                text: data.message,
+                                type: "error",
+                                confirmButtonText: "确认"
+                            })
+                            $("#table").bootstrapTable("refresh")
+                        }
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        swal({
+                            title: "信息已提交失败",
+                            text: textStatus,
+                            type: "error",
+                            confirmButtonText: "确认"
+                        })
+                    }
+                })
+            }
+        })
+        return
+
+    }
+
+
+
+
 }
