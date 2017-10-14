@@ -15,12 +15,14 @@ const wx = require('./wx')
 const scanqr = require('./scanqr')
 const order = require('./order')
 const admin = require('./admin')
+const config = require('./config')
 
 router.use('/user', users.routes(), users.allowedMethods())
 router.use('/wx', wx.routes(), wx.allowedMethods())
 router.use('/scanqr', scanqr.routes(), scanqr.allowedMethods())
 router.use('/order', order.routes(), order.allowedMethods())
 router.use('/admin', admin.routes(), admin.allowedMethods())
+router.use('/config', config.routes(), config.allowedMethods())
 
 
 router.get('/', async(ctx, next) => {

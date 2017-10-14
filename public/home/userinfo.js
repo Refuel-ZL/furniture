@@ -1,3 +1,17 @@
+var workitem = {
+    total: 0,
+    item: []
+}
+$.get({
+    url: '/config/workitems',
+    success: function(data) {
+        workitem = data
+    },
+    error: function(error) {
+        swal("获取工序列表失败！", error.message, "error")
+    }
+})
+
 $("#re_Form").bootstrapValidator({
     message: "此值无效！",
     verbose: false,
@@ -118,6 +132,25 @@ var tableconf = {
                     $("#re_Work3").val(row["3"])
                     $("#re_openid").val(row.openid)
                     $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
+
+                    if (workitem.total > 0) {
+                        var optionString = ""
+                        $.each(workitem.rows, function(index, units) {
+                            optionString += `<optgroup class="group_${index}" label="${units.name}">`
+                            $.each(units.item, function(i, u) {
+                                optionString += "<option value='" + u + "'>" + u + "</option>"
+                            })
+                            optionString += "</optgroup>"
+                        })
+                        $("#workitem").html(optionString)
+                    }
+                    var oldnumber = []
+                    oldnumber.push(row["1"])
+                    oldnumber.push(row["2"])
+                    oldnumber.push(row["3"])
+                    $('#workitem').selectpicker('refresh');
+                    $('#workitem').selectpicker('render');
+                    $('#workitem').selectpicker('val', oldnumber); //默认选中
                     $("#reModal").modal({ keyboard: true }) //esc退出
                 },
                 "click .RoleOfB": function(e, value, row, index) {
@@ -162,10 +195,21 @@ $("#re-submit").on("click", function() {
         showConfirmButton: false,
         imageUrl: "/images/timg.gif"
     });
+    // console.log($("#re_Form").serialize())
+    var data = $("#re_Form").serialize()
+    var work = $("#workitem").val()
+    console.log(work)
+    data = {
+        "Name": $("#re_Name").val(),
+        "Openid": $("#re_openid").val(),
+        "Work1": work[0],
+        "Work2": work[1],
+        "Work3": work[2],
+    }
     $.ajax({
         type: "post",
         url: "/user/reuserinfo",
-        data: $("#re_Form").serialize(),
+        data: data,
         async: true,
         error: function(res) {
             // console.log(res)
