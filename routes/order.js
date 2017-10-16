@@ -16,13 +16,16 @@ var orderutil = require('../service/order')
 
 router.use(async(ctx, next) => {
     if (!ctx.session.user) {
+        if (ctx.URL.pathname == "/order/qrcode") {
+            return await next()
+        }
         if (ctx.session.openid && (ctx.URL.pathname == "/order/search" || ctx.URL.pathname == "/order/pid_data" || ctx.URL.pathname == "/order/pidlist")) {
-            await next()
+            return await next()
         } else {
-            await ctx.redirect('/admin/')
+            return await ctx.redirect('/admin/')
         }
     } else {
-        await next()
+        return await next()
     }
 })
 

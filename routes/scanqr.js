@@ -19,11 +19,11 @@ var Wechat = require("../wechat/wechat")
 var configUtil = require("../service/config")
 
 var wechatApi = new Wechat(wxconfig.wechat)
+var gettoken = require("../service/code")
 
 /**
  * 提交产品
  */
-var iplist = []
 router.get("/qrform", async(ctx, next) => {
     var no = ctx.query.t || ctx.request.body.t //获取提交的型号
     var params = {
@@ -56,7 +56,15 @@ router.get("/qrupinfo", async(ctx, next) => {
             code: code
         }
         if (!ctx.session.openid) {
-            var data = JSON.parse(await wechatApi.fetchwebaccess_token(params))
+            var data = await new Promise(function(resolve, reject) {
+                try {
+                    gettoken(code, params, function(data) {
+                        resolve(data)
+                    })
+                } catch (error) {
+                    reject(error)
+                }
+            })
             if (data.errcode) {
                 ctx.state.content = "二维码信息已失效，请重新扫码提交"
                 logUtil.writeErr(`【${state}】QR获取微信id异常`, JSON.stringify(data))
@@ -96,7 +104,6 @@ router.get("/qrupinfo", async(ctx, next) => {
                 ctx.state.data.workitem = userwork.data.workitem
                 ctx.state.data.pid = option.itemno
                 ctx.state.config = configUtil.getconf()
-
                 ctx.state.data.timeout = {
                     status: false,
                     timer: 0, //时间差值
@@ -109,19 +116,14 @@ router.get("/qrupinfo", async(ctx, next) => {
                         ctx.state.data.timeout.timer = t2 - t1
                         ctx.state.data.timeout.status = ctx.state.data.timeout.timer > ctx.state.data.timeout.conf
                     } catch (error) {
-                        console.error(error)
+                        logUtil.writeErr(`【${state}】检测是否超时异常`, JSON.stringify(error))
                     }
                 }
-
-
-
-
             }
         } else {
             ctx.session = ""
             ctx.state.content = "产品型号已丢失请重新扫码"
         }
-
     } catch (error) {
         ctx.session = ""
         ctx.state.content = "用户提交工作异常!请重试"

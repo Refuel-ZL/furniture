@@ -17,6 +17,7 @@ var userutil = require("../service/user")
 var Wechat = require("../wechat/wechat")
 
 var wechatApi = new Wechat(wxconfig.wechat)
+var gettoken = require("../service/code")
 var val = {}
 var rt = 60 * 1000
 
@@ -101,91 +102,42 @@ router.get("/qr", async function(ctx, next) {
  * 
  */
 router.all("/qrupreg", async function(ctx, next) {
-    var res = ""
+    var html = `<script>(function(){alert("msg");})()</script>`
     try {
         var code = ctx.query.code
         var state = ctx.query.state
-        console.log("code " + code)
+            // console.log("code " + code)
         if (_.has(val, state)) {
             var params = {
                 code: code
             }
-            var data = JSON.parse(await wechatApi.fetchwebaccess_token(params))
+            var data = await new Promise(function(resolve, reject) {
+                try {
+                    gettoken(code, params, function(data) {
+                        resolve(data)
+                    })
+                } catch (error) {
+                    reject(error)
+                }
+            })
             if (data.errcode) {
-                res = "关键字失效，请重新扫码"
-                    // logUtil.writeErr("QR获取id异常", JSON.stringify(data))
+                logUtil.writeErr("QR获取id异常", JSON.stringify(data))
+                html = html.replace(/msg/, "获取信息失败，错误码: " + data.errcode)
             } else {
-                res = val[state] = {
+                val[state] = {
                     openid: data.openid
                 }
-            }
-            res = val[state] = {
-                openid: data.openid
+                html = html.replace(/msg/, "获取信息成功")
             }
         } else {
-            res = "该二维码已失效"
+            html = html.replace(/msg/, "获取信息失败,该二维码已失效")
         }
     } catch (error) {
-        res = "发生错误，请查看系统日志"
+        html = html.replace(/msg/, "获取信息失败,发生错误，请查看系统日志")
         logUtil.writeErr("QR获取id错误", error)
     }
-    res = JSON.stringify(res)
-    console.log(res)
-    ctx.body = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>信息</title>
-    </head>
-    <body>
-    <script>(function(){alert("${res}");})()</script> 
-    </body>
-    </html>`
+    ctx.body = html
 })
-router.all("/test", async function(ctx, next) {
-    // var res = "该二维码已失效"
-    var params = {
-        url: urlencode(`http://${ctx.hostname}/user/qrupreg`),
-        scope: "snsapi_base",
-        param: "t",
-    }
-    var url = await wechatApi.fetchcode(params)
-    ctx.body = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>提示信息</title>
-        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
-    </head>
-    <body>
-    <a href="/user/qr?t=1231312312">dsfsadf</a>
-   <!-- <button onclick="copyText()">Copy Text</button>    
-
-    // <script> 
-    // function copyText(){
-    //     $.get({
-    //         // url: '/config/workitems',
-    //         url: "${url}",
-    //         success: function(data) {
-    //             alert(data)
-    //         },
-    //         error: function(error) {
-    //             alert(error)
-    //         }
-    //     })
-    // }
-    // </script>
-    -->
-    </body>
-    </html>`
-})
-
 
 router.get("/key", async function(ctx, next) {
     var t = ctx.query.t

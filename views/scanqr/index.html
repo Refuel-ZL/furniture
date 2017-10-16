@@ -76,7 +76,6 @@
                 <%if(data){%>
                 var data = JSON.parse('<%- JSON.stringify(data)%>');
                 var config = JSON.parse('<%- JSON.stringify(config)%>');
-                console.log(data)
                 $('.title .status').html(`<u>${config.orserstutas[data.status]}</u> ${data.status} `)
                 if (data.status == 1) {
                     $('#proitem').html(`
@@ -84,7 +83,6 @@
                    `)
                 } else {
                     if (data.workitem[data.next]) {
-                        console.log("默认权限")
                         $('#proitem').html(`<div style="text-align:center" >您将对 ${data.pid} 提交 【<b>${data.next}</b>】工序,是否提交  </div>`)
                         $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
                     } else {

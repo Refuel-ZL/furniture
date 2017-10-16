@@ -86,6 +86,7 @@ var tableconf = {
     cardView: false, //是否显示详细视图
     detailView: false, //是否显示父子表
     showExport: true, //是否显示导出
+    exportDataType: 'all', //默认导出全部
     exportTypes: ['txt', 'doc', 'excel'],
     exportOptions: {
         fileName: '用户管理' + moment().format("YYYY-MM-DD"),
@@ -195,10 +196,9 @@ $("#re-submit").on("click", function() {
         showConfirmButton: false,
         imageUrl: "/images/timg.gif"
     });
-    // console.log($("#re_Form").serialize())
+
     var data = $("#re_Form").serialize()
     var work = $("#workitem").val()
-    console.log(work)
     data = {
         "Name": $("#re_Name").val(),
         "Openid": $("#re_openid").val(),
@@ -212,7 +212,6 @@ $("#re-submit").on("click", function() {
         data: data,
         async: true,
         error: function(res) {
-            // console.log(res)
             swal("失败", res.message, "error")
         },
         success: function(res) {

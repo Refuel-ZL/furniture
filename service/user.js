@@ -183,14 +183,14 @@ exports = module.exports = {
         }
         try {
             var time = moment().format("YYYY-MM-DD HH:mm:ss")
-            let sql1 = `update userinfo set userid="${params.Name}",usermtime="${time}" where openid="${params.Openid}"`
+            let sql1 = `update userinfo set userid='${params.Name}',usermtime='${time}' where openid='${params.Openid}'`
             await sqlutil.query(sql1)
         } catch (error) {
             res = {
                 code: "error",
                 message: error.message
             }
-            logUtil.writeErr("更新用户名称异常：", JSON.stringify(error))
+            logUtil.writeErr("更新用户信息失败：", JSON.stringify(error))
         }
         return res
     },
