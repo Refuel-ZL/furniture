@@ -255,7 +255,7 @@ $(function() {
                 },
                 formatter: function operateFormatter(value, row, index) {
                     return [
-                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 修改"></span>`,
+                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="编辑 ${row.pid}状态"></span>`,
                         `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
                         `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                     data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'

@@ -132,61 +132,6 @@ router.get("/qrupinfo", async(ctx, next) => {
     await ctx.render("scanqr/index", ctx.state)
 })
 
-router.get("/test", async(ctx, next) => {
-    ctx.state = {
-        "title": "kt-9-002",
-        "content": "提示语",
-        "data": {
-            "name": "赵磊2",
-            "id": 342,
-            "nextindex": 343,
-            "workstage": "刨方",
-            "index": 3,
-            "next": "立铣",
-            "status": "0",
-            "details": [{ "pid": "kt-9-002", "status": "0", "orderinfo": "kt-9-002", "userid": "赵磊2", "workstage": "刨方", "id": 342, "recordtime": "2017-09-20 10:16:09", "kind": "1", "index": 3, "next": "立铣", "nextindex": 343 }],
-            "default": false,
-            "workitem": { "null": null },
-            "pid": "kt-9-002"
-        },
-        "config": {
-            "qrencryption": false,
-            "host": "http://my.ngrok.zltcloud.com",
-            "workgap": 1000,
-            "orserstutas": { "0": "进行中", "1": "已完成", "2": "已取消" },
-            "beltline": {
-                "柜门": { "下料": "", "拼版": "", "刨方": "", "立铣": "", "出榫": "", "组装": "", "定尺": "", "边型铰孔": "", "装线条": "", "白胚质检": "", "打磨": "", "底油": "", "底油质栓": "", "面油": "", "成品质检": "", "成品包装": "", "发货": "" },
-                "柜体": { "下料": "", "封边": "", "排钻": "", "打磨": "", "底油": "", "质检": "", "面油": "", "包装": "", "发货": "" },
-                "房门": {
-                    "下料": "",
-                    "刨方": "",
-                    "立铣": "",
-                    "出榫": "",
-                    "组装": "",
-                    "定尺": "",
-                    "面线造型": "",
-                    "雕花": "",
-                    "门套": "",
-                    "套线": "",
-                    "白胚质检": "",
-                    "底油": "",
-                    "打磨": "",
-                    "面油": "",
-                    "成品质检": "",
-                    "包装": "",
-                    "发货": ""
-                }
-            }
-        },
-        "settings": { "views": "d:\\Empolder\\WebWorkspaces\\furniture\\views" },
-        "partials": {},
-        "filename": "d:\\Empolder\\WebWorkspaces\\furniture\\views\\scanqr\\index.html"
-    }
-
-    await ctx.render("scanqr/index", ctx.state)
-})
-
-
 router.post("/worksubmit", async(ctx, next) => {
     var res = {
         code: "ok"
@@ -197,7 +142,7 @@ router.post("/worksubmit", async(ctx, next) => {
             var params = ctx.request.body
             params.name = userwork.data.name
             if (!userwork.data.workitem[params.work]) {
-                console.log(`危险${params.name}使用自身以外的【${params.work}】权限`)
+                logUtil.writeWarn(`危险${params.name}使用自身以外的【${params.work}】权限`)
             }
             let val = await scanqrutil.recordwork(params)
             if (val.code == "error") {

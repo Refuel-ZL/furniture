@@ -540,7 +540,7 @@
                         if (bootstrapValidator.isValid()) {
                             swal({
                                 title: "",
-                                text: "提交中！请稍后。",
+                                text: "登录中！请稍后。",
                                 showConfirmButton: false,
                                 imageUrl: "/images/timg.gif"
                             });
@@ -550,13 +550,13 @@
                                 data: $("#adminform").serialize() + `&status=${st}`,
                                 async: true,
                                 error: function(res) {
-                                    swal("失败", res.message, "error")
+                                    swal("登录失败", res.message, "error")
                                 },
                                 success: function(res) {
                                     if (res.code == "ok") {
                                         swal({
-                                            title: '提交成功!',
-                                            text: '这在跳转到首页.',
+                                            title: '登录成功!',
+                                            text: '正在跳转到首页.',
                                             timer: 2000,
                                             onOpen: function() {
                                                 swal.showLoading()
@@ -570,7 +570,7 @@
                                             }
                                         )
                                     } else {
-                                        swal("失败", res.message, "error")
+                                        swal("登录失败", res.message, "error")
                                     }
                                 }
                             })

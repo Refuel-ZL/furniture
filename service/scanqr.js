@@ -53,7 +53,6 @@ var fun = {
             }
             logUtil.writeErr("拉取扫描订单信息异常", JSON.stringify(error))
         }
-        console.dir(res.data)
         return res
     },
     /**
@@ -61,6 +60,7 @@ var fun = {
      * 写操作记录
      */
     recordwork: async function(params) {
+        logUtil.writeInfo("提交操作记录：" + JSON.stringify(params))
         var res = {
             code: "ok"
         }

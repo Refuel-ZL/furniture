@@ -89,7 +89,6 @@ var fun = {
             }
             logUtil.writeErr(`获取${proid}最近一道工序异常：`, JSON.stringify(error))
         }
-        console.log(res.data)
         return res
 
     },

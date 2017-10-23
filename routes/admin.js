@@ -17,7 +17,7 @@ router.get("/", async(ctx, next) => {
         await ctx.redirect("/")
     }
     ctx.state = {
-        title: "用户登录",
+        title: "管理员登录",
         status: true
     }
     await ctx.render("admin/index", ctx.state)

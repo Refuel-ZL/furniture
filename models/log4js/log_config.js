@@ -10,26 +10,19 @@ if (!isexist) {
 }
 module.exports = {
     "appenders": {
-        "cheese": {
+        "out": { "type": "console" },
+        "task": {
             "type": "file",
             "filename": LogPath,
-            "maxLogSize": 2 * 1024 * 1024 * 1000,
-            "backups": 10
-        },
-        "con": {
-            "type": "console",
-            "category": "console"
-        },
-        // "deta": {
-        //     "type": "dateFile",
-        //     "filename": "log",
-        //     "alwaysIncludePattern": true,
-        //     "pattern": "-yyyy-MM-dd-hh.log"
-        // }
+            "maxLogSize": 10485760,
+            "compress": true,
+            "backups": 10,
+            "alwaysIncludePattern": true
+        }
     },
     "categories": {
         "default": {
-            "appenders": ["cheese", "con"],
+            "appenders": ["out", "task"],
             "level": "debug"
         }
     }

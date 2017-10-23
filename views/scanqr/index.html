@@ -76,22 +76,34 @@
                 <%if(data){%>
                 var data = JSON.parse('<%- JSON.stringify(data)%>');
                 var config = JSON.parse('<%- JSON.stringify(config)%>');
-                $('.title .status').html(`<u>${config.orserstutas[data.status]}</u> ${data.status} `)
+
+                var status = null
+                $.each(config.orserstutas, function(idx, obj) {
+                    if (obj == data.status) {
+                        status = idx
+                    }
+                });
+                $('.title .status').html(`<u>${status}</u>`)
                 if (data.status == 1) {
                     $('#proitem').html(`
-                     <div style="text-align:center" > 注意当前产品状态为<span  style="color:red">${config.orserstutas[data.status]}</span>，不能提交</div>
+                     <div style="text-align:center" > 注意当前产品状态为<span style="color:red">${status}</span>，不能提交</div>
                    `)
                 } else {
-                    if (data.workitem[data.next]) {
-                        $('#proitem').html(`<div style="text-align:center" >您将对 ${data.pid} 提交 【<b>${data.next}</b>】工序,是否提交  </div>`)
-                        $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
-                    } else {
-                        $('#proitem').html(`<div style="text-align:center" >很抱歉 您没有提交对 ${data.pid} 的 【${data.next} 】工序的权限。  </div>`)
-                        $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn" disabled="disabled" >提交</button>`)
-                    }
-                    $('#btn').append(`
+                    if (data.next != "ok") { //生产中，显示↓
+                        if (data.workitem[data.next]) {
+                            $('#proitem').html(`<div style="text-align:center" >您将对 ${data.pid} 提交 【<b>${data.next}</b>】工序,是否提交  </div>`)
+                            $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
+                        } else {
+                            $('#proitem').html(`<div style="text-align:center" >很抱歉 您没有提交对 ${data.pid} 的 【${data.next} 】工序的权限。  </div>`)
+                            $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn" disabled="disabled" >提交</button>`)
+                        }
+                        $('#btn').append(`
                          <button type="button" class="btn btn-link btn-xs" id="temp-btn"  style='margin-left: 20px;' >临时</button>
                     `)
+                    } else { //完成所有工序，显示↓
+                        $('#proitem').html(`<div style="text-align:center" > 注意当前产品已完成最后一道工序【${data.workstage}】，不能提交</div>`)
+                    }
+
                 }
                 $('#sub-btn').click(function() {
                     option = {

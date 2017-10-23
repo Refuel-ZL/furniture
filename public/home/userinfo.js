@@ -100,7 +100,7 @@ var tableconf = {
         // },
         {
             field: "userid",
-            title: "账户名",
+            title: "员工名",
         }, {
             field: "1",
             title: "工序1"
