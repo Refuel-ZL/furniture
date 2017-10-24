@@ -118,7 +118,7 @@ var fun = {
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
-                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} order by odi.pid,wsi.${params.sortName} ${params.sortOrder}  ${page}`
+                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} order by odi.pid,wsi.${params.sortName} ${params.sortOrder},recordtime asc  ${page}`
                 let val = await sqlutil.query(sql1)
                 let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS odi LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime`
                 let num = await sqlutil.query(sql2)
@@ -169,13 +169,19 @@ var fun = {
                 let sql1 = ` SELECT oif.pid,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime,oif.status,oif.category,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
                 orderinfo AS oif
                 LEFT JOIN  
-               (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage, wkd.recordtime FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+               (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid) as a WHERE a.recordtime = (
+                SELECT max(b.recordtime)
+                FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid )as b
+                WHERE a.orderinfo= b.orderinfo)) as info
                ON oif.pid = info.orderinfo ${valsql} order by ${params.sortName} ${params.sortOrder} ${page} `
 
                 let val = await sqlutil.query(sql1)
                 let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS oif
                 LEFT JOIN  
-                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage, wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid order by wkd.workstageid desc ) as b GROUP BY orderinfo ) as info
+                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid) as a WHERE a.recordtime = (
+                    SELECT max(b.recordtime)
+                    FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid )as b
+                    WHERE a.orderinfo= b.orderinfo)) as info
                 ON oif.pid = info.orderinfo  ${valsql} order by ${params.sortName} ${params.sortOrder} `
 
                 let num = await sqlutil.query(sql2)

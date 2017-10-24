@@ -120,7 +120,7 @@ var tableconf = {
                     `<span  class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
                     // `<button type="button" class="RoleOfA btn  btn-primary  btn-sm " style="margin-right:15px;">修改</button>`,//
                     // `<button type="button" class="RoleOfB  glyphicon glyphicon-remove" style="margin-right:15px;">删除</button>`,
-                    `<span  class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.userid}"></span>`,
+                    `<span  class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
                     // "<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>",
                 ].join("")
             },
