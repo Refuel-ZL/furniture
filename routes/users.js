@@ -2,8 +2,8 @@
 /*
  * @Author: ZhaoLei 
  * @Date: 2017-08-22 14:29:25 
- * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-11 09:21:08
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-10-26 10:33:04
  */
 const router = require("koa-router")()
 const urlencode = require("urlencode")
@@ -41,6 +41,7 @@ router.get("/", async function(ctx, next) {
     await ctx.render("user/userinfo")
 
 })
+
 
 router.get("/reguser", async function(ctx, next) {
     ctx.state = {

@@ -2,8 +2,8 @@
 /*
  * @Author: ZhaoLei 
  * @Date: 2017-08-31 14:29:25 
- * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-11 09:54:00
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-10-26 16:34:25
  */
 const router = require("koa-router")()
 const urlencode = require("urlencode")
@@ -159,28 +159,6 @@ router.post("/worksubmit", async(ctx, next) => {
     }
     ctx.body = res
 
-})
-
-router.all("/exit", async(ctx, next) => {
-    //ctx.session.get(sid)
-    // ctx.session = ""
-    ctx.session = {
-        user_id: Math.random().toString(36).substr(2),
-        openid: new Date().getTime()
-    }
-    ctx.body = ctx
-})
-
-router.all("/aa", async(ctx, next) => {
-    //ctx.session.get(sid)
-    // ctx.session = ""
-    ctx.session = null
-    ctx.body = ctx
-})
-router.all("/bb", async(ctx, next) => {
-    //ctx.session.get(sid)
-    // ctx.session = ""
-    ctx.body = ctx.session
 })
 
 exports = module.exports = router

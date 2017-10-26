@@ -39,6 +39,11 @@ class MysqlStore extends Store {
         let pool = this.getPool()
         return new Promise(function(resolve) {
             pool.getConnection(function(err, connection) {
+                if (err) {
+                    console.log(err)
+                    resolve()
+                    return
+                }
                 connection.query(GET_STATEMENT, [sid, Date.now()], function(err, results) {
                     connection.release()
                     if (err) {
@@ -64,6 +69,11 @@ class MysqlStore extends Store {
                 let data = JSON.stringify(session)
                 let expires = new Date(new Date().getTime() + sids.cookie.maxAge).valueOf()
                 pool.getConnection(function(err, connection) {
+                    if (err) {
+                        console.log(err)
+                        resolve()
+                        return
+                    }
                     connection.query(SET_STATEMENT, [sids.sid, expires, data, expires, data], function(err) {
                         connection.release()
                         if (err) {
@@ -82,6 +92,11 @@ class MysqlStore extends Store {
         return new Promise(function(resolve) {
             try {
                 pool.getConnection(function(err, connection) {
+                    if (err) {
+                        console.log(err)
+                        resolve()
+                        return
+                    }
                     connection.query(DELETE_STATEMENT, [sid], function(err) {
                         // console.log(ctx.cookies)
                         // ctx.cookies.set("")

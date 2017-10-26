@@ -2,8 +2,8 @@
 /*
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
- * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-12 17:07:11
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-10-26 16:54:01
  */
 const logUtil = require("../models/log4js/log_utils")
 var userutil = require("./user")
@@ -80,13 +80,25 @@ var fun = {
                     }
                 } else {
                     var item = await orderutil.fetchorderusableswork(params.no, params.work, params.id)
-                    if (item) { //是否是当前订单的适合工序
+                    if (item) { //是否是当前订单的合法工序
                         let time = moment().format("YYYY-MM-DD HH:mm:ss")
-                        let sql2 = "INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)"
-                        let option = [
-                            params.name, params.id, time, params.kind
-                        ]
-                        sqlutil.query(sql2, option)
+                            // let sql2 = "INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)"
+                            // let option = [
+                            //     params.name, params.id, time, params.kind
+                            // ]
+                            // sqlutil.query(sql2, option)
+                        var sql = []
+                        let sql2 = {
+                            "sql": "INSERT INTO workrecord (userid,workstageid,recordtime,kind) VALUES (?,?,?,?)",
+                            "param": [params.name, params.id, time, params.kind]
+                        }
+                        let sql3 = {
+                            "sql": "UPDATE workstageinfo SET num =num+1 WHERE id=?",
+                            "param": [params.id]
+                        }
+                        sql.push(sql2)
+                        sql.push(sql3)
+                        await sqlutil.sqlaffair(sql)
                         if (await orderutil.finallywork(params.no, params.id)) { //最后一道程序改变订单状态
                             let res3 = await orderutil.updateorderstatus({
                                 status: "1",

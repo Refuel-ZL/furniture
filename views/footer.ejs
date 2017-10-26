@@ -9,9 +9,7 @@
             <span class="line">|</span>
             <a href="/user/reguser">登记员工</a>
             <span class="line">|</span>
-            <a href="/admin" id="admin">
-                登录
-                           </a>
+            <a href="/admin" id="admin">登录</a>
             <span class="line">|</span>
             <a href="/help">帮助</a>
         </p>
@@ -85,6 +83,7 @@
             "title": "退出登录",
             "href": "/admin/exit"
         }).text("<%- user%>")
+
         <% }else{%>
 
         $("#admin").attr({
