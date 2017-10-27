@@ -162,7 +162,8 @@ router.post("/registe", async function(ctx, next) {
     var data = ctx.request.body
     let param = {
         name: data.Name,
-        openid: data.Openid
+        openid: data.Openid,
+        work: data.work || []
     }
     try {
         if (await userutil.verifyname(param.name)) {

@@ -18,16 +18,33 @@ exports = module.exports = {
         var res = {
             code: "ok"
         }
+        console.log(param)
         var time = moment().format("YYYY-MM-DD HH:mm:ss")
         try {
-            let sql2 = `INSERT INTO userinfo(userid,openid,usercreatetime,usermtime) VALUES ("${param.name}","${param.openid}","${time}","${time}")`
-            await sqlutil.query(sql2)
+            var sqls = []
+            var sql1 = {
+                sql: "INSERT INTO userinfo(userid,openid,usercreatetime,usermtime) VALUES (?,?,?,?)",
+                param: [param.name, param.openid, time, time]
+            }
+            sqls.push(sql1)
+            if (_.has(param, "work") && param.work.length > 0) {
+                var sql2 = {
+                    sql: "insert into userworkinfo(userid,userwork,level) VALUES (?,?,?)",
+                    param: [param.name, param.work[0], 1]
+                }
+                for (var i = 1; i < param.work.length; i++) {
+                    sql2.sql += ", (?,?,?)"
+                    sql2.param.push(param.name, param.work[i], i + 1)
+                }
+                sqls.push(sql2)
+            }
+            await sqlutil.sqlaffair(sqls)
         } catch (error) {
             res = {
                 code: "error",
-                message: error
+                message: error.message
             }
-            logUtil.writeErr("用户微信认证异常", error)
+            logUtil.writeErr(`录入用户【${param.openid}】异常`, error)
         }
         return res
     },
