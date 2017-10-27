@@ -2,8 +2,8 @@
 /*
  * @Author: ZhaoLei 
  * @Date: 2017-08-23 10:58:12 
- * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-12 17:03:30
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-10-27 16:16:36
  */
 const logUtil = require("../models/log4js/log_utils")
 const _ = require("lodash")
@@ -112,13 +112,13 @@ var fun = {
                     valsql += ` and odi.pid ="${params.pid}" `
                 }
                 if (params.search) {
-                    valsql += ` and concat_ws(" " ,odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime ,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ) ) like "%${params.search}%"`
+                    valsql += ` and concat_ws(" " ,odi.pid,DATE_FORMAT( odi.entertime, "%Y-%m-%d %H:%i:%s") as entertime ,odi.status,	odi.category,wsi.index,	wsi.workstage,IFNULL( wcd.userid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ) ) like "%${params.search}%"`
                 }
                 let page = ""
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
-                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.regtime, "%Y-%m-%d %H:%i:%s") as regtime,odi.status,	odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} order by odi.pid,wsi.${params.sortName} ${params.sortOrder},recordtime asc  ${page}`
+                let sql1 = `SELECT 	odi.pid,DATE_FORMAT( odi.fromtime, "%Y-%m-%d %H:%i:%s") as fromtime,DATE_FORMAT( odi.entertime, "%Y-%m-%d %H:%i:%s") as entertime,odi.status,	odi.customer,	odi.endcustomer,odi.category,wsi.index,	wsi.workstage,wcd.userid,DATE_FORMAT(wcd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,wcd.kind FROM orderinfo AS odi	LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} order by odi.pid,wsi.${params.sortName} ${params.sortOrder},recordtime asc  ${page}`
                 let val = await sqlutil.query(sql1)
                 let sql2 = `SELECT COUNT(*) as num FROM orderinfo AS odi LEFT JOIN workstageinfo AS wsi ON wsi.orderinfo = odi.pid	LEFT JOIN workrecord AS wcd ON wcd.workstageid = wsi.id ${valsql} ORDER BY odi.pid,wsi.index,wcd.recordtime`
                 let num = await sqlutil.query(sql2)
@@ -150,23 +150,29 @@ var fun = {
             try {
                 var valsql = "WHERE 1=1"
                 if (params.search) {
-                    valsql += ` AND concat_ws(" " ,oif.pid,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
+                    valsql += ` AND concat_ws(" " ,oif.pid,IFNULL( oif.entertime,""),IFNULL( oif.fromtime,"") ,IFNULL( oif.category, "" ),IFNULL(oif.status, "" ) ) like "%${params.search}%"`
                 }
                 if (params.starttime && params.endtime) {
-                    valsql += ` AND  oif.regtime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
+                    valsql += ` AND  oif.entertime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
                 }
-                if (params.position && params.position != "ALL") {
-                    valsql += ` AND oif.category ='${params.position}'`
+                if (params.category && params.category != "ALL") {
+                    valsql += ` AND oif.category ='${params.category}'`
                 }
                 if (params.status && params.status != "ALL") {
                     valsql += ` AND oif.status ='${params.status}'`
+                }
+                if (params.customer && params.customer != "ALL") {
+                    valsql += ` AND oif.customer ='${params.customer}'`
+                }
+                if (params.endcustomer && params.endcustomer != "ALL") {
+                    valsql += ` AND oif.endcustomer ='${params.endcustomer}'`
                 }
                 let page = ""
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
 
-                let sql1 = ` SELECT oif.pid,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime,oif.status,oif.category,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
+                let sql1 = ` SELECT oif.pid,DATE_FORMAT( oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime,DATE_FORMAT( oif.fromtime, "%Y-%m-%d %H:%i:%s") as fromtime,oif.status,oif.category,oif.customer,oif.endcustomer,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
                 orderinfo AS oif
                 LEFT JOIN  
                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid) as a WHERE a.recordtime = (
@@ -257,35 +263,30 @@ var fun = {
                 code: "error",
                 message: `${params.Pid}已存在`
             }
-        } else if (!(params.Position in await configutil.getconf().beltline)) {
+        } else if (!(params.category in await configutil.getconf().beltline)) {
             res = {
                 code: "error",
-                message: `${params.Position}不存在`
+                message: `${params.category}不存在`
             }
         } else {
-            let workitem = _.keys(await configutil.getconf().beltline[params.Position])
-
+            let workitem = _.keys(await configutil.getconf().beltline[params.category])
             var sqls = []
-            let time = moment().format("YYYY-MM-DD HH:mm:ss")
             let sql1 = {
-                sql: "INSERT INTO orderinfo (pid, regtime,status,category) VALUES (?,?,?,?)",
-                param: [params.Pid, time, 0, params.Position]
+                sql: "INSERT INTO orderinfo (pid, fromtime,entertime,status,category,customer,endcustomer ) VALUES (?,?,?,?,?,?,?)",
+                param: [params.Pid, params.fromtime, params.entertime, 0, params.category, params.customer, params.endcustomer]
             }
             sqls.push(sql1)
-
-            let _params = []
             let sql2 = {
-                sql: "INSERT INTO workstageinfo (workstage, orderinfo,workstageinfo.index) VALUES (?,?,?)",
-                param: _params
+                sql: "INSERT INTO workstageinfo (workstage, orderinfo,workstageinfo.index,num) VALUES (?,?,?,?)",
+                param: []
             }
             for (var i = 1; i <= workitem.length; i++) {
                 var n = i - 1
-                _params.push(workitem[n], params.Pid, i.toString())
+                sql2.param.push(workitem[n], params.Pid, i.toString(), 0)
                 if (i < workitem.length) {
-                    sql2.sql += ",(?,?,?)"
+                    sql2.sql += ",(?,?,?,?)"
                 }
             }
-            sql2.param = _params
             sqls.push(sql2)
             try {
                 await sqlutil.sqlaffair(sqls)
@@ -314,9 +315,9 @@ var fun = {
                 message: "参数错误"
             }
         }
-        let sql1 = "update orderinfo set regtime= ?,status=?, category=? where pid= ?"
+        let sql1 = "update orderinfo set fromtime=?, entertime=?,status=?, category=?,customer=?,endcustomer=? where pid=?"
         try {
-            await sqlutil.query(sql1, [params.regtime, params.status, params.category, params.pid])
+            await sqlutil.query(sql1, [params.fromtime, params.entertime, params.status, params.category, params.customer, params.endcustomer, params.pid])
         } catch (error) {
             res = {
                 code: "error",
@@ -388,7 +389,7 @@ var fun = {
      *返回所有订单基本信息的数组
      */
     fetchpidlist: async function() {
-        let sql = "SELECT oif.pid,oif.status,oif.category,DATE_FORMAT( oif.regtime, \"%Y-%m-%d %H:%i:%s\") as regtime FROM orderinfo AS oif"
+        let sql = "SELECT oif.pid,oif.status,oif.category,DATE_FORMAT( oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime FROM orderinfo AS oif"
         let res1 = await sqlutil.query(sql)
         return res1
     },

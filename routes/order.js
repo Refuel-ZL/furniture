@@ -2,8 +2,8 @@
 /*
  * @Author: ZhaoLei 
  * @Date: 2017-08-31 14:29:25 
- * @Last Modified by: ZhaoLei
- * @Last Modified time: 2017-09-12 17:05:09
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-10-27 15:11:24
  */
 const router = require('koa-router')()
 var qrcodeutil = require('../models/qrcode/util')
@@ -115,13 +115,14 @@ router.all('/data', async(ctx, next) => {
         var limit = ctx.query.limit || ctx.request.body.limit || null
         var offset = ctx.query.offset || ctx.request.body.offset || 0
         var search = ctx.query.search || ctx.request.body.search || ''
-        var sortName = ctx.query.sortName || ctx.request.body.sortName || 'regtime'
+        var sortName = ctx.query.sortName || ctx.request.body.sortName || 'entertime'
         var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'desc'
-
-        var starttime = ctx.query.starttime || ctx.request.body.starttime || moment(1483200000000).format("YYYY-MM-DD HH:mm:ss")
-        var endtime = ctx.query.endtime || ctx.request.body.endtime || moment().format("YYYY-MM-DD HH:mm:ss")
-        var position = ctx.query.position || ctx.request.body.position || 'ALL'
+        var starttime = ctx.query.starttime || ctx.request.body.starttime || ""
+        var endtime = ctx.query.endtime || ctx.request.body.endtime || ""
+        var category = ctx.query.category || ctx.request.body.category || 'ALL'
         var status = ctx.query.status || ctx.request.body.status || 'ALL'
+        var customer = ctx.query.customer || ctx.request.body.customer || 'ALL'
+        var endcustomer = ctx.query.endcustomer || ctx.request.body.endcustomer || 'ALL'
 
         var option = {
             limit: parseInt(limit),
@@ -131,8 +132,10 @@ router.all('/data', async(ctx, next) => {
             sortOrder: sortOrder,
             starttime: starttime,
             endtime: endtime,
-            position: position,
+            category: category,
             status: status,
+            customer: customer,
+            endcustomer: endcustomer,
         }
         res = await orderutil.fetchproall(option)
         if (res.code == 'ok') {
@@ -250,6 +253,9 @@ router.get('/check/:conn', async(ctx, next) => {
 router.post('/submit', async(ctx, next) => {
     var req = ctx.request.body
     req.Pid = req.Pid.trim()
+    req.category = req.category.trim()
+    req.customer = req.customer.trim()
+    req.endcustomer = req.endcustomer.trim()
     ctx.body = await orderutil.submit(req)
 })
 

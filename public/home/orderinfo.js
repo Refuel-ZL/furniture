@@ -7,7 +7,7 @@ $.get({
         })
     },
     error: function(error) {
-        swal("获取生产线失败", error.message, "error")
+        swal("获取产品种类失败", error.message, "error")
     },
     complete: function() {
         $("#Position").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
@@ -21,7 +21,7 @@ $.get({
         })
     },
     error: function(error) {
-        swal("获取生产线失败", error.message, "error")
+        swal("获取产品种类失败", error.message, "error")
     },
     complete: function() {
         $("#status").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
@@ -79,8 +79,8 @@ $(function() {
         sortable: true, //是否启用排序
         sortStable: false,
         silentSort: false,
-        sortName: "regtime",
-        sortOrder: "asc", //排序方式
+        sortName: "entertime",
+        sortOrder: "desc", //排序方式
         queryParams: function(params) {
             var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
                 offset: params.offset, //页码
@@ -94,6 +94,8 @@ $(function() {
                 endtime: $("#endtime :text").val(),
                 position: $("#Position").val() || "ALL",
                 status: $("#status").val() || "ALL",
+                customer: $("#customer").val() || "ALL",
+                endcustomer: $("#endcustomer").val() || "ALL",
             }
             return temp
         }, //传递参数（*）
@@ -162,55 +164,45 @@ $(function() {
                 }
             }, {
                 field: "pid",
-                title: "编号"
+                title: "订单编号"
             }, {
                 field: "category",
-                title: "生产线"
+                title: "产品种类"
             }, {
-                field: "regtime",
-                title: "录入时间",
+                field: "fromtime",
+                title: "来单时间",
                 sortable: true,
+                width: '200px',
                 formatter: function(value, row, index) {
                     return moment(value).format("YYYY-MM-DD HH:mm:ss")
                 }
+            }, {
+                field: "entertime",
+                title: "下单时间",
+                sortable: true,
+                width: '200px',
+                formatter: function(value, row, index) {
+                    return moment(value).format("YYYY-MM-DD HH:mm:ss")
+                }
+            }, {
+                field: "customer",
+                title: "客户"
+            }, {
+                field: "endcustomer",
+                title: "终端客户"
             }, {
                 field: "status",
                 title: "状态",
                 sortable: true,
                 formatter: function(value, row, index) {
-                        if (value == 0) {
-                            return "进行中"
-                        } else if (value == 1) {
-                            return "完成"
-                        } else if (value == 2) {
-                            return "已取消"
-                        }
+                    if (value == 0) {
+                        return "进行中"
+                    } else if (value == 1) {
+                        return "已完成"
+                    } else if (value == 2) {
+                        return "已取消"
                     }
-                    // editable: {
-                    //     type: "select",
-                    //     title: "状态",
-                    //     source: [{
-                    //             value: "0",
-                    //             text: "进行中",
-                    //             disabled: "disabled" //不能返工
-                    //         },
-                    //         {
-                    //             value: "1",
-                    //             text: "已完成",
-                    //             disabled: "disabled" //不能返工
-                    //         }, {
-                    //             value: "2",
-                    //             text: "已取消"
-                    //         }
-                    //     ],
-                    //     validate: function(v, a, b) {
-                    //         console.log(v, a, b)
-                    //         if (!v) return "不能为空"
-                    //     },
-                    //     success: function(a, b, c) {
-                    //         console.log(a, b, c)
-                    //     }
-                    // }
+                }
             }, {
                 field: "workstage",
                 title: "最近完成的工序",
@@ -222,7 +214,6 @@ $(function() {
                     }
                     return val
                 }
-
             },
             {
                 field: "recordtime",
@@ -241,6 +232,18 @@ $(function() {
                 title: "操作",
                 width: 300,
                 align: "center",
+
+                formatter: function operateFormatter(value, row, index) {
+                    return [
+                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="编辑 ${row.pid}状态"></span>`,
+                        `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
+                        `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
+                    data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
+                    data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
+                    data-trigger="hover"></a>`,
+                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
+                    ].join("")
+                },
                 events: {
                     "click .RoleOfA": function(e, value, row, index) {
                         let val = encodeURIComponent(row.pid)
@@ -252,17 +255,6 @@ $(function() {
                     "click .RoleOfD": function(e, value, row, index) {
                         edit(row)
                     }
-                },
-                formatter: function operateFormatter(value, row, index) {
-                    return [
-                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="编辑 ${row.pid}状态"></span>`,
-                        `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
-                        `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
-                    data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
-                    data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
-                    data-trigger="hover"></a>`,
-                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
-                    ].join("")
                 }
             }
         ],
@@ -402,14 +394,16 @@ var Deleteorder = function(pidlist) {
 }
 var edit = function(row) {
     console.log(row)
-    if (row.status == 1) {
-        swal({
-            title: "无法修改",
-            text: "产品完成所有工序后，不可修改",
-            type: "error",
-            confirmButtonText: "确认"
-        })
-    } else {
+        // if (row.status == 1) {
+        //     swal({
+        //         title: "无法修改",
+        //         text: "产品完成所有工序后，不可修改",
+        //         type: "error",
+        //         confirmButtonText: "确认"
+        //     })
+        // } else {
+        /**
+         
         swal({
             title: `修改${row.pid}订单状态`,
             input: 'select',
@@ -479,11 +473,74 @@ var edit = function(row) {
                 })
             }
         })
-        return
-
+        * 
+        */
+    $("#reModalLabel").text("编辑")
+    $("#_fromtime :text").val(row.fromtime)
+    $("#_entertime :text").val(row.entertime)
+    $("#_pid").val(row.pid)
+    $("#_category").html("<option>" + row.category + "</option>")
+    $("#_status").removeAttr('disabled')
+    if (row.status == 1) {
+        $("#_status").attr('disabled', "true")
     }
+    var list = "<option value=0>进行中</option><option value=1 >已完成</option><option value=2>已取消</option>"
+    $("#_status").html(list)
+    $("#_status ").val(row.status)
 
+    $("#_customer").val(row.customer)
+    $("#_endcustomer").val(row.endcustomer)
+    $("#reModal").modal({ keyboard: true }) //esc退出
 
+    return
 
-
+    // }
 }
+
+$("#re_Form").keydown(function(event) {
+    if (event.keyCode == 13) {
+        $("#re-submit").click()
+    }
+})
+$("#re-submit").on("click", function() {
+    swal({
+        title: "",
+        text: "提交中！请稍后。",
+        showConfirmButton: false,
+        imageUrl: "/images/timg.gif"
+    });
+    $("#_fromtime :text").removeAttr('disabled')
+    $("#_entertime :text").removeAttr('disabled')
+    $("#_pid").removeAttr('disabled')
+    $("#_category").removeAttr('disabled')
+    $("#_status").removeAttr('disabled')
+    var data = $("#re_Form").serialize()
+    $("#_fromtime :text").attr('disabled', "true")
+    $("#_entertime :text").attr('disabled', "true")
+    $("#_pid").attr('disabled', "true")
+    $("#_category").attr('disabled', "true")
+    $("#_status").attr('disabled', "true")
+    $.ajax({
+        type: "post",
+        url: "/order/edit",
+        data: data,
+        dataType: "JSON",
+        success: function(data, status) {
+            if (status == "success" && data.code == "ok") {
+                $("#reModal").modal("hide")
+                swal("成功", "恭喜修改成功", "success")
+                $("#table").bootstrapTable("refresh")
+            } else {
+                swal("失败", data.message, "error")
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            swal({
+                title: "信息已提交失败",
+                text: textStatus,
+                type: "error",
+                confirmButtonText: "确认"
+            })
+        }
+    })
+})
