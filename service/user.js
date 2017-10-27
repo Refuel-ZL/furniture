@@ -282,5 +282,58 @@ exports = module.exports = {
             }
         }
         return res
+    },
+    fetchuserlist: async function() {
+        let sql = "SELECT uif.userid,  uif.openid,  uif.usercreatetime,  uif.usermtime  FROM  userinfo AS uif"
+        let res1 = await sqlutil.query(sql)
+        return res1
+    },
+    fetchuserlog: async function(params) {
+        var res = {
+            code: "ok"
+        }
+        if (!params) {
+            res = {
+                code: "error",
+                message: "参数错误"
+            }
+        } else {
+            try {
+                var valsql = "WHERE 1=1"
+                if (params.userid) {
+                    valsql += ` and wcd.userid ="${params.userid}" `
+                }
+                if (params.search) {
+                    valsql += ` and concat_ws(" " ,IFNULL( wcd.userid, "" ),IFNULL( wcd.workstageid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ),IFNULL( wif.workstage, "" ),IFNULL( wif.num, "" ),IFNULL(wif.orderinfo, "" ),IFNULL( oif.fromtime, "" ),IFNULL(oif.entertime, "" ),IFNULL(oif.status, "" ),IFNULL( oif.category, "" ),IFNULL( oif.customer, "" ),IFNULL( oif.endcustomer, "" ),IFNULL(wif.index, "",IFNULL( oif.id, "" ) ))  like %${params.search}%"`
+                }
+                if (params.starttime && params.endtime) {
+                    valsql += ` AND  wcd.recordtime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
+                }
+                if (params.category && params.category != "ALL") {
+                    valsql += `and oif.category ="${params.category}" `
+                }
+                if (params.workstage && params.workstage != "ALL") {
+                    valsql += `and wif.workstage = "${params.workstage}"`
+                }
+
+                let page = ""
+                if (params.limit) {
+                    page = `LIMIT  ${params.offset}, ${params.limit}`
+                }
+                let sql1 = `SELECT * FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
+                let val = await sqlutil.query(sql1)
+                let sql2 = `SELECT COUNT( * ) FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} `
+                let num = await sqlutil.query(sql2)
+                res.data = val
+                res.total = num[0].num
+            } catch (error) {
+                res = {
+                    code: "error",
+                    message: error.message
+                }
+                logUtil.writeErr("拉取员工记录异常：" + JSON.stringify(error))
+            }
+        }
+        return res
     }
 }

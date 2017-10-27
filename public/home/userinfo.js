@@ -117,11 +117,9 @@ var tableconf = {
             align: "center",
             formatter: function operateFormatter(value, row, index) {
                 return [
-                    `<span  class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
-                    // `<button type="button" class="RoleOfA btn  btn-primary  btn-sm " style="margin-right:15px;">修改</button>`,//
-                    // `<button type="button" class="RoleOfB  glyphicon glyphicon-remove" style="margin-right:15px;">删除</button>`,
-                    `<span  class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
-                    // "<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>",
+                    `<span class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
+                    `<span class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
+                    `<span class="RoleOfC btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.userid} 进度"></span>`,
                 ].join("")
             },
             events: {
@@ -133,7 +131,6 @@ var tableconf = {
                     $("#re_Work3").val(row["3"])
                     $("#re_openid").val(row.openid)
                     $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
-
                     if (workitem.total > 0) {
                         var optionString = ""
                         $.each(workitem.rows, function(index, units) {
@@ -156,6 +153,10 @@ var tableconf = {
                 },
                 "click .RoleOfB": function(e, value, row, index) {
                     DeleteUser([row.userid])
+                },
+                "click .RoleOfC": function(e, value, row, index) {
+                    let val = encodeURIComponent(row.userid)
+                    window.open("http://" + window.location.host + "/user/search?userid=" + val)
                 }
             }
         }

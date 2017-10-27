@@ -165,7 +165,7 @@
                                         data: $("#Form").serialize(),
                                         async: true,
                                         error: function(res) {
-                                            console.log(res.message)
+                                            swal("注册失败", res.message, "error");
                                         },
                                         success: function(res) {
                                             if (res.code == 'ok') {
@@ -212,6 +212,7 @@
                             });
 
                             $(function() {
+                                click("init")
                                 $.get({
                                     url: '/config/workitems',
                                     success: function(data) {

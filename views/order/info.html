@@ -46,102 +46,103 @@
                                             </div>
                                             <br>
                                             <div class="form-group">
-                                                <label for="Position">&nbsp;&nbsp; 产品类型：</label>
-                                                <select class="form-control" id="Position" name="Position" placeholder="Position"></select>
+                                                <label for="category"> 产品类型：</label>
+                                                <select class="form-control" id="category" name="category" placeholder="category"></select>
                                             </div>
                                             <div class="form-group">
-                                                <label for="status">&nbsp;&nbsp; 产品状态：</label>
+                                                <label for="status"> 产品状态：</label>
                                                 <select class="form-control" id="status" name="status" placeholder="status"></select>
                                             </div>
                                             <br>
                                             <div class="form-group">
-                                                <label for="customer">&nbsp;&nbsp; 客户：</label>
+                                                <label for="customer"> 客户：</label>
                                                 <input type="text" class="form-control" id="customer" name="customer" placeholder="客户">
                                             </div>
                                             <div class="form-group">
-                                                <label for="endcustomer">&nbsp;&nbsp; 终端客户：</label>
+                                                <label for="endcustomer"> 终端客户：</label>
                                                 <input type="text" class="form-control" id="endcustomer" name="endcustomer" placeholder="终端客户">
                                             </div>
                                             <button type="button" class="btn btn-default" id="search">查询</button>
                                         </form>
                                     </div>
-                                    <div id="toolbar">
-                                        <select class="form-control">
+                                </div>
+                                <div id="toolbar">
+                                    <select class="form-control">
                                             <option value="all">导出所有</option>
                                             <option value="basic">导出当前页</option>
                                          </select>
-                                    </div>
-                                    <div class="modal fade" id="reModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
-                                                    <h4 class="modal-title" id="reModalLabel">
-                                                        标题
-                                                    </h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form class="form-horizontal re-form" id="re_Form">
-                                                        <div class="form-group">
-                                                            <label for="fromtime" class="col-sm-3 control-label">来单时间<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <div class="input-group date" id="_fromtime">
-                                                                    <input class="form-control" size="16" name="fromtime" type="text" value="" disabled>
-                                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
-                                                                </div>
+                                </div>
+                                <div class="modal fade" id="reModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+                                                <h4 class="modal-title" id="reModalLabel">
+                                                    标题
+                                                </h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form class="form-horizontal re-form" id="re_Form">
+                                                    <div class="form-group">
+                                                        <label for="fromtime" class="col-sm-3 control-label">来单时间<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group date" id="_fromtime">
+                                                                <input class="form-control" size="16" name="fromtime" type="text" value="" disabled>
+                                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                                                             </div>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="entertime" class="col-sm-3 control-label">下单时间<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <div class="input-group date" id="_entertime">
-                                                                    <input class="form-control" size="16" name="entertime" type="text" value="" disabled>
-                                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
-                                                                </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="entertime" class="col-sm-3 control-label">下单时间<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group date" id="_entertime">
+                                                                <input class="form-control" size="16" name="entertime" type="text" value="" disabled>
+                                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                                                             </div>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="inputPid" class="col-sm-3 control-label">订单编号<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" class="form-control" id="_pid" name="pid" placeholder="编号 不能重复" Readonly>
-                                                            </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputPid" class="col-sm-3 control-label">订单编号<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" id="_pid" name="pid" placeholder="编号 不能重复" Readonly>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="category" class="col-sm-3 control-label">产品种类<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <select class="form-control" id="_category" name="category" placeholder="产品种类" disabled></select>
-                                                            </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="category" class="col-sm-3 control-label">产品种类<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="_category" name="category" placeholder="产品种类" disabled></select>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="status" class="col-sm-3 control-label">产品状态<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <select class="form-control" id="_status" name="status" placeholder="产品状态">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="status" class="col-sm-3 control-label">产品状态<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" id="_status" name="status" placeholder="产品状态">
                                                                 </select>
-                                                            </div>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="customer" class="col-sm-3 control-label">客户<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" class="form-control" id="_customer" name="customer" placeholder="客户">
-                                                            </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="customer" class="col-sm-3 control-label">客户<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" id="_customer" name="customer" placeholder="客户">
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="endcustomer" class="col-sm-3 control-label">终端客户<span style="color: red;">*</span></label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" class="form-control" id="_endcustomer" name="endcustomer" placeholder="终端客户">
-                                                            </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="endcustomer" class="col-sm-3 control-label">终端客户<span style="color: red;">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" id="_endcustomer" name="endcustomer" placeholder="终端客户">
                                                         </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                                            <button type="button" class="btn btn-primary" id="re-submit"> 提交更改</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                                        <button type="button" class="btn btn-primary" id="re-submit"> 提交更改</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <table id="table"></table>
                                 </div>
+                                <table id="table"></table>
+
                             </div>
                             <%- include("../footer.ejs") %>
                                 <script src="/home/orderinfo.js"></script>

@@ -1,16 +1,18 @@
 var filename = ""
+$("#category").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+$("#status").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
 $.get({
     url: '/order/beltline',
     success: function(data) {
         $.each(data.item, function(index, units) {
-            $("#Position").append("<option value=" + units + ">" + units + "</option>")
+            $("#category").append("<option value=" + units + ">" + units + "</option>")
         })
     },
     error: function(error) {
         swal("获取产品种类失败", error.message, "error")
     },
     complete: function() {
-        $("#Position").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+
     }
 })
 $.get({
@@ -24,7 +26,7 @@ $.get({
         swal("获取产品种类失败", error.message, "error")
     },
     complete: function() {
-        $("#status").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+
     }
 })
 $("#starttime").datetimepicker({
@@ -64,7 +66,7 @@ $("#endtime").datetimepicker("setStartDate", $("#starttime :text").val());
 $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 $("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 
-filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#Position").val() || "全部" } - ${$("#status").find("option:selected").text() || "全部"} `
+filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#category").val() || "全部" } - ${$("#status").find("option:selected").text() || "全部"} `
 
 $(function() {
     var tableconf = {
@@ -92,7 +94,7 @@ $(function() {
                 sortName: params.sort, //排序字段
                 starttime: $("#starttime :text").val(),
                 endtime: $("#endtime :text").val(),
-                position: $("#Position").val() || "ALL",
+                category: $("#category").val() || "ALL",
                 status: $("#status").val() || "ALL",
                 customer: $("#customer").val() || "ALL",
                 endcustomer: $("#endcustomer").val() || "ALL",
@@ -147,6 +149,7 @@ $(function() {
             return false
         },
         onDblClickCell: function(field, value, row, $element) { //双击单元格
+            console.log(field)
             return false
         },
         onClickRow: function(item, $element) { //单击行
@@ -154,6 +157,7 @@ $(function() {
             return false
         },
         onDblClickRow: function(item, $element) { //双击行
+            console.log(item)
 
             return false
         },
@@ -325,7 +329,7 @@ $(function() {
         }
     }
     $("#search").on('click', function() {
-        filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#Position").val() || "全部" } - ${$("#status").find("option:selected").text() || "全部"} `
+        filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#category").val() || "全部" } - ${$("#status").find("option:selected").text() || "全部"} `
         $("#table").bootstrapTable('destroy')
         tableconf.exportDataType = $("#toolbar .form-control").val()
         tableconf.exportOptions.fileName = filename + "_" + $("#toolbar .form-control").val()

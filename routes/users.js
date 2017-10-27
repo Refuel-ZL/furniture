@@ -339,6 +339,80 @@ router.post('/delet', async(ctx, next) => {
     ctx.body = res
 })
 
+router.all('/search', async(ctx, next) => {
+    ctx.state = {
+        title: '用户搜索',
+        user: ctx.session.user || ''
+    }
+    await ctx.render('user/search', ctx.state)
+})
+
+/**
+ * 获取所有订单id
+ */
+router.all('/userlist', async(ctx, next) => {
+    var res = []
+    try {
+        res = await userutil.fetchuserlist()
+    } catch (error) {
+        console.log(error)
+    }
+    ctx.body = res
+})
+
+/**
+ * 
+ * 获取userid 的工作记录
+ */
+router.all('/userid_data', async function(ctx, next) {
+    var res = {
+        total: 0,
+        rows: []
+    }
+    try {
+        var limit = ctx.query.limit || ctx.request.body.limit || null
+        var offset = ctx.query.offset || ctx.request.body.offset || 0
+        var search = ctx.query.search || ctx.request.body.search || ''
+        var userid = ctx.query.userid || ctx.request.body.userid || ''
+        var sortName = ctx.query.sortName || ctx.request.body.sortName || 'id'
+        var sortOrder = ctx.query.sortOrder || ctx.request.body.sortOrder || 'esc'
+        var starttime = ctx.query.starttime || ctx.request.body.starttime || ''
+        var endtime = ctx.query.endtime || ctx.request.body.endtime || ''
+        var category = ctx.query.category || ctx.request.body.category || 'ALL'
+        var workstage = ctx.query.workstage || ctx.request.body.workstage || 'ALL'
+        var option = {
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            search: search,
+            sortName: sortName,
+            sortOrder: sortOrder,
+            userid: userid,
+            starttime: starttime,
+            endtime: endtime,
+            category: category,
+            workstage: workstage,
+        }
+        if (userid == '') { return ctx.body = res }
+        res = await userutil.fetchuserlog(option)
+        if (res.code == 'ok') {
+            res = {
+                total: res.total,
+                rows: res.data
+            }
+        } else {
+            console.log(res.message)
+            res = {
+                total: 0,
+                rows: []
+            }
+        }
+    } catch (error) {
+        console.log(error)
+    } finally {
+        ctx.body = res
+    }
+})
+
 function scheduleCronstyle(id) {
     setTimeout(function() { Rtask(id) }, rt)
 }
