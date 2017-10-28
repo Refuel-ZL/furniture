@@ -157,6 +157,23 @@
                                 exportOptions: {
                                     fileName: '文件名',
                                 },
+                                rowStyle: function(row, index) {
+                                    /* var classes = ["active", "success", "info", "warning", "danger"]*/
+                                    let value = row.status
+                                    if (value == 0) {
+                                        return {
+                                            classes: "info"
+                                        }
+                                    } else if (value == 1) {
+                                        return {
+                                            classes: "success"
+                                        }
+                                    } else if (value == 2) {
+                                        return {
+                                            classes: "danger"
+                                        }
+                                    }
+                                },
                                 columns: [{
                                     field: 'pid',
                                     title: '编号',
@@ -268,7 +285,14 @@
                                             return ""
                                         }
                                     }
-                                }]
+                                }],
+                                onDblClickRow: function(item, $element) { //双击行
+                                    console.log(item);
+                                    if (item.userid) {
+                                        window.open("/user/search?userid=" + item.userid);
+                                    }
+                                    return false
+                                },
                             }
                         }
 

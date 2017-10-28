@@ -157,8 +157,7 @@ $(function() {
             return false
         },
         onDblClickRow: function(item, $element) { //双击行
-            console.log(item)
-
+            window.open("/order/search?pid=" + item.pid);
             return false
         },
         columns: [{

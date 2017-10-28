@@ -58,20 +58,10 @@
                                 </div>
                             </div>
                             <div id="toolbar" class="btn-group">
-                                <!-- <div class="row">
-                                    <div class="col-xs-8 col-sm-6">
-                                      
-                                    </div>
-                                    <div class="col-xs-4 col-sm-2">
-                                        <button type="button" class="btn btn-default" id="search">查询</button>
-                                    </div> -->
-                                <!-- <div class="col-xs-6 col-sm-4"> -->
                                 <select class="form-control">
                                     <option value="all">导出所有</option>
                                     <option value="basic">导出当前页</option>
                                  </select>
-                                <!-- </div> -->
-                                <!-- </div> -->
                             </div>
                             <table id="table"></table>
 
@@ -79,74 +69,52 @@
                         <%- include("../footer.ejs") %>
 
                             <script>
-                                $(function() {
-                                    var UID = $.getUrlParam('userid');
-                                    $("#table").bootstrapTable(
-                                        TableInit.table
-                                    );
-                                    if (UID) {
-                                        $("#wd").val(UID)
-                                        $("#search").click()
-                                    }
-                                    $("#wd").keydown(function(event) {
-                                        if (event.keyCode == 13) {
-                                            // $("#search").click()
-                                        }
-                                    })
-                                    $("#wd").typeahead({
-                                        delay: 500,
-                                        fitToElement: true,
-                                        source: function(query, process) {
-                                            return $.ajax({
-                                                url: '/user/userlist',
-                                                type: 'post',
-                                                data: {
-                                                    name: query
-                                                },
-                                                success: function(result) {
-                                                    for (var i = 0; i < result.length; i++) {
-                                                        result[i] = JSON.stringify(result[i])
-                                                    }
-                                                    return process(result);
-                                                }
-
-                                            })
-                                        },
-                                        highlighter: function(obj) {
-                                            var item = JSON.parse(obj);
-                                            var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-                                            return item.userid.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
-                                                return '<strong>' + match + '</strong>'
-                                            });
-                                        },
-                                        updater: function(obj) {
-                                            var item = JSON.parse(obj);
-                                            return item.userid;
-                                        },
-                                        afterSelect: function() {
-                                            $("#search").click()
-                                        }
-                                    })
-
-                                    /**
-                                     * 下拉框选择事件  动态控制导出类型
-                                     */
-                                    $('#toolbar').find('select').change(function() {
-                                        $("#table").bootstrapTable('refreshOptions', {
-                                            exportDataType: $(this).val()
-                                        });
-                                    });
-
+                                $("#starttime").datetimepicker({
+                                    format: "yyyy-mm-dd hh:ii:ss",
+                                    language: 'zh-CN',
+                                    weekStart: 1,
+                                    todayBtn: 1,
+                                    autoclose: 1,
+                                    todayHighlight: 1,
+                                    startView: 2,
+                                    minView: 0,
+                                    forceParse: 0
+                                }).on("changeDate", function(ev) {
+                                    var starttime = $("#starttime :text").val();
+                                    $("#endtime").datetimepicker("setStartDate", starttime)
+                                    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
                                 })
-
+                                $("#endtime").datetimepicker({
+                                    format: "yyyy-mm-dd hh:ii:ss",
+                                    language: 'zh-CN',
+                                    weekStart: 1,
+                                    todayBtn: 'linked',
+                                    autoclose: 1,
+                                    todayHighlight: 1,
+                                    startView: 2,
+                                    minView: 0,
+                                    forceParse: 0
+                                }).on("changeDate", function(ev) {
+                                    var starttime = $("#starttime :text").val();
+                                    var endtime = $("#endtime :text").val();
+                                    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                    $("#starttime").datetimepicker("setEndDate", endtime)
+                                })
+                                $("#starttime :text").val(moment(moment().format('YYYY-MM')).format("YYYY-MM-DD HH:mm:ss"))
+                                $("#endtime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
+                                $("#endtime").datetimepicker("setStartDate", $("#starttime :text").val());
+                                $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                $("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
                                 $("#search").click(function() {
                                     var val = $("#wd").val()
                                     if (val == "") return
+                                    var filename = `员工记录${$("#wd").val()} ${$("#starttime :text").val()}-${$("#endtime :text").val()} ${$("#category").find("option:selected").text() == "全部"?"":$("#category").find("option:selected").text()} ${$("#workstage").find("option:selected").text() == "全部"?"": $("#workstage").find("option:selected").text()}`
+                                    console.log(filename)
                                     $("#table").bootstrapTable('refreshOptions', {
                                         url: '/user/userid_data?userid=' + val,
                                         method: 'get',
                                         exportOptions: {
-                                            fileName: val
+                                            fileName: filename
                                         }
                                     });
                                 })
@@ -197,7 +165,7 @@
                                         // 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'.
                                         exportTypes: ['txt', 'doc', 'excel'],
                                         exportOptions: {
-                                            fileName: '文件名',
+                                            fileName: `员工记录${$("#wd").val()}`,
                                         },
                                         rowStyle: function(row, index) {
                                             /* var classes = ["active", "success", "info", "warning", "danger"]*/
@@ -322,6 +290,63 @@
                                 }
 
                                 $(function() {
+
+                                    var UID = $.getUrlParam('userid');
+                                    $("#table").bootstrapTable(
+                                        TableInit.table
+                                    );
+                                    if (UID) {
+                                        $("#wd").val(UID)
+                                        $("#search").click()
+                                    }
+                                    $("#wd").keydown(function(event) {
+                                        if (event.keyCode == 13) {
+                                            // $("#search").click()
+                                        }
+                                    })
+                                    $("#wd").typeahead({
+                                        delay: 500,
+                                        fitToElement: true,
+                                        source: function(query, process) {
+                                            return $.ajax({
+                                                url: '/user/userlist',
+                                                type: 'post',
+                                                data: {
+                                                    name: query
+                                                },
+                                                success: function(result) {
+                                                    for (var i = 0; i < result.length; i++) {
+                                                        result[i] = JSON.stringify(result[i])
+                                                    }
+                                                    return process(result);
+                                                }
+
+                                            })
+                                        },
+                                        highlighter: function(obj) {
+                                            var item = JSON.parse(obj);
+                                            var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+                                            return item.userid.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
+                                                return '<strong>' + match + '</strong>'
+                                            });
+                                        },
+                                        updater: function(obj) {
+                                            var item = JSON.parse(obj);
+                                            return item.userid;
+                                        },
+                                        afterSelect: function() {
+                                            $("#search").click()
+                                        }
+                                    })
+
+                                    /**
+                                     * 下拉框选择事件  动态控制导出类型
+                                     */
+                                    $('#toolbar').find('select').change(function() {
+                                        $("#table").bootstrapTable('refreshOptions', {
+                                            exportDataType: $(this).val()
+                                        });
+                                    });
                                     $(window).resize(function() {
                                         if ($("#table").width() < 800) {
                                             $("#table").bootstrapTable("hideColumn", 'regtime')
@@ -365,42 +390,6 @@
                                             swal("获取工序列表失败！", error.message, "error")
                                         }
                                     })
-                                    $("#starttime").datetimepicker({
-                                        format: "yyyy-mm-dd hh:ii:ss",
-                                        language: 'zh-CN',
-                                        weekStart: 1,
-                                        todayBtn: 1,
-                                        autoclose: 1,
-                                        todayHighlight: 1,
-                                        startView: 2,
-                                        minView: 0,
-                                        forceParse: 0
-                                    }).on("changeDate", function(ev) {
-                                        var starttime = $("#starttime :text").val();
-                                        $("#endtime").datetimepicker("setStartDate", starttime)
-                                        $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                    })
-                                    $("#endtime").datetimepicker({
-                                        format: "yyyy-mm-dd hh:ii:ss",
-                                        language: 'zh-CN',
-                                        weekStart: 1,
-                                        todayBtn: 'linked',
-                                        autoclose: 1,
-                                        todayHighlight: 1,
-                                        startView: 2,
-                                        minView: 0,
-                                        forceParse: 0
-                                    }).on("changeDate", function(ev) {
-                                        var starttime = $("#starttime :text").val();
-                                        var endtime = $("#endtime :text").val();
-                                        $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                        $("#starttime").datetimepicker("setEndDate", endtime)
-                                    })
-                                    $("#starttime :text").val(moment(moment().format('YYYY-MM')).format("YYYY-MM-DD HH:mm:ss"))
-                                    $("#endtime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
-                                    $("#endtime").datetimepicker("setStartDate", $("#starttime :text").val());
-                                    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                    $("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 
                                 })
                             </script>

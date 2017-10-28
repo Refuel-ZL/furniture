@@ -160,10 +160,11 @@ router.post("/registe", async function(ctx, next) {
         code: "ok",
     }
     var data = ctx.request.body
+
     let param = {
         name: data.Name,
         openid: data.Openid,
-        work: data.work || []
+        work: data.work ? (typeof data.work == "string") && data.work.constructor == String ? [data.work] : data.work : []
     }
     try {
         if (await userutil.verifyname(param.name)) {

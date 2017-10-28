@@ -119,7 +119,7 @@ var tableconf = {
                 return [
                     `<span class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
                     `<span class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
-                    `<span class="RoleOfC btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.userid} 进度"></span>`,
+                    `<span class="RoleOfC btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.userid} 操作记录"></span>`,
                 ].join("")
             },
             events: {

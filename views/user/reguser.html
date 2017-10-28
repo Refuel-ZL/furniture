@@ -236,7 +236,6 @@
                                         swal("获取工序列表失败！", error.message, "error")
                                     }
                                 })
-                                click("init")
                             })
 
                             function makeqr(key, status) {
@@ -373,7 +372,6 @@
                                     },
                                     error: function(params) {
                                         makeqr('该二维码已失效', 'invalid')
-                                        console.log('error')
                                     }
                                 })
                                 if (!at) {
