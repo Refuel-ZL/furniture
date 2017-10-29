@@ -3,8 +3,8 @@
     "qrencryption": false,
     /* 二维码域名 http:// **/
     "host": "http://my.ngrok.zltcloud.com",
-    /**特殊工序(有合作的)提交间隔**/
-    "workgap": 60480000,
+    /**特殊工序(有合作的)提交间隔 （秒）**/
+    "workgap": 86400,
     "orserstutas": {
         "进行中": "0",
         "已完成": "1",

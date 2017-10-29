@@ -123,6 +123,7 @@ router.all('/data', async(ctx, next) => {
         var status = ctx.query.status || ctx.request.body.status || 'ALL'
         var customer = ctx.query.customer || ctx.request.body.customer || 'ALL'
         var endcustomer = ctx.query.endcustomer || ctx.request.body.endcustomer || 'ALL'
+        var pid = ctx.query.pid || ctx.request.body.pid || 'ALL'
 
         var option = {
             limit: parseInt(limit),
@@ -136,6 +137,7 @@ router.all('/data', async(ctx, next) => {
             status: status,
             customer: customer,
             endcustomer: endcustomer,
+            pid: pid
         }
         res = await orderutil.fetchproall(option)
         if (res.code == 'ok') {

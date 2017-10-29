@@ -111,8 +111,8 @@ router.get("/qrupinfo", async(ctx, next) => {
                 }
                 if (ctx.state.data.index != 0) { //是否超时 非首道工序
                     try {
-                        let t1 = moment(ctx.state.data.details[0].recordtime).valueOf()
-                        let t2 = moment().valueOf()
+                        let t1 = moment(ctx.state.data.details[0].recordtime).unix()
+                        let t2 = moment().unix()
                         ctx.state.data.timeout.timer = t2 - t1
                         ctx.state.data.timeout.status = ctx.state.data.timeout.timer > ctx.state.data.timeout.conf
                     } catch (error) {

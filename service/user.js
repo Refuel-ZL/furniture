@@ -230,25 +230,46 @@ exports = module.exports = {
         }
         var time = moment().format("YYYY-MM-DD HH:mm:ss")
         try {
-            let val = _.keys(params.work)
-            val = "\"" + val.join("\",\"") + "\""
-            let sql1 = `select level from userworkinfo where userid="${params.name}" and level in(${val})`
-            let res1 = await sqlutil.query(sql1)
-            for (var i in params.work) {
-                let re = true
-                for (var j = 0; j < res1.length; j++) {
-                    if (i == res1[j].level) {
-                        re = false
-                        let sql2 = `update  userworkinfo set userwork = "${params.work[i]}" where level="${i}" and userid="${params.name}"`
-                        await sqlutil.query(sql2)
-                        break
-                    }
-                }
-                if (re) {
-                    let sql3 = ` insert  userworkinfo(userid,userwork,level) values( "${params.name}","${params.work[i]}","${i}" )`
-                    await sqlutil.query(sql3)
-                }
+            // let val = _.keys(params.work)
+            // if (val == null || val.length == 0) {
+            //     let sql1 = `delete from userworkinfo where userid =${params.name}`
+            //     await sqlutil.query(sql1)                
+            // } else {
+            //     val = "\"" + val.join("\",\"") + "\""
+            //     let sql1 = `select level from userworkinfo where userid="${params.name}" and level in(${val})`
+            //     let res1 = await sqlutil.query(sql1)
+            //     for (var i in params.work) {
+            //         let re = true
+            //         for (var j = 0; j < res1.length; j++) {
+            //             if (i == res1[j].level) {
+            //                 re = false
+            //                 let sql2 = `update  userworkinfo set userwork = "${params.work[i]}" where level="${i}" and userid="${params.name}"`
+            //                 await sqlutil.query(sql2)
+            //                 break
+            //             }
+            //         }
+            //         if (re) {
+            //             let sql3 = ` insert userworkinfo(userid,userwork,level) values( "${params.name}","${params.work[i]}","${i}" )`
+            //             await sqlutil.query(sql3)
+            //         }
+            //     }
+            // }
+            var sql = []
+            sql.push({
+                sql: "delete from userworkinfo where userid =?",
+                param: [params.name]
+            })
+            for (var work in params.work) {
+                sql.push({
+                    sql: "insert userworkinfo(userid,userwork,level) values(?,?,? ) ",
+                    param: [params.name, params.work[work], work]
+                })
             }
+            sql.push({
+                sql: "update userinfo set usermtime = ? where userid=? ",
+                param: [time, params.name]
+            })
+            await sqlutil.sqlaffair(sql)
         } catch (error) {
             res = {
                 code: "error",

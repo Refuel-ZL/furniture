@@ -3,25 +3,47 @@
         <style>
             body {
                 padding-top: 70px;
+                color: #000000 !important;
+            }
+            
+            a:hover,
+            .navbar-inverse a:hover {
+                text-decoration: underline !important;
+                color: #C20C0C !important;
+                text-decoration: none !important;
+            }
+            
+            .navbar-inverse {
+                color: #ffffff !important;
+                border-color: #000000 !important;
+            }
+            
+            .navbar-inverse a {
+                color: #ffffff !important;
+            }
+            
+            .navbar-inverse .navbar-header a:hover {
+                color: #ffffff !important;
             }
         </style>
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-                    <a class="navbar-brand" href="/">产品管理</a>
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">湖南汇多利木制品有限公司</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
 
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="/order/">订单管理</a></li>
+                        <li><a href="/order/input">录入订单</a></li>
                         <li><a href="/user/">员工管理</a></li>
-                        <li><a href="/order/search">订单查询</a></li>
+                        <li><a href="/user/reguser">登记员工</a></li>
                     </ul>
                     <div class="navbar-form navbar-right" id='navbar-search-form'>
                         <input type="text" class="form-control" placeholder="查询产品">

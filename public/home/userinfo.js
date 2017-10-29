@@ -91,76 +91,68 @@ var tableconf = {
     exportOptions: {
         fileName: '用户管理' + moment().format("YYYY-MM-DD"),
     },
-    columns: [
-        //     {
-        //     title: "",
-        //     formatter: function(value, row, index) {
-        //         return index + 1
-        //     }
-        // },
-        {
-            field: "userid",
-            title: "员工名",
-        }, {
-            field: "1",
-            title: "工序1"
-        }, {
-            field: "2",
-            title: "工序2"
-        }, {
-            field: "3",
-            title: "工序3"
-        }, {
-            field: "operate",
-            title: "操作",
-            width: 150,
-            align: "center",
-            formatter: function operateFormatter(value, row, index) {
-                return [
-                    `<span class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
-                    `<span class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
-                    `<span class="RoleOfC btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.userid} 操作记录"></span>`,
-                ].join("")
-            },
-            events: {
-                "click .RoleOfA": function(e, value, row, index) {
-                    $("#reModalLabel").text("编辑")
-                    $("#re_Name").val(row.userid)
-                    $("#re_Work1").val(row["1"])
-                    $("#re_Work2").val(row["2"])
-                    $("#re_Work3").val(row["3"])
-                    $("#re_openid").val(row.openid)
-                    $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
-                    if (workitem.total > 0) {
-                        var optionString = ""
-                        $.each(workitem.rows, function(index, units) {
-                            optionString += `<optgroup class="group_${index}" label="${units.name}">`
-                            $.each(units.item, function(i, u) {
-                                optionString += "<option value='" + u + "'>" + u + "</option>"
-                            })
-                            optionString += "</optgroup>"
+    columns: [{
+        field: "userid",
+        title: "员工名",
+    }, {
+        field: "1",
+        title: "工序1"
+    }, {
+        field: "2",
+        title: "工序2"
+    }, {
+        field: "3",
+        title: "工序3"
+    }, {
+        field: "operate",
+        title: "操作",
+        width: 150,
+        align: "center",
+        formatter: function operateFormatter(value, row, index) {
+            return [
+                `<span class="RoleOfA btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="修改 ${row.userid}"></span>`,
+                `<span class="RoleOfB btn glyphicon glyphicon-remove" style="margin-right:15px; color:red ;display: none;" title="删除 ${row.userid}"></span>`,
+                `<span class="RoleOfC btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.userid} 操作记录"></span>`,
+            ].join("")
+        },
+        events: {
+            "click .RoleOfA": function(e, value, row, index) {
+                $("#reModalLabel").text("编辑")
+                $("#re_Name").val(row.userid)
+                $("#re_Work1").val(row["1"])
+                $("#re_Work2").val(row["2"])
+                $("#re_Work3").val(row["3"])
+                $("#re_openid").val(row.openid)
+                $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
+                if (workitem.total > 0) {
+                    var optionString = ""
+                    $.each(workitem.rows, function(index, units) {
+                        optionString += `<optgroup class="group_${index}" label="${units.name}">`
+                        $.each(units.item, function(i, u) {
+                            optionString += "<option value='" + u + "'>" + u + "</option>"
                         })
-                        $("#workitem").html(optionString)
-                    }
-                    var oldnumber = []
-                    oldnumber.push(row["1"])
-                    oldnumber.push(row["2"])
-                    oldnumber.push(row["3"])
-                    $('#workitem').selectpicker('refresh');
-                    $('#workitem').selectpicker('render');
-                    $('#workitem').selectpicker('val', oldnumber); //默认选中
-                    $("#reModal").modal({ keyboard: true }) //esc退出
-                },
-                "click .RoleOfB": function(e, value, row, index) {
-                    DeleteUser([row.userid])
-                },
-                "click .RoleOfC": function(e, value, row, index) {
-                    let val = encodeURIComponent(row.userid)
-                    window.open("http://" + window.location.host + "/user/search?userid=" + val)
+                        optionString += "</optgroup>"
+                    })
+                    $("#workitem").html(optionString)
                 }
+                var oldnumber = []
+                oldnumber.push(row["1"])
+                oldnumber.push(row["2"])
+                oldnumber.push(row["3"])
+                $('#workitem').selectpicker('refresh');
+                $('#workitem').selectpicker('render');
+                $('#workitem').selectpicker('val', oldnumber); //默认选中
+                $("#reModal").modal({ keyboard: true }) //esc退出
+            },
+            "click .RoleOfB": function(e, value, row, index) {
+                DeleteUser([row.userid])
+            },
+            "click .RoleOfC": function(e, value, row, index) {
+                let val = encodeURIComponent(row.userid)
+                window.open("http://" + window.location.host + "/user/search?userid=" + val)
             }
         }
-    ],
+    }],
     onLoadSuccess: function(data) {
         if (data.rows.length === 0) {
             if (this.pageNumber > 1) {

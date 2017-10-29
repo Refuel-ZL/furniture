@@ -1,3 +1,10 @@
+var rcolor = {
+    0: "#339933",
+    1: "#3399CC",
+    2: "#FF0033"
+}
+
+
 var filename = ""
 $("#category").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
 $("#status").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
@@ -11,9 +18,7 @@ $.get({
     error: function(error) {
         swal("获取产品种类失败", error.message, "error")
     },
-    complete: function() {
-
-    }
+    complete: function() {}
 })
 $.get({
     url: '/order/status',
@@ -67,7 +72,40 @@ $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"
 $("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 
 filename = `订单管理${$("#starttime :text").val()}-${$("#endtime :text").val()}-${$("#category").val() || "全部" } - ${$("#status").find("option:selected").text() || "全部"} `
+$("#pid").typeahead({
+    delay: 500,
+    fitToElement: true,
+    source: function(query, process) {
+        return $.ajax({
+            url: '/order/pidlist',
+            type: 'post',
+            data: {
+                name: query
+            },
+            success: function(result) {
+                for (var i = 0; i < result.length; i++) {
+                    result[i] = JSON.stringify(result[i])
+                }
+                return process(result);
+            }
 
+        })
+    },
+    highlighter: function(obj) {
+        var item = JSON.parse(obj);
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+        return item.pid.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
+            return '<strong>' + match + '</strong>'
+        });
+    },
+    updater: function(obj) {
+        var item = JSON.parse(obj);
+        return item.pid;
+    },
+    afterSelect: function() {
+        $("#search").click()
+    }
+})
 $(function() {
     var tableconf = {
         classes: "table table-hover", //加载的样式
@@ -98,6 +136,7 @@ $(function() {
                 status: $("#status").val() || "ALL",
                 customer: $("#customer").val() || "ALL",
                 endcustomer: $("#endcustomer").val() || "ALL",
+                pid: $("#pid").val() || "ALL",
             }
             return temp
         }, //传递参数（*）
@@ -126,17 +165,9 @@ $(function() {
         rowStyle: function(row, index) {
             /* var classes = ["active", "success", "info", "warning", "danger"]*/
             let value = row.status
-            if (value == 0) {
-                return {
-                    classes: "info"
-                }
-            } else if (value == 1) {
-                return {
-                    classes: "success"
-                }
-            } else if (value == 2) {
-                return {
-                    classes: "danger"
+            return {
+                css: {
+                    "background-color": rcolor[value] || "none"
                 }
             }
         },
@@ -162,9 +193,8 @@ $(function() {
         },
         columns: [{
                 // checkbox: false
-                formatter: function(value, row, index) {
-                    return index + 1
-                }
+                field: "id",
+                title: "订单序号"
             }, {
                 field: "pid",
                 title: "订单编号"
@@ -231,20 +261,18 @@ $(function() {
                     return date
                 }
             }, {
-                field: "operate",
+                field: "operate1",
                 title: "操作",
-                width: 300,
+                width: 260,
                 align: "center",
-
                 formatter: function operateFormatter(value, row, index) {
                     return [
-                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px; color:#337AB7" title="编辑 ${row.pid}状态"></span>`,
-                        `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px; color:#337AB7" title="查看 ${row.pid} 进度"></span>`,
+                        `<span class="RoleOfD btn glyphicon glyphicon-edit" style="margin-right:15px;"  title="编辑 ${row.pid}状态"></span>`,
+                        `<span class="RoleOfA btn glyphicon glyphicon-search" style="margin-right:15px;"  title="查看 ${row.pid} 进度"></span>`,
                         `<a href="/order/qrcode?pid=${row.pid}"  class="RoleOfB btn glyphicon glyphicon-qrcode" style="margin-right:15px;color: #000000;" download="${row.pid}.png"
                     data-toggle="popover" data-placement="left" data-delay='200'  data-title='${row.pid}'
                     data-content="<img src='/order/qrcode?pid=${row.pid}&width=236&height=236' alt='${row.pid}' height='236px' width='236px'/>" 
                     data-trigger="hover"></a>`,
-                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
                     ].join("")
                 },
                 events: {
@@ -252,13 +280,33 @@ $(function() {
                         let val = encodeURIComponent(row.pid)
                         window.open("http://" + window.location.host + "/order/search?pid=" + val)
                     },
-                    "click .RoleOfC": function(e, value, row, index) {
-                        Deleteorder([row.pid])
-                    },
                     "click .RoleOfD": function(e, value, row, index) {
                         edit(row)
                     }
                 }
+            }, {
+                field: "operate2",
+                title: "删除",
+                width: 50,
+                align: "center",
+                formatter: function operateFormatter(value, row, index) {
+                    return [
+                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
+                    ].join("")
+                },
+                events: {
+                    "click .RoleOfC": function(e, value, row, index) {
+                        Deleteorder([row.pid])
+                    }
+                }
+                // cellStyle: function cellStyle(value, row, index) {
+                //     // let value = row.status
+                //     return {
+                //         css: {
+                //             // "color": "#000000"
+                //         }
+                //     }
+                // }
             }
         ],
         onEditableInit: function() {
@@ -344,6 +392,8 @@ $(function() {
         tableconf.exportOptions.fileName = filename + "_" + $(this).val()
         $("#table").bootstrapTable(tableconf)
     })
+
+    $("#table").bootstrapTable("hideColumn", 'operate2')
 })
 
 

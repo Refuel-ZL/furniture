@@ -167,12 +167,15 @@ var fun = {
                 if (params.endcustomer && params.endcustomer != "ALL") {
                     valsql += ` AND oif.endcustomer ='${params.endcustomer}'`
                 }
+                if (params.pid && params.pid != "ALL") {
+                    valsql += ` AND oif.pid ='${params.pid}'`
+                }
                 let page = ""
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
 
-                let sql1 = ` SELECT oif.pid,DATE_FORMAT( oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime,DATE_FORMAT( oif.fromtime, "%Y-%m-%d %H:%i:%s") as fromtime,oif.status,oif.category,oif.customer,oif.endcustomer,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
+                let sql1 = ` SELECT oif.id, oif.pid,DATE_FORMAT( oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime,DATE_FORMAT( oif.fromtime, "%Y-%m-%d %H:%i:%s") as fromtime,oif.status,oif.category,oif.customer,oif.endcustomer,info.index,info.orderinfo,info.workstage,DATE_FORMAT( info.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime  FROM
                 orderinfo AS oif
                 LEFT JOIN  
                (SELECT * FROM (SELECT wif.index,wif.orderinfo,wif.workstage,wkd.recordtime  FROM workrecord AS wkd LEFT JOIN workstageinfo AS wif ON wif.id=wkd.workstageid) as a WHERE a.recordtime = (

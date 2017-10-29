@@ -41,6 +41,11 @@
                 <%- include("../footer.ejs") %>
 
                     <script>
+                        var rcolor = {
+                            0: "#339933",
+                            1: "#3399CC",
+                            2: "#FF0033"
+                        }
                         $(function() {
                             var ID = $.getUrlParam('pid');
                             $("#table").bootstrapTable(
@@ -158,21 +163,13 @@
                                     fileName: '文件名',
                                 },
                                 rowStyle: function(row, index) {
-                                    /* var classes = ["active", "success", "info", "warning", "danger"]*/
-                                    let value = row.status
-                                    if (value == 0) {
-                                        return {
-                                            classes: "info"
-                                        }
-                                    } else if (value == 1) {
-                                        return {
-                                            classes: "success"
-                                        }
-                                    } else if (value == 2) {
-                                        return {
-                                            classes: "danger"
-                                        }
-                                    }
+                                    // let value = row.status
+                                    return {}
+                                    // return {
+                                    //     css: {
+                                    //         "background-color": rcolor[value] || "none"
+                                    //     }
+                                    // }
                                 },
                                 columns: [{
                                     field: 'pid',
@@ -204,18 +201,19 @@
                                         } else if (value == 2) {
                                             return "已取消"
                                         }
+                                    },
+                                    cellStyle: function cellStyle(value, row, index) {
+                                        // let value = row.status
+                                        return {
+                                            css: {
+                                                "background-color": rcolor[value] || "none"
+                                            }
+                                        };
                                     }
                                 }, {
                                     field: 'index',
                                     title: '序号',
                                     width: '80px',
-                                    // footerFormatter: function(value) {
-                                    //     var count;
-                                    //     for (var i in value) {
-                                    //         count = value[i].pid;
-                                    //     }
-                                    //     return `<b>${count}</b>`;
-                                    // }
                                 }, {
                                     field: 'workstage',
                                     title: '工序',
@@ -227,14 +225,6 @@
                                         }
                                         return val
                                     }
-
-                                    // footerFormatter: function(value) {
-                                    //     var count;
-                                    //     for (var i in value) {
-                                    //         count = value[i].regtime;
-                                    //     }
-                                    //     return `<b>${count}</b>`;
-                                    // }
                                 }, {
                                     field: 'userid',
                                     title: '员工',
@@ -246,21 +236,6 @@
                                         }
                                         return val
                                     }
-
-                                    // footerFormatter: function(value) {
-                                    //     var count;
-                                    //     for (var i in value) {
-                                    //         count = value[i].status;
-                                    //     }
-                                    //     if (count == 0) {
-                                    //         count = "<span style='color: green'>进行中</span>"
-                                    //     } else if (count == 1) {
-                                    //         count = "<span style='color:blue '>完成</span>"
-                                    //     } else if (count == 2) {
-                                    //         count = "<span style='color:red'>已取消</span>"
-                                    //     }
-                                    //     return `<b>${count}</b>`;
-                                    // }
                                 }, {
                                     field: 'recordtime',
                                     title: '操作时间',
@@ -297,14 +272,28 @@
                         }
 
                         $(function() {
-                            $(window).resize(function() {
+                            sinit()
+
+                            function sinit() {
                                 if ($("#table").width() < 800) {
                                     $("#table").bootstrapTable("hideColumn", 'regtime')
-                                    $("#table").bootstrapTable("hideColumn", 'category')
+                                    $("#table").bootstrapTable("hideColumn", 'fromtime')
+                                    $("#table").bootstrapTable("hideColumn", 'entertime')
+                                    $("#table").bootstrapTable("hideColumn", 'index')
+                                    $("#table").bootstrapTable("hideColumn", 'customer')
+                                    $("#table").bootstrapTable("hideColumn", 'endcustomer')
+
                                 } else {
                                     $("#table").bootstrapTable("showColumn", 'regtime')
-                                    $("#table").bootstrapTable("showColumn", 'category')
+                                    $("#table").bootstrapTable("showColumn", 'fromtime')
+                                    $("#table").bootstrapTable("showColumn", 'entertime')
+                                    $("#table").bootstrapTable("showColumn", 'index')
+                                    $("#table").bootstrapTable("showColumn", 'customer')
+                                    $("#table").bootstrapTable("showColumn", 'endcustomer')
                                 }
+                            }
+                            $(window).resize(function() {
+                                sinit()
                             })
                         })
                     </script>

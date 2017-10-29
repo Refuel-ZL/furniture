@@ -69,6 +69,11 @@
                         <%- include("../footer.ejs") %>
 
                             <script>
+                                var rcolor = {
+                                    0: "#339933",
+                                    1: "#3399CC",
+                                    2: "#FF0033"
+                                }
                                 $("#starttime").datetimepicker({
                                     format: "yyyy-mm-dd hh:ii:ss",
                                     language: 'zh-CN',
@@ -170,18 +175,10 @@
                                         rowStyle: function(row, index) {
                                             /* var classes = ["active", "success", "info", "warning", "danger"]*/
                                             let value = row.status
-                                            if (value == 0) {
-                                                return {
-                                                    classes: "info"
-                                                }
-                                            } else if (value == 1) {
-                                                return {
-                                                    classes: "success"
-                                                }
-                                            } else if (value == 2) {
-                                                return {
-                                                    classes: "danger"
-                                                }
+                                            return {
+                                                // css: {
+                                                //     "background-color": rcolor[value] || "none"
+                                                // }
                                             }
                                         },
                                         columns: [{
@@ -262,6 +259,14 @@
                                                 } else if (value == 2) {
                                                     return "已取消"
                                                 }
+                                            },
+                                            cellStyle: function cellStyle(value, row, index) {
+                                                // let value = row.status
+                                                return {
+                                                    css: {
+                                                        "background-color": rcolor[value] || "none"
+                                                    }
+                                                };
                                             }
                                         }, {
                                             field: 'fromtime',
