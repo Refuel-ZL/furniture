@@ -33,7 +33,7 @@
                 <%- include("../static/qrcode.ejs") %>
                     <%- include("../static/eventsource.ejs") %>
                         <%- include("../static/bootstrap-datetimepicker.ejs")%>
-                            <div class="container">
+                            <div class="container content">
                                 <form class="form-horizontal pro-form" id="pro-form">
                                     <h2 class="pro-form-heading">录入订单</h2>
                                     <div class="form-group">
@@ -226,8 +226,8 @@
                                             autoclose: 1,
                                             todayHighlight: 1,
                                             startView: 2,
-                                            minView: 0,
-                                            forceParse: 0
+                                            minView: 1,
+                                            forceParse: 1
                                         }).on("changeDate", function(ev) {
                                             var fromtime = $("#fromtime :text").val();
                                             $("#entertime").datetimepicker("setStartDate", fromtime)
@@ -241,8 +241,8 @@
                                             autoclose: 1,
                                             todayHighlight: 1,
                                             startView: 2,
-                                            minView: 0,
-                                            forceParse: 0
+                                            minView: 1,
+                                            forceParse: 1
                                         }).on("changeDate", function(ev) {
                                             var fromtime = $("#fromtime :text").val();
                                             var entertime = $("#entertime :text").val();

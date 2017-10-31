@@ -1110,7 +1110,7 @@ Wechat.prototype.fetchwebaccess_token = async function(params) {
             if (err) {
                 reject(err)
             } else {
-                resolve(body)
+                resolve(JSON.parse(body))
             }
         })
     })

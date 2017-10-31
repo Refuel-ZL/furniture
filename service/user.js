@@ -341,9 +341,9 @@ exports = module.exports = {
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
-                let sql1 = `SELECT * FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
+                let sql1 = `SELECT *,wcd.id FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
                 let val = await sqlutil.query(sql1)
-                let sql2 = `SELECT COUNT( * ) FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} `
+                let sql2 = `SELECT COUNT( * ) as num FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} `
                 let num = await sqlutil.query(sql2)
                 res.data = val
                 res.total = num[0].num

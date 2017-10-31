@@ -40,12 +40,9 @@ router.get("/qrform", async(ctx, next) => {
  * 获取产品详情 返回前台
  */
 router.get("/qrupinfo", async(ctx, next) => {
-    ctx.set("Access-Control-Allow-Origin", "*")
-    ctx.set("Access-Control-Allow-Methods", "OPTIONS, GET, PUT, POST, DELETE")
-    ctx.set("Access-Control-Allow-Credentials", true)
-    ctx.set("Access-Control-Max-Age", 300)
     var code = ctx.query.code
     var state = ctx.query.state
+    logUtil.writeDebug(JSON.stringify(ctx.query))
     ctx.state = {
         title: `${state}`,
         content: "提示语",
@@ -56,6 +53,7 @@ router.get("/qrupinfo", async(ctx, next) => {
             code: code
         }
         if (!ctx.session.openid) {
+            // var data = await wechatApi.fetchwebaccess_token(params)
             var data = await new Promise(function(resolve, reject) {
                 try {
                     gettoken(code, params, function(data) {
@@ -65,6 +63,7 @@ router.get("/qrupinfo", async(ctx, next) => {
                     reject(error)
                 }
             })
+            logUtil.writeDebug(JSON.stringify(data))
             if (data.errcode) {
                 ctx.state.content = "二维码信息已失效，请重新扫码提交"
                 logUtil.writeErr(`【${state}】QR获取微信id异常`, JSON.stringify(data))
@@ -74,7 +73,8 @@ router.get("/qrupinfo", async(ctx, next) => {
                 let nameinfo = await userutil.fetchname(data.openid)
                 let nameworkitem = await userutil.fetchuserwork(data.openid)
                 if (nameinfo.code == "error" || nameworkitem.code == "error") {
-                    ctx.state.content = `拉取用户信息异常${nameinfo.message||nameworkitem.message}`
+                    ctx.state.content = `拉取用户信息异常:${nameinfo.message||nameworkitem.message}`
+                    logUtil.writeDebug(ctx.state.content)
                     await ctx.render("scanqr/index", ctx.state)
                     return
                 } else {
@@ -94,7 +94,8 @@ router.get("/qrupinfo", async(ctx, next) => {
             let userwork = await userutil.fetchuserwork(option.openid)
 
             if (val.code == "error" || userwork.code == "error") {
-                ctx.state.content = `拉取${state}错误：${val.message}`
+                ctx.state.content = `拉取${state}错误：${val.message||userwork.message}`
+                logUtil.writeDebug(ctx.state.content)
             } else {
                 val.data.default = false
                 if (userwork.data.workitem[val.data.next]) {
@@ -115,8 +116,10 @@ router.get("/qrupinfo", async(ctx, next) => {
                         let t2 = moment().unix()
                         ctx.state.data.timeout.timer = t2 - t1
                         ctx.state.data.timeout.status = ctx.state.data.timeout.timer > ctx.state.data.timeout.conf
+                        ctx.state.data.timeout.timer = sec_to_time(ctx.state.data.timeout.timer)
                     } catch (error) {
                         logUtil.writeErr(`【${state}】检测是否超时异常`, JSON.stringify(error))
+                        logUtil.writeDebug(`【${state}】检测是否超时异常 ${JSON.stringify(error)}`)
                     }
                 }
             }
@@ -129,8 +132,48 @@ router.get("/qrupinfo", async(ctx, next) => {
         ctx.state.content = "用户提交工作异常!请重试"
         logUtil.writeErr(`【用户提交${state}工作】拉取用户信息异常`, error)
     }
+    logUtil.writeDebug(JSON.stringify(ctx.state))
     await ctx.render("scanqr/index", ctx.state)
 })
+
+
+router.get("/qrtest", async(ctx, next) => {
+    var no = ctx.query.t || ctx.request.body.t //获取提交的型号
+    var params = {
+        url: urlencode(`http://${ctx.hostname}/scanqr/qrtest1`),
+        scope: "snsapi_userinfo",
+        param: no,
+    }
+    var url = await wechatApi.fetchcode(params)
+    ctx.redirect(url) //重定向
+})
+router.get("/qrtest1", async(ctx, next) => {
+    console.log("测试")
+    var code = ctx.query.code
+    var state = ctx.query.state
+    var params = {
+        code: code
+    }
+    var data = await new Promise(function(resolve, reject) {
+        try {
+            gettoken(code, params, function(data) {
+                resolve(data)
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
+    if (data.errcode) {
+        ctx.state.content = "二维码信息已失效，请重新扫码提交"
+        logUtil.writeErr(`【${state}】QR获取微信id异常`, JSON.stringify(data))
+        ctx.body = ctx.state
+        return
+    } else {
+        console.log(JSON.stringify(data))
+        ctx.body = data
+    }
+})
+
 
 router.post("/worksubmit", async(ctx, next) => {
     var res = {
@@ -160,5 +203,30 @@ router.post("/worksubmit", async(ctx, next) => {
     ctx.body = res
 
 })
+
+/**
+ * 时间秒数格式化
+ * @param s 时间戳（单位：秒）
+ * @returns {*} 格式化后的时分秒
+ */
+var sec_to_time = function(s) {
+    var t;
+    if (s > -1) {
+        var hour = Math.floor(s / 3600);
+        var min = Math.floor(s / 60) % 60;
+        var sec = s % 60;
+        if (hour < 10) {
+            t = '0' + hour + ":";
+        } else {
+            t = hour + ":";
+        }
+
+        if (min < 10) { t += "0"; }
+        t += min + ":";
+        if (sec < 10) { t += "0"; }
+        t += sec.toFixed(2);
+    }
+    return t;
+}
 
 exports = module.exports = router

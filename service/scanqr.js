@@ -13,6 +13,9 @@ var moment = require("moment-timezone")
 moment.tz.setDefault("Asia/Shanghai")
 
 var fun = {
+    /**
+     * 该二维码对象的信息
+     */
     scaninfo: async function(param) {
         var res = {
             code: "ok"
@@ -37,7 +40,10 @@ var fun = {
                         index: st.data[0].index, //完成工序的序号
                         next: st.data[0].next, //将要提交的工序
                         status: st.data[0].status, //订单状态
-                        details: st.data
+                        details: st.data,
+                        category: st.data[0].category,
+                        customer: st.data[0].customer,
+                        endcustomer: st.data[0].endcustomer,
                     }
                 } else {
                     res = {

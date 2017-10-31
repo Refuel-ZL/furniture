@@ -11,10 +11,10 @@ var logUtil = {}
 var errorLogger = log4js.getLogger("errorLogger")
 var resLogger = log4js.getLogger("resLogger")
 
-var logDebug = log4js.getLogger("logDebug")
-var logInfo = log4js.getLogger("logInfo")
-var logWarn = log4js.getLogger("logWarn")
-var logErr = log4js.getLogger("logErr")
+var logDebug = log4js.getLogger("Debug")
+var logInfo = log4js.getLogger("Info")
+var logWarn = log4js.getLogger("Warn")
+var logErr = log4js.getLogger("Error")
 
 //封装错误日志
 logUtil.logError = function(ctx, error, resTime) {

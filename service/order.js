@@ -34,6 +34,9 @@ var fun = {
             if (res1[0].num > 0) {
                 var sql2 = `SELECT
                     oif.pid,
+                    oif.category,
+                    oif.customer,
+                    oif.endcustomer,
                     oif.status,
                     wsi.orderinfo,
                     wrd.userid,
@@ -69,6 +72,9 @@ var fun = {
                     null workstage,
                     wsi.workstage as next,
                     odif.pid,
+                    odif.category,
+                    odif.customer,
+                    odif.endcustomer,
                     wsi.orderinfo,
                     wrd.userid,
                     DATE_FORMAT( wrd.recordtime, "%Y-%m-%d %H:%i:%s") as recordtime,

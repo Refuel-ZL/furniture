@@ -41,7 +41,7 @@
 
 <body>
     <%- include("../header.ejs") %>
-        <div class="container">
+        <div class="container content">
             <div class="mypanel">
                 <div class="title">
                     <h1 style="margin-top: 5px;">
@@ -91,10 +91,10 @@
                 } else {
                     if (data.next != "ok") { //生产中，显示↓
                         if (data.workitem[data.next]) {
-                            $('#proitem').html(`<div style="text-align:center" >您将对 ${data.pid} 提交 【<b>${data.next}</b>】工序,是否提交  </div>`)
+                            $('#proitem').html(`<div style="text-align:center" >您将对<b>${data.category}·<span style="color:red">${data.pid}</span></b> 提交 【<b>${data.next}</b>】工序。<p style="text-align:center">是否提交<p>  </p>`)
                             $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
                         } else {
-                            $('#proitem').html(`<div style="text-align:center" >很抱歉 您没有提交对 ${data.pid} 的 【${data.next} 】工序的权限。  </div>`)
+                            $('#proitem').html(`<div style="text-align:center" >很抱歉 您没有提交对<b>${data.category}·<span style="color:red">${data.pid}</span></b>提交【${data.next} 】工序的权限。  </p>`)
                             $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn" disabled="disabled" >提交</button>`)
                         }
                         $('#btn').append(`
@@ -103,7 +103,6 @@
                     } else { //完成所有工序，显示↓
                         $('#proitem').html(`<div style="text-align:center" > 注意当前产品已完成最后一道工序【${data.workstage}】，不能提交</div>`)
                     }
-
                 }
                 $('#sub-btn').click(function() {
                     option = {
@@ -122,12 +121,12 @@
                     }
                     let message = ""
                     if (data.timeout.status) {
-                        message = `据上一工序已超过允许范围:超时【${data.timeout.timer}】`
+                        message = `据上一工序已超过允许范围:<br>超时【${data.timeout.timer}】`
                     }
                     swal({
                         title: '临时操作',
                         input: 'radio',
-                        text: message,
+                        html: message,
                         type: 'warning',
                         inputValue: '',
                         inputOptions: rediodata,

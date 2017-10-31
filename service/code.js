@@ -21,7 +21,7 @@ var loadGettoken = async function(code, params, fun) {
             codeCacheCallback[code].push([fun])
         } else {
             codeCacheCallback[code] = [fun]
-            codeCache[code] = JSON.parse(await wechatApi.fetchwebaccess_token(params))
+            codeCache[code] = await wechatApi.fetchwebaccess_token(params)
             codeCacheCallback[code][0](codeCache[code])
             codeCacheCallback[code] = null
         }

@@ -263,7 +263,7 @@ $(function() {
             }, {
                 field: "operate1",
                 title: "操作",
-                width: 260,
+                // width: 240,
                 align: "center",
                 formatter: function operateFormatter(value, row, index) {
                     return [
@@ -291,14 +291,16 @@ $(function() {
                 align: "center",
                 formatter: function operateFormatter(value, row, index) {
                     return [
-                        `<span class="RoleOfC btn glyphicon glyphicon-remove" style="margin-right:15px; color:red" title="删除 ${row.pid} "></span>`,
+                        `<span class="RoleOfC btn glyphicon glyphicon-remove" title="删除 ${row.pid} "></span>`,
                     ].join("")
                 },
                 events: {
                     "click .RoleOfC": function(e, value, row, index) {
                         Deleteorder([row.pid])
                     }
-                }
+                },
+                visible: false
+
                 // cellStyle: function cellStyle(value, row, index) {
                 //     // let value = row.status
                 //     return {
@@ -392,8 +394,6 @@ $(function() {
         tableconf.exportOptions.fileName = filename + "_" + $(this).val()
         $("#table").bootstrapTable(tableconf)
     })
-
-    $("#table").bootstrapTable("hideColumn", 'operate2')
 })
 
 
