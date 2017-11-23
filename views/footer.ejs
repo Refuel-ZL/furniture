@@ -3,13 +3,17 @@
         <p class="footer-links">
             <a href="/order/">订单管理</a>
             <span class="line">|</span>
-            <a href="/order/input">录入订单</a>
+            <a href="/order/input">订单录入</a>
             <span class="line">|</span>
             <a href="/user/">员工管理</a>
             <span class="line">|</span>
-            <a href="/user/reguser">登记员工</a>
+            <a href="/user/reguser">员工登记</a>
             <span class="line">|</span>
             <a href="/admin" id="admin">登录</a>
+            <span id="modify">
+                <!-- <span class="line">|</span> --> &nbsp;
+            <a href="/admin/modify">修改密码</a>
+            </span>
             <span class="line">|</span>
             <a href="/help">帮助</a>
         </p>
@@ -20,7 +24,7 @@
                 业务经营许可证:
                  <a href="http://www.miitbeian.gov.cn">湘B2-20070379</a>
                  <a href="http://www.miitbeian.gov.cn">湘ICP备*****号</a>
-                </span>
+            </span>
         </p>
     </div>
 </nav>
@@ -88,9 +92,19 @@
             "title": "退出登录",
             "href": "/admin/exit"
         }).text("<%- user%>")
+        $("#modify").css({
+            "display": "inline"
+        })
+
+        $("#modify>a").attr({
+            "title": "修改密码",
+            "href": "/admin/modify?u_id=<%- user%>"
+        }).text("修改密码")
 
         <% }else{%>
-
+        $("#modify").css({
+            "display": "none"
+        })
         $("#admin").attr({
             "href": "/admin"
         }).text("登录")

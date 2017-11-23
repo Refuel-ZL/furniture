@@ -28,5 +28,25 @@ exports = module.exports = {
             }
         }
         return res
+    },
+    modify: async function(params) {
+        var res = {
+            code: "error"
+        }
+        var sql = [{
+            sql: "UPDATE admininfo SET u_password =? WHERE u_name =?",
+            param: [params.password, params.username]
+        }]
+        try {
+            await sqlutil.sqlaffair(sql)
+            res.code = "ok"
+        } catch (error) {
+            res = {
+                code: "error",
+                message: error.message
+            }
+        }
+        return res
     }
+
 }

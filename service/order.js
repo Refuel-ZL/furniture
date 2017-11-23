@@ -255,7 +255,7 @@ var fun = {
         }
     },
     /**
-     * 提交录入订单
+     * 提交订单录入
      */
     submit: async function(params) {
         var res = {
@@ -303,16 +303,16 @@ var fun = {
             } catch (error) {
                 res = {
                     code: "error",
-                    message: `录入订单错误${error.message}`
+                    message: `订单录入错误${error.message}`
                 }
-                logUtil.writeErr("录入订单异常：" + JSON.stringify(error))
+                logUtil.writeErr("订单录入异常：" + JSON.stringify(error))
 
             }
         }
         return res
     },
     /**
-     * 更新录入订单
+     * 更新订单录入
      */
     updateorder: async function(params) {
         var res = {
@@ -332,7 +332,7 @@ var fun = {
                 code: "error",
                 message: error.message
             }
-            logUtil.writeErr("更新录入订单异常：" + JSON.stringify(error))
+            logUtil.writeErr("更新订单录入异常：" + JSON.stringify(error))
 
         }
         return res

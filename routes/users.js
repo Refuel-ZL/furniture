@@ -45,7 +45,8 @@ router.get("/", async function(ctx, next) {
 
 router.get("/reguser", async function(ctx, next) {
     ctx.state = {
-        title: "员工登记"
+        title: "员工登记",
+        user: ctx.session.user || ''
     }
     await ctx.render("user/reguser")
 })

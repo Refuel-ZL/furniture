@@ -37,8 +37,61 @@ router.get("/exit", async(ctx, next) => {
         await ctx.redirect("/")
     } else {
         ctx.session = ""
-        await ctx.redirect("/")
+        await ctx.redirect("/admin")
     }
+})
+router.get("/modify", async(ctx, next) => {
+    if (!ctx.session.user) {
+        await ctx.redirect("/")
+    } else {
+        ctx.state = {
+            title: "更改管理员密码",
+            name: ctx.query.u_id || ctx.session.user,
+            user: ctx.session.user || ''
+        }
+        await ctx.render("admin/modify", ctx.state)
+    }
+})
+router.post("/modify", async(ctx, next) => {
+    var res = {
+        code: "ok"
+    }
+    if (ctx.request.body.password1 == ctx.request.body.password2) {
+        var param = {
+            "username": ctx.request.body.username,
+            "password": ctx.request.body.password
+        }
+        let log = await adminutil.login(param)
+        if (log.code == "ok") {
+            param = {
+                "username": ctx.request.body.username,
+                "password": ctx.request.body.password1
+            }
+            log = await adminutil.modify(param)
+            if (log.code == "ok") {
+                res = {
+                    code: "ok"
+                }
+                ctx.session = ""
+            } else {
+                res = {
+                    code: "error",
+                    message: `操作失败：${log.message}`
+                }
+            }
+        } else {
+            res = {
+                code: "error",
+                message: `登录密码错误：${log.message}`
+            }
+        }
+    } else {
+        res = {
+            code: "error",
+            message: "两次密码不一致"
+        }
+    }
+    ctx.body = res
 })
 router.post("/", async(ctx, next) => {
     var res = {

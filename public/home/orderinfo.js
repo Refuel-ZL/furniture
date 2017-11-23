@@ -428,7 +428,7 @@ var Deleteorder = function(pidlist) {
                 success: function(res) {
                     $("#table").bootstrapTable("refresh")
                     if (res.code == 'ok') {
-                        swal('成功', "速度非常", 'success')
+                        swal('成功', "", 'success')
                     } else {
                         swal('失败', res.message, 'error')
                     }
