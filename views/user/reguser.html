@@ -218,13 +218,13 @@
                                     success: function(data) {
                                         if (data.total > 0) {
                                             var optionString = "";
-                                            $.each(data.rows, function(index, units) {
-                                                optionString += `<optgroup class="group_${index}" label="${units.name}">`
-                                                $.each(units.item, function(i, u) {
-                                                    optionString += "<option value='" + u + "'>" + u + "</option>"
-                                                })
-                                                optionString += "</optgroup>"
-                                            })
+                                            // $.each(data.rows, function(index, units) {
+                                            //     optionString += `<optgroup class="group_${index}" label="${units.name}">`
+                                            //     $.each(units.item, function(i, u) {
+                                            //         optionString += "<option value='" + u + "'>" + u + "</option>"
+                                            //     })
+                                            //     optionString += "</optgroup>"
+                                            // })
                                             var list = {}
                                             $.each(data.rows, function(index, units) {
                                                 $.each(units.item, function(i, u) {
@@ -238,13 +238,13 @@
                                                 })
                                             })
 
-                                            // $.each(list, function(index, units) {
-                                            //     optionString += `<optgroup  label="${index}">`
-                                            //     $.each(units, function(i, u) {
-                                            //         optionString += "<option value='" + u + "'>" + u + "</option>"
-                                            //     })
-                                            //     optionString += "</optgroup>"
-                                            // })
+                                            $.each(list, function(index, units) {
+                                                optionString += `<optgroup  label="${index}">`
+                                                $.each(units, function(i, u) {
+                                                    optionString += "<option value='" + u + "'>" + u + "</option>"
+                                                })
+                                                optionString += "</optgroup>"
+                                            })
 
 
                                             parent.empty();
