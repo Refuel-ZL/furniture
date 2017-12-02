@@ -45,8 +45,7 @@
                                 <div class="form-group">
                                     <label for="inputWork" class="col-sm-3 control-label">默认工序(3项)</label>
                                     <div class="col-sm-8">
-                                        <select id="workitem" class="workitem" name="work" multiple>
-                                        </select>
+                                        <select id="workitem" class="workitem" name="work" multiple></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -204,20 +203,21 @@
                         <script>
                             var evtSource = null
                             $('#workitem').selectpicker({
-                                size: 10,
                                 liveSearch: true,
                                 maxOptions: 3,
                                 liveSearchPlaceholder: "搜索",
+                                size: 10,
                                 actionsBox: false
                             });
 
                             $(function() {
-                                click("init")
+                                click("init");
+                                var parent = $('#workitem');
                                 $.get({
                                     url: '/config/workitems',
                                     success: function(data) {
                                         if (data.total > 0) {
-                                            var optionString = ""
+                                            var optionString = "";
                                             $.each(data.rows, function(index, units) {
                                                 optionString += `<optgroup class="group_${index}" label="${units.name}">`
                                                 $.each(units.item, function(i, u) {
@@ -225,9 +225,33 @@
                                                 })
                                                 optionString += "</optgroup>"
                                             })
-                                            $("#workitem").html(optionString)
-                                            $('#workitem').selectpicker('refresh');
-                                            $('#workitem').selectpicker('render');
+                                            var list = {}
+                                            $.each(data.rows, function(index, units) {
+                                                $.each(units.item, function(i, u) {
+                                                    var n = u.substring(0, u.indexOf("-"))
+                                                    if (!list.hasOwnProperty(n)) {
+                                                        list[n] = []
+                                                    }
+                                                    if (list[n].indexOf(u) < 0) {
+                                                        list[n].push(u);
+                                                    }
+                                                })
+                                            })
+
+                                            // $.each(list, function(index, units) {
+                                            //     optionString += `<optgroup  label="${index}">`
+                                            //     $.each(units, function(i, u) {
+                                            //         optionString += "<option value='" + u + "'>" + u + "</option>"
+                                            //     })
+                                            //     optionString += "</optgroup>"
+                                            // })
+
+
+                                            parent.empty();
+                                            parent.append(optionString)
+                                                // parent.selectpicker('render');
+                                            parent.selectpicker('refresh');
+
                                         } else {
                                             swal("获取工序列表失败！", "也许工序列表为空", "error")
                                         }
