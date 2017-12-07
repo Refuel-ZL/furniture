@@ -32,7 +32,7 @@ let store = new MysqlSession(mysqlconf)
 
 // 存放sessionId的cookie配置
 var key = "Furniture"
-var THIRTY_MINTUES = 10 * 60 * 1000
+var THIRTY_MINTUES = 60 * 60 * 1000
 let cookie = {
     maxAge: THIRTY_MINTUES, // cookie有效时长
     path: "/", // 写cookie所在的路径

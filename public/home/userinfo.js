@@ -95,6 +95,9 @@ var tableconf = {
         field: "userid",
         title: "员工名",
     }, {
+        field: "workpart",
+        title: "配件工序",
+    }, {
         field: "1",
         title: "工序1"
     }, {
@@ -123,6 +126,11 @@ var tableconf = {
                 $("#re_Work2").val(row["2"])
                 $("#re_Work3").val(row["3"])
                 $("#re_openid").val(row.openid)
+                if (row.workpart == 1) {
+                    $("#part").attr("checked", 'checked');
+                } else {
+                    $("#part").attr("checked", false);
+                }
                 $("#re_Form").bootstrapValidator("enableFieldValidators", "Name", false)
                 if (workitem.total > 0) {
                     var optionString = ""
@@ -198,6 +206,7 @@ $("#re-submit").on("click", function() {
         "Work1": work[0],
         "Work2": work[1],
         "Work3": work[2],
+        "workpart": $("#part").is(':checked') ? $("#part").val() : 0
     }
     $.ajax({
         type: "post",

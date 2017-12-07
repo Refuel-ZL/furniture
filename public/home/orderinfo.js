@@ -237,6 +237,19 @@ $(function() {
                     }
                 }
             }, {
+                field: "partstate",
+                title: "配件",
+                sortable: true,
+                formatter: function(value, row, index) {
+                    if (value == 0) {
+                        return "无"
+                    } else if (value == 1) {
+                        return "有"
+                    } else {
+                        return value
+                    }
+                }
+            }, {
                 field: "workstage",
                 title: "最近完成的工序",
                 width: '100px',

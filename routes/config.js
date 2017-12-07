@@ -6,12 +6,9 @@
  * @Last Modified time: 2017-09-11 09:21:08
  */
 const router = require("koa-router")()
-const urlencode = require("urlencode")
 const _ = require("lodash")
 var moment = require("moment-timezone")
 moment.tz.setDefault("Asia/Shanghai")
-var wxconfig = require("../config/wxconfig")
-const logUtil = require("../models/log4js/log_utils")
 
 const configinfo = require("../service/config")
 
@@ -42,7 +39,7 @@ router.get("/workitems", async function(ctx, next) {
     if (key != null || key.length != 0) {
         res.total = key.length
         for (var i = 0; i < key.length; i++) {
-            var val = _.keys(config[key[i]])
+            var val = _.keys(config[key[i]].work)
             var va = {
                 "name": key[i],
                 "item": val

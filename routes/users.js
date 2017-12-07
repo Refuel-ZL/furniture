@@ -165,6 +165,7 @@ router.post("/registe", async function(ctx, next) {
     let param = {
         name: data.Name,
         openid: data.Openid,
+        part: data.part,
         work: data.work ? (typeof data.work == "string") && data.work.constructor == String ? [data.work] : data.work : []
     }
     try {
@@ -409,6 +410,51 @@ router.all('/userid_data', async function(ctx, next) {
             }
         }
     } catch (error) {
+        logUtil.writeErr("用户获取记录失败", JSON.stringify(error))
+        console.log(error)
+    } finally {
+        ctx.body = res
+    }
+})
+
+router.all('/userid_partdata', async function(ctx, next) {
+    var res = {
+        total: 0,
+        rows: []
+    }
+    try {
+        var limit = ctx.query.limit || ctx.request.body.limit || null
+        var offset = ctx.query.offset || ctx.request.body.offset || 0
+        var search = ctx.query.search || ctx.request.body.search || ''
+        var userid = ctx.query.userid || ctx.request.body.userid || ''
+        var starttime = ctx.query.starttime || ctx.request.body.starttime || ''
+        var endtime = ctx.query.endtime || ctx.request.body.endtime || ''
+        var category = ctx.query.category || ctx.request.body.category || 'ALL'
+        var option = {
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            search: search,
+            userid: userid,
+            starttime: starttime,
+            endtime: endtime,
+            category: category
+        }
+        if (userid == '') { return ctx.body = res }
+        res = await userutil.fetchuserpartlog(option)
+        if (res.code == 'ok') {
+            res = {
+                total: res.total,
+                rows: res.data
+            }
+        } else {
+            console.log(res.message)
+            res = {
+                total: 0,
+                rows: []
+            }
+        }
+    } catch (error) {
+        logUtil.writeErr("用户获取记录失败", JSON.stringify(error))
         console.log(error)
     } finally {
         ctx.body = res

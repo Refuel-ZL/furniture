@@ -33,230 +33,245 @@
                 <%- include("../static/qrcode.ejs") %>
                     <%- include("../static/eventsource.ejs") %>
                         <%- include("../static/bootstrap-datetimepicker.ejs")%>
-                            <div class="container content">
-                                <form class="form-horizontal pro-form" id="pro-form">
-                                    <h2 class="pro-form-heading">订单录入</h2>
-                                    <div class="form-group">
-                                        <label for="inputPid" class="col-sm-3 control-label">来单时间<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <div class="input-group date" id="fromtime">
-                                                <input class="form-control" size="16" name="fromtime" type="text" value="" readonly>
-                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                            <%- include("../static/bootstrap-select.ejs") %>
+                                <div class="container content">
+                                    <form class="form-horizontal pro-form" id="pro-form">
+                                        <h2 class="pro-form-heading">订单录入</h2>
+                                        <div class="form-group">
+                                            <label for="inputPid" class="col-sm-3 control-label">来单时间<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group date" id="fromtime">
+                                                    <input class="form-control" size="16" name="fromtime" type="text" value="" readonly>
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputPid" class="col-sm-3 control-label">下单时间<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <div class="input-group date" id="entertime">
-                                                <input class="form-control" size="16" name="entertime" type="text" value="" readonly>
-                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                        <div class="form-group">
+                                            <label for="inputPid" class="col-sm-3 control-label">下单时间<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group date" id="entertime">
+                                                    <input class="form-control" size="16" name="entertime" type="text" value="" readonly>
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputPid" class="col-sm-3 control-label">订单编号<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" name="Pid" placeholder="编号 不能重复">
+                                        <div class="form-group">
+                                            <label for="inputPid" class="col-sm-3 control-label">订单编号<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="Pid" placeholder="编号 不能重复">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputLine" class="col-sm-3 control-label">产品种类<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <select class="form-control" id="category" name="category" placeholder="category"></select>
+                                        <div class="form-group">
+                                            <label for="inputLine" class="col-sm-3 control-label">产品种类<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="category" name="category" placeholder="category"></select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="customer" class="col-sm-3 control-label">客户<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" name="customer" placeholder="客户">
+                                        <div class="form-group">
+                                            <label for="inputLine" class="col-sm-3 control-label">配件</label>
+                                            <div class="col-sm-8">
+                                                <input type="checkbox" id="part" name="part" placeholder="part" value="1">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="endcustomer" class="col-sm-3 control-label">终端客户<span style="color: red;">*</span></label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" name="endcustomer" placeholder="终端客户">
+                                        <div class="form-group">
+                                            <label for="customer" class="col-sm-3 control-label">客户<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="customer" placeholder="客户">
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-3 col-sm-8">
-                                            <button class="btn btn-lg btn-primary btn-block col-sm-6" type="button" id="submit">提交</button>
+                                        <div class="form-group">
+                                            <label for="endcustomer" class="col-sm-3 control-label">终端客户<span style="color: red;">*</span></label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" name="endcustomer" placeholder="终端客户">
+                                            </div>
                                         </div>
-                                    </div>
 
-                                </form>
-                            </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-3 col-sm-8">
+                                                <button class="btn btn-lg btn-primary btn-block col-sm-6" type="button" id="submit">提交</button>
+                                            </div>
+                                        </div>
 
-                            <%- include("../footer.ejs") %>
-                                <script>
-                                    $('#pro-form').bootstrapValidator({
-                                        message: '此值无效！',
-                                        verbose: false,
-                                        excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证
-                                        feedbackIcons: {
-                                            valid: 'glyphicon glyphicon-ok',
-                                            invalid: 'glyphicon glyphicon-remove',
-                                            validating: 'glyphicon glyphicon-refresh'
-                                        },
-                                        fields: {
-                                            message: '该值是无效的',
-                                            fromtime: {
-                                                message: '来单时间是无效的',
-                                                validators: {
-                                                    notEmpty: {
-                                                        message: '来单时间是必需的，不能是空的'
-                                                    }
-                                                }
-                                            },
-                                            entertime: {
-                                                message: '下单时间是无效的',
-                                                validators: {
-                                                    notEmpty: {
-                                                        message: '下单时间是必需的，不能是空的'
-                                                    }
-                                                }
-                                            },
+                                    </form>
+                                </div>
 
-                                            Pid: {
-                                                message: '订单编号是无效的',
-                                                validators: {
-                                                    notEmpty: {
-                                                        message: '订单编号是必需的，不能是空的'
-                                                    },
-                                                    regexp: {
-                                                        regexp: /^[^\s][\w\s-]+[^\s]$/,
-                                                        message: '编号只能由字母、数字、下划线、点和 - 组成且首尾不能为空格'
-                                                    },
-                                                    stringLength: {
-                                                        min: 2,
-                                                        max: 16,
-                                                        message: '订单编号必须2~16个字符'
-                                                    },
-                                                    remote: {
-                                                        url: '/order/check/pid',
-                                                        delay: 1000,
-                                                        message: '该编号已存在'
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    })
+                                <%- include("../footer.ejs") %>
+                                    <script>
+                                        $(function() {
+                                            $("#fromtime").datetimepicker({
+                                                format: "yyyy-mm-dd hh:ii:ss",
+                                                language: 'zh-CN',
+                                                weekStart: 1,
+                                                todayBtn: 1,
+                                                autoclose: 1,
+                                                todayHighlight: 1,
+                                                startView: 2,
+                                                minView: 1,
+                                                forceParse: 1
+                                            }).on("changeDate", function(ev) {
+                                                var fromtime = $("#fromtime :text").val();
+                                                $("#entertime").datetimepicker("setStartDate", fromtime)
+                                                $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                            })
+                                            $("#entertime").datetimepicker({
+                                                format: "yyyy-mm-dd hh:ii:ss",
+                                                language: 'zh-CN',
+                                                weekStart: 1,
+                                                todayBtn: 'linked',
+                                                autoclose: 1,
+                                                todayHighlight: 1,
+                                                startView: 2,
+                                                minView: 1,
+                                                forceParse: 1
+                                            }).on("changeDate", function(ev) {
+                                                var fromtime = $("#fromtime :text").val();
+                                                var entertime = $("#entertime :text").val();
+                                                $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                                $("#fromtime").datetimepicker("setEndDate", entertime)
+                                            })
+                                            $("#fromtime :text").val(moment(moment().format('YYYY-MM')).format("YYYY-MM-DD HH:mm:ss"))
+                                            $("#entertime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
+                                            $("#entertime").datetimepicker("setStartDate", $("#fromtime :text").val());
+                                            $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                            $("#fromtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 
-                                    $("#pro-form").submit(function(ev) {
-                                        ev.preventDefault();
-                                    });
-                                    $("#pro-form").keydown(function(event) {
-                                        if (event.keyCode == 13) {
-                                            $("#submit").click()
-                                            event.preventDefault();
-                                        }
-                                    })
-
-                                    $("#submit").on("click", function() {
-                                        var bootstrapValidator = $("#pro-form").data('bootstrapValidator');
-                                        bootstrapValidator.validate();
-                                        if (bootstrapValidator.isValid()) {
-                                            swal({
-                                                title: "",
-                                                text: "提交中！请稍后。",
-                                                // timer: 5000,
-                                                showConfirmButton: false,
-                                                imageUrl: "/images/timg.gif"
-                                            });
-                                            $.ajax({
-                                                type: 'post',
-                                                url: '/order/submit',
-                                                data: $("#pro-form").serialize(),
-                                                error: function(res) {
-                                                    console.log(res.message)
-                                                },
-                                                success: function(res) {
-                                                    if (res.code == 'ok') {
-                                                        swal({
-                                                            title: '',
-                                                            html: `<p>恭喜你录入成功<p></br><img src='/order/qrcode?pid=${res.Pid}' alt='${res.Pid}' height='256px' width='260px'/> </br><a href="/order/qrcode?pid=${res.Pid}" download='${res.Pid}.png' class="RoleOfB btn btn-default btn-sm" style="margin-right:15px;">二维码下载</a>`,
-                                                            type: 'success',
-                                                            showCancelButton: true,
-                                                            confirmButtonColor: '#3085d6',
-                                                            cancelButtonColor: '#d33',
-                                                            confirmButtonText: '继续录入',
-                                                            cancelButtonText: '订单管理',
-                                                            allowOutsideClick: false
-                                                        }).then(function(isConfirm) {
-                                                            window.location.replace(window.location.href);
-                                                        }, function(dismiss) {
-                                                            // dismiss can be 'cancel', 'overlay',
-                                                            // 'close', and 'timer'
-                                                            if (dismiss === 'cancel' || dismiss === 'close') {
-                                                                window.location.href = "/order"
-                                                            } else {
-                                                                return true
-                                                            }
-                                                        })
-                                                    } else {
-                                                        $("#pro-form").data('bootstrapValidator').validate();
-                                                        swal("注册失败", res.message, "error");
-                                                    }
-                                                }
-                                            });
-                                        } else return
-
-                                    });
-                                </script>
-                                <script>
-                                    $(function() {
+                                        })
+                                    </script>
+                                    <script>
+                                        $('#category').selectpicker();
                                         $.get({
                                             url: '/order/beltline',
                                             success: function(data) {
+                                                var parent = $('#category');
+                                                var optionString = "";
                                                 $.each(data.item, function(index, units) {
-                                                    $("#category").append("<option value=" + units + ">" + units + "</option>");
+                                                    optionString += "<option value=" + units + ">" + units + "</option>";
                                                 });
+                                                parent.empty();
+                                                parent.append(optionString)
+                                                parent.selectpicker('refresh');
                                             },
                                             error: function(error) {
                                                 console.log('error')
                                                 swal("获取生产线失败", error.message, "error");
                                             }
                                         })
-                                        $("#fromtime").datetimepicker({
-                                            format: "yyyy-mm-dd hh:ii:ss",
-                                            language: 'zh-CN',
-                                            weekStart: 1,
-                                            todayBtn: 1,
-                                            autoclose: 1,
-                                            todayHighlight: 1,
-                                            startView: 2,
-                                            minView: 1,
-                                            forceParse: 1
-                                        }).on("changeDate", function(ev) {
-                                            var fromtime = $("#fromtime :text").val();
-                                            $("#entertime").datetimepicker("setStartDate", fromtime)
-                                            $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                        })
-                                        $("#entertime").datetimepicker({
-                                            format: "yyyy-mm-dd hh:ii:ss",
-                                            language: 'zh-CN',
-                                            weekStart: 1,
-                                            todayBtn: 'linked',
-                                            autoclose: 1,
-                                            todayHighlight: 1,
-                                            startView: 2,
-                                            minView: 1,
-                                            forceParse: 1
-                                        }).on("changeDate", function(ev) {
-                                            var fromtime = $("#fromtime :text").val();
-                                            var entertime = $("#entertime :text").val();
-                                            $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                            $("#fromtime").datetimepicker("setEndDate", entertime)
-                                        })
-                                        $("#fromtime :text").val(moment(moment().format('YYYY-MM')).format("YYYY-MM-DD HH:mm:ss"))
-                                        $("#entertime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
-                                        $("#entertime").datetimepicker("setStartDate", $("#fromtime :text").val());
-                                        $("#entertime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                        $("#fromtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
 
-                                    })
-                                </script>
+                                        $('#pro-form').bootstrapValidator({
+                                            message: '此值无效！',
+                                            verbose: false,
+                                            excluded: [":disabled"], //关键配置，表示只对于禁用域不进行验证，其他的表单元素都要验证
+                                            feedbackIcons: {
+                                                valid: 'glyphicon glyphicon-ok',
+                                                invalid: 'glyphicon glyphicon-remove',
+                                                validating: 'glyphicon glyphicon-refresh'
+                                            },
+                                            fields: {
+                                                message: '该值是无效的',
+                                                fromtime: {
+                                                    message: '来单时间是无效的',
+                                                    validators: {
+                                                        notEmpty: {
+                                                            message: '来单时间是必需的，不能是空的'
+                                                        }
+                                                    }
+                                                },
+                                                entertime: {
+                                                    message: '下单时间是无效的',
+                                                    validators: {
+                                                        notEmpty: {
+                                                            message: '下单时间是必需的，不能是空的'
+                                                        }
+                                                    }
+                                                },
+
+                                                Pid: {
+                                                    message: '订单编号是无效的',
+                                                    validators: {
+                                                        notEmpty: {
+                                                            message: '订单编号是必需的，不能是空的'
+                                                        },
+                                                        regexp: {
+                                                            regexp: /^[^\s][\w\s-]+[^\s]$/,
+                                                            message: '编号只能由字母、数字、下划线、点和 - 组成且首尾不能为空格'
+                                                        },
+                                                        stringLength: {
+                                                            min: 2,
+                                                            max: 16,
+                                                            message: '订单编号必须2~16个字符'
+                                                        },
+                                                        remote: {
+                                                            url: '/order/check/pid',
+                                                            delay: 1000,
+                                                            message: '该编号已存在'
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        })
+
+                                        $("#pro-form").submit(function(ev) {
+                                            ev.preventDefault();
+                                        });
+                                        $("#pro-form").keydown(function(event) {
+                                            if (event.keyCode == 13) {
+                                                $("#submit").click()
+                                                event.preventDefault();
+                                            }
+                                        })
+
+                                        $("#submit").on("click", function() {
+                                            var bootstrapValidator = $("#pro-form").data('bootstrapValidator');
+                                            bootstrapValidator.validate();
+                                            if (bootstrapValidator.isValid()) {
+                                                swal({
+                                                    title: "",
+                                                    text: "提交中！请稍后。",
+                                                    // timer: 5000,
+                                                    showConfirmButton: false,
+                                                    imageUrl: "/images/timg.gif"
+                                                });
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: '/order/submit',
+                                                    data: $("#pro-form").serialize(),
+                                                    error: function(res) {
+                                                        console.log(res.message)
+                                                    },
+                                                    success: function(res) {
+                                                        if (res.code == 'ok') {
+                                                            swal({
+                                                                title: '',
+                                                                html: `<p>恭喜你录入成功<p></br><img src='/order/qrcode?pid=${res.Pid}' alt='${res.Pid}' height='256px' width='260px'/> </br><a href="/order/qrcode?pid=${res.Pid}" download='${res.Pid}.png' class="RoleOfB btn btn-default btn-sm" style="margin-right:15px;">二维码下载</a>`,
+                                                                type: 'success',
+                                                                showCancelButton: true,
+                                                                confirmButtonColor: '#3085d6',
+                                                                cancelButtonColor: '#d33',
+                                                                confirmButtonText: '继续录入',
+                                                                cancelButtonText: '订单管理',
+                                                                allowOutsideClick: false
+                                                            }).then(function(isConfirm) {
+                                                                window.location.replace(window.location.href);
+                                                            }, function(dismiss) {
+                                                                // dismiss can be 'cancel', 'overlay',
+                                                                // 'close', and 'timer'
+                                                                if (dismiss === 'cancel' || dismiss === 'close') {
+                                                                    window.location.href = "/order"
+                                                                } else {
+                                                                    return true
+                                                                }
+                                                            })
+                                                        } else {
+                                                            $("#pro-form").data('bootstrapValidator').validate();
+                                                            swal("注册失败", res.message, "error");
+                                                        }
+                                                    }
+                                                });
+                                            } else return
+
+                                        });
+                                    </script>
+
 </body>
 
 </html>

@@ -25,7 +25,7 @@
 
                         <div class="container-fluid content">
                             <div class="panel panel-default">
-                                <div class="panel-heading">过滤条件</div>
+                                <div class="panel-heading">查询条件</div>
                                 <div class="panel-body">
                                     <form class="form-inline" id="orderform">
                                         <div class="form-group">
@@ -36,12 +36,16 @@
                                             <label>操作时间：</label>
                                             <div class="input-group date " id="starttime">
                                                 <input class="form-control" size="16" name="starttime" type="text" value="" readonly>
-                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-th"></span>
+                                                </span>
                                             </div>
                                             <label>~</label>
                                             <div class="input-group date endtime" id="endtime">
                                                 <input class="form-control" size="16" name="endtime" type="text" value="" readonly>
-                                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-th"></span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -52,6 +56,11 @@
                                             <label for="workstage"> 产品工序：</label>
                                             <select class="form-control" id="workstage" name="workstage" placeholder="workstage"></select>
                                         </div>
+                                        <div class="form-group">
+                                            <label for="part">配件工序：</label>
+                                            <input type="checkbox" id="part" name="part" placeholder="part" value="1">
+                                        </div>
+                                        &nbsp; &nbsp;
                                         <button type="button" class="btn btn-primary btn-lg" id="search">查询</button>
                                     </form>
                                 </div>
@@ -60,7 +69,7 @@
                                 <select class="form-control">
                                     <option value="all">导出所有</option>
                                     <option value="basic">导出当前页</option>
-                                 </select>
+                                </select>
                             </div>
                             <table id="table"></table>
 
@@ -83,10 +92,11 @@
                                     startView: 2,
                                     minView: 0,
                                     forceParse: 0
-                                }).on("changeDate", function(ev) {
+                                }).on("changeDate", function (ev) {
                                     var starttime = $("#starttime :text").val();
                                     $("#endtime").datetimepicker("setStartDate", starttime)
-                                    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                    $("#endtime").datetimepicker("setEndDate", moment().format(
+                                        "YYYY-MM-DD HH:mm:ss"));
                                 })
                                 $("#endtime").datetimepicker({
                                     format: "yyyy-mm-dd hh:ii:ss",
@@ -98,33 +108,54 @@
                                     startView: 2,
                                     minView: 0,
                                     forceParse: 0
-                                }).on("changeDate", function(ev) {
+                                }).on("changeDate", function (ev) {
                                     var starttime = $("#starttime :text").val();
                                     var endtime = $("#endtime :text").val();
-                                    $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
+                                    $("#endtime").datetimepicker("setEndDate", moment().format(
+                                        "YYYY-MM-DD HH:mm:ss"));
                                     $("#starttime").datetimepicker("setEndDate", endtime)
                                 })
-                                $("#starttime :text").val(moment(moment().format('YYYY-MM')).format("YYYY-MM-DD HH:mm:ss"))
+                                $("#starttime :text").val(moment(moment().format('YYYY-MM')).format(
+                                    "YYYY-MM-DD HH:mm:ss"))
                                 $("#endtime :text").val(moment().format("YYYY-MM-DD HH:mm:ss"))
                                 $("#endtime").datetimepicker("setStartDate", $("#starttime :text").val());
                                 $("#endtime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
                                 $("#starttime").datetimepicker("setEndDate", moment().format("YYYY-MM-DD HH:mm:ss"));
-                                $("#search").click(function() {
+                                $("#search").click(function () {
                                     var val = $("#wd").val()
                                     if (val == "") return
-                                    var filename = `员工记录${$("#wd").val()} ${$("#starttime :text").val()}-${$("#endtime :text").val()} ${$("#category").find("option:selected").text() == "全部"?"":$("#category").find("option:selected").text()} ${$("#workstage").find("option:selected").text() == "全部"?"": $("#workstage").find("option:selected").text()}`
+                                    var filename =
+                                        `员工记录${$("#wd").val()} ${$("#starttime :text").val()}-${$("#endtime :text").val()} ${$("#category").find("option:selected").text() == "全部"?"":$("#category").find("option:selected").text()} ${$("#workstage").find("option:selected").text() == "全部"?"": $("#workstage").find("option:selected").text()}`
                                     console.log(filename)
-                                    $("#table").bootstrapTable('refreshOptions', {
-                                        url: '/user/userid_data?userid=' + val,
-                                        method: 'get',
-                                        exportOptions: {
+                                    var url = "/user/userid_data?userid="
+                                    if ($("#part").is(':checked')) {
+                                        url = "/user/userid_partdata?userid="
+                                        TableInit.table2.url = url + val
+                                        // TableInit.table2.method = 'get'
+                                        TableInit.table2.exportOptions = {
                                             fileName: filename
                                         }
-                                    });
+                                        $("#table").bootstrapTable('refreshOptions',
+                                            TableInit.table2
+                                        );
+                                    } else {
+                                        TableInit.table1.url = url + val
+                                        // TableInit.table1.method = 'get'
+                                        TableInit.table1.exportOptions = {
+                                            fileName: filename
+                                        }
+                                        $("#table").bootstrapTable('refreshOptions',
+                                            TableInit.table1
+                                        );
+                                    }
                                 })
 
+                                $("#part").change(function () {
+                                    $('#workstage').attr("disabled", $("#part").is(':checked'));
+                                });
                                 var TableInit = {
-                                    table: {
+                                    table1: {
+                                        method: 'get',
                                         toolbar: '#toolbar', //工具按钮用哪个容器
                                         singleSelect: true, //多选
                                         striped: true, //是否显示行间隔色
@@ -134,7 +165,7 @@
                                         sortable: true, //是否启用排序
                                         sortName: 'recordtime',
                                         sortOrder: 'DESC', //排序方式
-                                        queryParams: function(params) {
+                                        queryParams: function (params) {
                                             var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
                                                 limit: params.limit, //页面大小
                                                 offset: params.offset, //页码
@@ -171,7 +202,7 @@
                                         exportOptions: {
                                             fileName: `员工记录${$("#wd").val()}`,
                                         },
-                                        rowStyle: function(row, index) {
+                                        rowStyle: function (row, index) {
                                             /* var classes = ["active", "success", "info", "warning", "danger"]*/
                                             let value = row.status
                                             return {
@@ -188,7 +219,7 @@
                                             field: 'userid',
                                             title: '员工',
                                             width: '120px',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 var val = ""
                                                 if (value) {
                                                     val = value
@@ -205,7 +236,7 @@
                                             field: 'recordtime',
                                             title: '操作时间',
                                             width: '180px',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 var val = ""
                                                 if (value) {
                                                     val = moment(value).format("YYYY-MM-DD HH:mm:ss")
@@ -216,7 +247,7 @@
                                             field: 'workstage',
                                             title: '工序',
                                             width: '100px',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 var val = ""
                                                 if (value) {
                                                     val = value
@@ -227,9 +258,9 @@
                                             field: 'num',
                                             title: '完成占比',
                                             width: '80px',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 var val = 1
-                                                if (value != 1) {
+                                                if (value != 1&&value) {
                                                     val = "1/" + parseInt(value.toString())
                                                 }
                                                 return val
@@ -251,7 +282,7 @@
                                             field: 'status',
                                             title: '状态',
                                             width: '80px',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 if (value == 0) {
                                                     return "进行中"
                                                 } else if (value == 1) {
@@ -271,13 +302,13 @@
                                         }, {
                                             field: 'fromtime',
                                             title: '来单时间',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 return moment(value).format("YYYY-MM-DD HH:mm:ss")
                                             }
                                         }, {
                                             field: 'entertime',
                                             title: '下单时间',
-                                            formatter: function(value, row, index) {
+                                            formatter: function (value, row, index) {
                                                 return moment(value).format("YYYY-MM-DD HH:mm:ss")
                                             }
                                         }, {
@@ -287,24 +318,171 @@
                                             field: 'endcustomer',
                                             title: '终端客户',
                                         }],
-                                        onDblClickRow: function(item, $element) { //双击行
+                                        onDblClickRow: function (item, $element) { //双击行
+                                            window.open("/order/search?pid=" + item.pid);
+                                            return false
+                                        }
+                                    },
+                                    table2: {
+                                        toolbar: '#toolbar', //工具按钮用哪个容器
+                                        singleSelect: true, //多选
+                                        striped: true, //是否显示行间隔色
+                                        cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                                        showPaginationSwitch: true,
+                                        pagination: false, //是否显示分页（*）
+                                        sortable: true, //是否启用排序
+                                        sortName: 'parttime',
+                                        sortOrder: 'DESC', //排序方式
+                                        queryParams: function (params) {
+                                            var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                                                limit: params.limit, //页面大小
+                                                offset: params.offset, //页码
+                                                search: params.search,
+                                                starttime: $("#starttime :text").val(),
+                                                endtime: $("#endtime :text").val(),
+                                                category: $("#category").val() || "ALL"
+                                            }
+                                            return temp
+                                        }, //传递参数（*）
+                                        sidePagination: 'server', //分页方式：client客户端分页，server服务端分页（*）
+                                        pageNumber: 1, //初始化加载第一页，默认第一页
+                                        pageSize: 10, //每页的记录行数（*）
+                                        pageList: [15, 20, 50, 100, 200, 'ALL'], //可供选择的每页的行数（*）
+                                        search: true, //是否显示表格搜索
+                                        // strictSearch: false,
+                                        showColumns: true, //是否显示所有的列
+                                        showRefresh: true, //是否显示刷新按钮
+                                        minimumCountColumns: 2, //最少允许的列数
+                                        clickToSelect: true, //是否启用点击选中行
+                                        // height: 800, //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                                        // uniqueId: 'ID', //每一行的唯一标识，一般为主键列
+                                        showToggle: true, //是否显示详细视图和列表视图的切换按钮
+                                        cardView: false, //是否显示详细视图
+                                        // showFooter: true,//页脚
+                                        detailView: false, //是否显示父子表
+                                        showExport: true, //是否显示导出
+                                        exportDataType: 'all', //basic'//当前页, 'all'//所有, 'selected'.//选择项
+                                        // 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'.
+                                        exportTypes: ['txt', 'doc', 'excel'],
+                                        exportOptions: {
+                                            fileName: `员工记录${$("#wd").val()}`,
+                                        },
+                                        rowStyle: function (row, index) {
+                                            /* var classes = ["active", "success", "info", "warning", "danger"]*/
+                                            let value = row.status
+                                            return {
+                                                // css: {
+                                                //     "background-color": rcolor[value] || "none"
+                                                // }
+                                            }
+                                        },
+                                        columns: [{
+                                            field: 'userid',
+                                            title: '员工',
+                                            width: '120px',
+                                            formatter: function (value, row, index) {
+                                                var val = ""
+                                                if (value) {
+                                                    val = value
+                                                }
+                                                return val
+                                            }
+                                        }, {
+                                            field: 'pid',
+                                            title: '产品单号',
+                                        }, {
+                                            field: 'category',
+                                            title: '产品种类'
+                                        }, {
+                                            field: 'parttime',
+                                            title: '操作时间',
+                                            width: '180px',
+                                            formatter: function (value, row, index) {
+                                                var val = ""
+                                                if (value) {
+                                                    val = moment(value).format("YYYY-MM-DD HH:mm:ss")
+                                                }
+                                                return val
+                                            }
+                                        }, {
+                                            field: 'workstage',
+                                            title: '工序',
+                                            width: '100px',
+                                            formatter: function (value, row, index) {
+                                                return "配件"
+                                            }
+                                        }, {
+                                            field: 'num',
+                                            title: '完成占比',
+                                            width: '80px',
+                                            formatter: function (value, row, index) {
+                                                var val = 1
+                                                return val
+                                            }
+                                        }, {
+                                            field: 'kind',
+                                            title: '操作类别',
+                                            width: '100px',
+                                            formatter: function indexFormatter(value, row, index) { //在表格前加上序号
+                                                return '<span style="color:#000000">默认</span>';
+                                            }
+                                        }, {
+                                            field: 'status',
+                                            title: '状态',
+                                            width: '80px',
+                                            formatter: function (value, row, index) {
+                                                if (value == 0) {
+                                                    return "进行中"
+                                                } else if (value == 1) {
+                                                    return "完成"
+                                                } else if (value == 2) {
+                                                    return "已取消"
+                                                }
+                                            },
+                                            cellStyle: function cellStyle(value, row, index) {
+                                                // let value = row.status
+                                                return {
+                                                    css: {
+                                                        "background-color": rcolor[value] || "none"
+                                                    }
+                                                };
+                                            }
+                                        }, {
+                                            field: 'fromtime',
+                                            title: '来单时间',
+                                            formatter: function (value, row, index) {
+                                                return moment(value).format("YYYY-MM-DD HH:mm:ss")
+                                            }
+                                        }, {
+                                            field: 'entertime',
+                                            title: '下单时间',
+                                            formatter: function (value, row, index) {
+                                                return moment(value).format("YYYY-MM-DD HH:mm:ss")
+                                            }
+                                        }, {
+                                            field: 'customer',
+                                            title: '客户',
+                                        }, {
+                                            field: 'endcustomer',
+                                            title: '终端客户',
+                                        }],
+                                        onDblClickRow: function (item, $element) { //双击行
                                             window.open("/order/search?pid=" + item.pid);
                                             return false
                                         }
                                     }
                                 }
 
-                                $(function() {
-
+                                $(function () {
                                     var UID = $.getUrlParam('userid');
                                     $("#table").bootstrapTable(
-                                        TableInit.table
+                                        TableInit.table1
                                     );
                                     if (UID) {
                                         $("#wd").val(UID)
                                         $("#search").click()
                                     }
-                                    $("#wd").keydown(function(event) {
+                                    $("#wd").keydown(function (event) {
                                         if (event.keyCode == 13) {
                                             // $("#search").click()
                                         }
@@ -312,34 +490,37 @@
                                     $("#wd").typeahead({
                                         delay: 500,
                                         fitToElement: true,
-                                        source: function(query, process) {
+                                        source: function (query, process) {
                                             return $.ajax({
                                                 url: '/user/userlist',
                                                 type: 'post',
                                                 data: {
                                                     name: query
                                                 },
-                                                success: function(result) {
+                                                success: function (result) {
                                                     for (var i = 0; i < result.length; i++) {
-                                                        result[i] = JSON.stringify(result[i])
+                                                        result[i] = JSON.stringify(
+                                                            result[i])
                                                     }
                                                     return process(result);
                                                 }
 
                                             })
                                         },
-                                        highlighter: function(obj) {
+                                        highlighter: function (obj) {
                                             var item = JSON.parse(obj);
-                                            var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-                                            return item.userid.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
+                                            var query = this.query.replace(
+                                                /[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+                                            return item.userid.replace(new RegExp('(' + query + ')',
+                                                'ig'), function ($1, match) {
                                                 return '<strong>' + match + '</strong>'
                                             });
                                         },
-                                        updater: function(obj) {
+                                        updater: function (obj) {
                                             var item = JSON.parse(obj);
                                             return item.userid;
                                         },
-                                        afterSelect: function() {
+                                        afterSelect: function () {
                                             $("#search").click()
                                         }
                                     })
@@ -347,12 +528,12 @@
                                     /**
                                      * 下拉框选择事件  动态控制导出类型
                                      */
-                                    $('#toolbar').find('select').change(function() {
+                                    $('#toolbar').find('select').change(function () {
                                         $("#table").bootstrapTable('refreshOptions', {
                                             exportDataType: $(this).val()
                                         });
                                     });
-                                    $(window).resize(function() {
+                                    $(window).resize(function () {
                                         if ($("#table").width() < 800) {
                                             $("#table").bootstrapTable("hideColumn", 'regtime')
                                             $("#table").bootstrapTable("hideColumn", 'category')
@@ -361,28 +542,34 @@
                                             $("#table").bootstrapTable("showColumn", 'category')
                                         }
                                     })
-                                    $("#category").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
-                                    $("#workstage").append("<option value= 'ALL'  selected = 'selected'>全部</option>")
+                                    $("#category").append(
+                                        "<option value= 'ALL'  selected = 'selected'>全部</option>")
+                                    $("#workstage").append(
+                                        "<option value= 'ALL'  selected = 'selected'>全部</option>")
                                     $.get({
                                         url: '/order/beltline',
-                                        success: function(data) {
-                                            $.each(data.item, function(index, units) {
-                                                $("#category").append("<option value=" + units + ">" + units + "</option>")
+                                        success: function (data) {
+                                            $.each(data.item, function (index, units) {
+                                                $("#category").append("<option value=" +
+                                                    units + ">" + units + "</option>")
                                             })
                                         },
-                                        error: function(error) {
+                                        error: function (error) {
                                             swal("获取产品种类失败", error.message, "error")
                                         }
                                     })
                                     $.get({
                                         url: '/config/workitems',
-                                        success: function(data) {
+                                        success: function (data) {
                                             if (data.total > 0) {
                                                 var optionString = ""
-                                                $.each(data.rows, function(index, units) {
-                                                    optionString += `<optgroup class="group_${index}" label="${units.name}">`
-                                                    $.each(units.item, function(i, u) {
-                                                        optionString += "<option value='" + u + "'>" + u + "</option>"
+                                                $.each(data.rows, function (index, units) {
+                                                    optionString +=
+                                                        `<optgroup class="group_${index}" label="${units.name}">`
+                                                    $.each(units.item, function (i, u) {
+                                                        optionString +=
+                                                            "<option value='" + u +
+                                                            "'>" + u + "</option>"
                                                     })
                                                     optionString += "</optgroup>"
                                                 })
@@ -391,7 +578,7 @@
                                                 swal("获取工序列表失败！", "也许工序列表为空", "error")
                                             }
                                         },
-                                        error: function(error) {
+                                        error: function (error) {
                                             swal("获取工序列表失败！", error.message, "error")
                                         }
                                     })
@@ -403,8 +590,8 @@
                                 /***
                                  * 获取url所带参数
                                  * */
-                                (function($) {
-                                    $.getUrlParam = function(name) {
+                                (function ($) {
+                                    $.getUrlParam = function (name) {
                                         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
                                         var r = window.location.search.substr(1).match(reg);
                                         if (r != null) return decodeURIComponent(r[2]);

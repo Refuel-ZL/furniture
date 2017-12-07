@@ -14,24 +14,24 @@
             margin: 0;
             padding: 0
         }
-        
+
         .mypanel {
             width: 100%;
             margin: 0px auto;
         }
-        
+
         #btn {
             text-align: center;
         }
-        
+
         .mypanel .title {
             text-align: center;
         }
-        
+
         .font-user {
             color: red
         }
-        
+
         .status {
             /* color:blue */
             font-size: 10pt
@@ -49,7 +49,11 @@
                             </br>
                             <span class='status'></span>
                     </h1>
-                    <h5><span class="font-user">当前操作者：<%- data.name %></span></h5>
+                    <h5>
+                        <span class="font-user">当前操作者：
+                            <%- name %>
+                        </span>
+                    </h5>
 
                 </div>
                 <div class="content" id="content">
@@ -72,114 +76,161 @@
         </div>
         <script>
             var option = {}
-            $(function() {
-                <%if(data){%>
+            $(function () {
+                <% if (data) {%>
                 var data = JSON.parse('<%- JSON.stringify(data)%>');
                 var config = JSON.parse('<%- JSON.stringify(config)%>');
-
                 var status = null
-                $.each(config.orserstutas, function(idx, obj) {
+                $.each(config.orserstutas, function (idx, obj) {
                     if (obj == data.status) {
                         status = idx
                     }
                 });
                 $('.title .status').html(`<u>${status}</u>`)
-                if (data.status == 1) {
-                    $('#proitem').html(`
-                     <div style="text-align:center" > 注意当前产品状态为<span style="color:red">${status}</span>，不能提交</div>
-                   `)
-                } else {
-                    if (data.next != "ok") { //生产中，显示↓
-                        if (data.workitem[data.next]) {
-                            $('#proitem').html(`<div style="text-align:center" >您将对<b>${data.category}·<span style="color:red">${data.pid}</span></b> 提交 【<b>${data.next}</b>】工序。<p style="text-align:center">是否提交<p>  </p>`)
-                            $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
-                        } else {
-                            $('#proitem').html(`<div style="text-align:center" >很抱歉 您没有提交对<b>${data.category}·<span style="color:red">${data.pid}</span></b>提交【${data.next} 】工序的权限。  </p>`)
-                            $('#btn').html(`<button type="button" class="btn btn-primary btn-lg" id="sub-btn" disabled="disabled" >提交</button>`)
+
+                if (data.type == 0) {
+
+                    if (data.status == 1) {
+                        $('#proitem').html(
+                            `
+                         <div style="text-align:center" > 注意当前产品状态为<span style="color:red">${status}</span>，不能提交</div>
+                       `
+                        )
+                    } else {
+                        if (data.next != "ok") { //生产中，显示↓
+                            if (data.workitem[data.next]) {
+                                $('#proitem').html(
+                                    `<div style="text-align:center" >您将对<b>${data.category}·<span style="color:red">${data.pid}</span></b> 提交 【<b>${data.next}</b>】工序。<p style="text-align:center">是否提交<p>  </p>`
+                                )
+                                $('#btn').html(
+                                    `<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`
+                                )
+                            } else {
+                                $('#proitem').html(
+                                    `<div style="text-align:center" >很抱歉 您没有提交对<b>${data.category}·<span style="color:red">${data.pid}</span></b>提交【${data.next} 】工序的权限。  </p>`
+                                )
+                                $('#btn').html(
+                                    `<button type="button" class="btn btn-primary btn-lg" id="sub-btn" disabled="disabled" >提交</button>`
+                                )
+                            }
+                            $('#btn').append(
+                                `
+                             <button type="button" class="btn btn-link btn-xs" id="temp-btn"  style='margin-left: 20px;' >临时</button>
+                        `
+                            )
+                        } else { //完成所有工序，显示↓
+                            $('#proitem').html(
+                                `<div style="text-align:center" > 注意当前产品已完成最后一道工序【${data.workstage}】，不能提交</div>`
+                            )
                         }
-                        $('#btn').append(`
-                         <button type="button" class="btn btn-link btn-xs" id="temp-btn"  style='margin-left: 20px;' >临时</button>
-                    `)
-                    } else { //完成所有工序，显示↓
-                        $('#proitem').html(`<div style="text-align:center" > 注意当前产品已完成最后一道工序【${data.workstage}】，不能提交</div>`)
                     }
-                }
-                $('#sub-btn').click(function() {
-                    option = {
-                        kind: '0',
-                        no: data.pid,
-                        work: data.next,
-                        id: data.nextindex
-                    }
-                    submit(option)
-                })
-                $('#temp-btn').click(function() {
-                    var rediodata = {}
-                    rediodata[data.nextindex] = data.next
-                    if (data.index != 0 && !data.timeout.status) {
-                        rediodata[data.id] = data.workstage
-                    }
-                    let message = ""
-                    if (data.timeout.status) {
-                        message = `据上一工序已超过允许范围:<br>超时【${data.timeout.timer}】`
-                    }
-                    swal({
-                        title: '临时操作',
-                        input: 'radio',
-                        html: message,
-                        type: 'warning',
-                        inputValue: '',
-                        inputOptions: rediodata,
-                        showCancelButton: true,
-                        allowOutsideClick: false,
-                        confirmButtonText: '提交',
-                        inputValidator: function(result) {
-                            return new Promise(function(resolve, reject) {
-                                if (result) {
-                                    resolve();
-                                } else {
-                                    reject('请选中工序!');
-                                }
-                            });
-                        }
-                    }).then(function(result) {
-                        if (data.workitem[rediodata[result]] && data.next == rediodata[result]) {
-                            option = {
+                    $('#sub-btn').click(function () {
+                        option = {
+                            data: {
                                 kind: '0',
                                 no: data.pid,
                                 work: data.next,
                                 id: data.nextindex
-                            }
-                            submit(option)
-                        } else {
-                            option = {
-                                kind: '1',
-                                no: data.pid,
-                                work: rediodata[result],
-                                id: result
-                            }
-                            swal({
-                                title: '是否确认提交如下信息?',
-                                // html:true,
-                                html: `<table style='margin: auto;'><tr><td style='text-align: right;'>产品编号：</td><td>${option.no}</td></tr><tr><td style='text-align: right;'> 工序：</td><td>${option.work}</td> </tr></table>`,
-                                type: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: '确定',
-                                cancelButtonText: '取消',
-                            }).then(function(isConfirm) {
-                                if (isConfirm === true) {
-                                    submit(option)
-                                } else if (isConfirm === false) {
-                                    swal.close()
-                                } else {
-                                    swal.close()
-                                }
-                            });
-
+                            },
+                            url: "/scanqr/worksubmit"
                         }
+                        submit(option)
                     })
-                })
-                <%}%>
+                    $('#temp-btn').click(function () {
+                        var rediodata = {}
+                        rediodata[data.nextindex] = data.next
+                        if (data.index != 0 && !data.timeout.status) {
+                            rediodata[data.id] = data.workstage
+                        }
+                        let message = ""
+                        if (data.timeout.status) {
+                            message = `据上一工序已超过允许范围:<br>超时【${data.timeout.timer}】`
+                        }
+                        swal({
+                            title: '临时操作',
+                            input: 'radio',
+                            html: message,
+                            type: 'warning',
+                            inputValue: '',
+                            inputOptions: rediodata,
+                            showCancelButton: true,
+                            allowOutsideClick: false,
+                            confirmButtonText: '提交',
+                            inputValidator: function (result) {
+                                return new Promise(function (resolve, reject) {
+                                    if (result) {
+                                        resolve();
+                                    } else {
+                                        reject('请选中工序!');
+                                    }
+                                });
+                            }
+                        }).then(function (result) {
+                            if (data.workitem[rediodata[result]] && data.next == rediodata[
+                                    result]) {
+                                option = {
+                                    data: {
+                                        kind: '0',
+                                        no: data.pid,
+                                        work: data.next,
+                                        id: data.nextindex
+                                    },
+                                    url: "/scanqr/worksubmit"
+                                }
+                                submit(option)
+                            } else {
+                                option = {
+                                    data: {
+                                        kind: '1',
+                                        no: data.pid,
+                                        work: rediodata[result],
+                                        id: result
+                                    },
+                                    url: "/scanqr/worksubmit"
+                                }
+                                swal({
+                                    title: '是否确认提交如下信息?',
+                                    // html:true,
+                                    html: `<table style='margin: auto;'><tr><td style='text-align: right;'>产品编号：</td><td>${option.data.no}</td></tr><tr><td style='text-align: right;'> 工序：</td><td>${option.data.work}</td> </tr></table>`,
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: '确定',
+                                    cancelButtonText: '取消',
+                                }).then(function (isConfirm) {
+                                    if (isConfirm === true) {
+                                        submit(option)
+                                    } else if (isConfirm === false) {
+                                        swal.close()
+                                    } else {
+                                        swal.close()
+                                    }
+                                });
+
+                            }
+                        })
+                    })
+                } else if (data.type == 1) {
+                    $('#proitem').html(
+                        `<div style="text-align:center" >您将对<b>${data.category}·<span style="color:red">${data.pid}</span></b> 提交 【<b>${data.next}</b>】工序。<p style="text-align:center">是否提交<p>  </p>`
+                    )
+                    $('#btn').html(
+                        `<button type="button" class="btn btn-primary btn-lg" id="sub-btn">提交</button>`)
+
+                    $('#sub-btn').click(function () {
+                        option = {
+                            data: {
+                                kind: '0',
+                                no: data.pid
+                            },
+                            url: "/scanqr/worksubmit_"
+                        }
+                        submit(option)
+                    })
+                } else {
+                    $('#proitem').html(`<div style="text-align:center" >参数错误，请重试</div>`)
+                }
+
+                <% }%>
 
             })
 
@@ -193,18 +244,18 @@
              * }
              **/
             function submit(option) {
-                // alert(JSON.stringify(option) )
                 $.ajax({
                     type: 'post',
-                    url: '/scanqr/worksubmit',
-                    data: option,
-                    error: function(res) {
+                    url: option.url,
+                    data: option.data,
+                    error: function (res) {
                         swal('失败', res.message, 'error')
                     },
-                    success: function(res) {
+                    success: function (res) {
                         if (res.code == 'ok') {
-                            swal('成功', '恭喜修改成功', 'success')
-                            window.location.href = 'http://' + window.location.host + '/order/search?pid=' + encodeURIComponent(option.no)
+                            swal('成功', '恭喜您提交成功', 'success')
+                            window.location.href = 'http://' + window.location.host + '/order/search?pid=' +
+                                encodeURIComponent(option.data.no)
                         } else {
                             swal('失败', res.message, 'error')
                         }

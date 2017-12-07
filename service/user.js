@@ -14,17 +14,17 @@ exports = module.exports = {
     /**
      * 登记账户
      */
-    reguser: async function(param) {
+    reguser: async function (param) {
         var res = {
             code: "ok"
         }
-        console.log(param)
+        logUtil.writeDebug(JSON.stringify(param))
         var time = moment().format("YYYY-MM-DD HH:mm:ss")
         try {
             var sqls = []
             var sql1 = {
-                sql: "INSERT INTO userinfo(userid,openid,usercreatetime,usermtime) VALUES (?,?,?,?)",
-                param: [param.name, param.openid, time, time]
+                sql: "INSERT INTO userinfo(userid,openid,usercreatetime,usermtime,workpart) VALUES (?,?,?,?,?)",
+                param: [param.name, param.openid, time, time, param.part || 0]
             }
             sqls.push(sql1)
             if (_.has(param, "work") && param.work.length > 0) {
@@ -51,7 +51,7 @@ exports = module.exports = {
     /**
      * 核对openid 是否可用
      */
-    verifyid: async function(id) {
+    verifyid: async function (id) {
         let sql1 = `SELECT openid FROM userinfo WHERE userinfo.openid="${id}"`
         try {
             let res1 = await sqlutil.query(sql1)
@@ -69,7 +69,7 @@ exports = module.exports = {
     /**
      * 核对name 是否可用
      */
-    verifyname: async function(name) {
+    verifyname: async function (name) {
         if (!name) return false
         let sql1 = `SELECT userid FROM userinfo WHERE userinfo.userid="${name}"`
         try {
@@ -89,7 +89,7 @@ exports = module.exports = {
     /**
      * 依据id 匹配用户名
      */
-    fetchname: async function(openid) {
+    fetchname: async function (openid) {
         var res = {
             code: "ok"
         }
@@ -117,13 +117,13 @@ exports = module.exports = {
      * 依据id 获取名下所有工序
      * 
      */
-    fetchuserwork: async function(openid) {
+    fetchuserwork: async function (openid) {
         //TODO 获取当前用户的所有默认工序接口
         var res = {
             code: "ok"
         }
         try {
-            let sql1 = `SELECT ui.userid, ui.openid,uwi.userwork ,uwi.level FROM  userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid WHERE ui.openid="${openid}"`
+            let sql1 = `SELECT ui.userid, ui.openid, ui.workpart,uwi.userwork ,uwi.level FROM  userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid WHERE ui.openid="${openid}"`
             let data = await sqlutil.query(sql1)
             if (data.length <= 0) {
                 res = {
@@ -138,7 +138,8 @@ exports = module.exports = {
                 res.data = {
                     openid: openid,
                     name: data[0].userid,
-                    workitem: item
+                    workitem: item,
+                    workpart: data[0].workpart
                 }
             }
         } catch (error) {
@@ -153,7 +154,7 @@ exports = module.exports = {
      * 获取所有用户所有工序
      *
      */
-    fetchwork: async function(params) {
+    fetchwork: async function (params) {
         var res = {
             code: "ok"
         }
@@ -166,7 +167,7 @@ exports = module.exports = {
             if (params.limit) {
                 page = `LIMIT ${params.offset}, ${params.limit}`
             }
-            let sql1 = `select  ui.userid,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime ${page}`
+            let sql1 = `select  ui.userid,ui.workpart,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime ${page}`
             let data = await sqlutil.query(sql1)
 
             let sql2 = `SELECT COUNT(*)as num FROM (select  ui.userid,max(case when  uwi.level="1"  then uwi.userwork else "" end) as "1",max(case when   uwi.level ="2" then  uwi.userwork else "" end)  as "2",max(case when   uwi.level ="3" then  uwi.userwork else "" end)  as "3" ,ui.openid,ui.usercreatetime,ui.usermtime from userinfo AS ui LEFT JOIN  userworkinfo AS uwi ON uwi.userid = ui.userid ${search} group by ui.userid,ui.openid,ui.usercreatetime,	ui.usermtime)as table1`
@@ -187,7 +188,7 @@ exports = module.exports = {
     /**
      * 更新用户信息
      */
-    updateuserinfo: async function(params) {
+    updateuserinfo: async function (params) {
 
         var res = {
             code: "ok"
@@ -200,7 +201,7 @@ exports = module.exports = {
         }
         try {
             var time = moment().format("YYYY-MM-DD HH:mm:ss")
-            let sql1 = `update userinfo set userid='${params.Name}',usermtime='${time}' where openid='${params.Openid}'`
+            let sql1 = `update userinfo set userid='${params.Name}',usermtime='${time}',workpart='${params.workpart}'  where openid='${params.Openid}'`
             await sqlutil.query(sql1)
         } catch (error) {
             res = {
@@ -224,36 +225,12 @@ exports = module.exports = {
      *    }
      * }
      */
-    updateuserwork: async function(params) {
+    updateuserwork: async function (params) {
         var res = {
             code: "ok"
         }
         var time = moment().format("YYYY-MM-DD HH:mm:ss")
         try {
-            // let val = _.keys(params.work)
-            // if (val == null || val.length == 0) {
-            //     let sql1 = `delete from userworkinfo where userid =${params.name}`
-            //     await sqlutil.query(sql1)                
-            // } else {
-            //     val = "\"" + val.join("\",\"") + "\""
-            //     let sql1 = `select level from userworkinfo where userid="${params.name}" and level in(${val})`
-            //     let res1 = await sqlutil.query(sql1)
-            //     for (var i in params.work) {
-            //         let re = true
-            //         for (var j = 0; j < res1.length; j++) {
-            //             if (i == res1[j].level) {
-            //                 re = false
-            //                 let sql2 = `update  userworkinfo set userwork = "${params.work[i]}" where level="${i}" and userid="${params.name}"`
-            //                 await sqlutil.query(sql2)
-            //                 break
-            //             }
-            //         }
-            //         if (re) {
-            //             let sql3 = ` insert userworkinfo(userid,userwork,level) values( "${params.name}","${params.work[i]}","${i}" )`
-            //             await sqlutil.query(sql3)
-            //         }
-            //     }
-            // }
             var sql = []
             sql.push({
                 sql: "delete from userworkinfo where userid =?",
@@ -282,7 +259,7 @@ exports = module.exports = {
     /**
      * 根据用户名删除指定用户（数组）
      */
-    deletuser: async function(list) {
+    deletuser: async function (list) {
         var res = {
             code: "ok"
         }
@@ -304,12 +281,16 @@ exports = module.exports = {
         }
         return res
     },
-    fetchuserlist: async function() {
+    fetchuserlist: async function () {
         let sql = "SELECT uif.userid,  uif.openid,  uif.usercreatetime,  uif.usermtime  FROM  userinfo AS uif"
         let res1 = await sqlutil.query(sql)
         return res1
     },
-    fetchuserlog: async function(params) {
+    /**
+     * 员工提交日志
+     * 
+     */
+    fetchuserlog: async function (params) {
         var res = {
             code: "ok"
         }
@@ -320,9 +301,9 @@ exports = module.exports = {
             }
         } else {
             try {
-                var valsql = "WHERE 1=1"
+                var valsql = "1=1"
                 if (params.userid) {
-                    valsql += ` and wcd.userid ="${params.userid}" `
+                    valsql += ` and wcd.userid ='${params.userid}' `
                 }
                 if (params.search) {
                     valsql += ` and concat_ws(" " ,IFNULL( wcd.userid, "" ),IFNULL( wcd.workstageid, "" ),IFNULL( wcd.recordtime, "" ),IFNULL( wcd.kind, "" ),IFNULL( wif.workstage, "" ),IFNULL( wif.num, "" ),IFNULL(wif.orderinfo, "" ),IFNULL( oif.fromtime, "" ),IFNULL(oif.entertime, "" ),IFNULL(oif.status, "" ),IFNULL( oif.category, "" ),IFNULL( oif.customer, "" ),IFNULL( oif.endcustomer, "" ),IFNULL(wif.index, "",IFNULL( oif.id, "" ) ))  like %${params.search}%"`
@@ -341,12 +322,62 @@ exports = module.exports = {
                 if (params.limit) {
                     page = `LIMIT  ${params.offset}, ${params.limit}`
                 }
-                let sql1 = `SELECT *,wcd.id FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
+                let sql1 = `SELECT oif.pid,DATE_FORMAT( oif.fromtime, \"%Y-%m-%d %H:%i:%s\") as fromtime ,DATE_FORMAT(oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime ,oif.status,oif.category,oif.customer,oif.endcustomer,oif.partstate,DATE_FORMAT(oif.parttime, \"%Y-%m-%d %H:%i:%s\") as parttime ,oif.partuser,wcd.userid,wif.workstage,wcd.id,DATE_FORMAT(wcd.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime ,wcd.kind,wif.index,wif.num FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid WHERE ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
                 let val = await sqlutil.query(sql1)
-                let sql2 = `SELECT COUNT( * ) as num FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} `
+                let sql2 = `SELECT COUNT( * ) as num FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid where ${valsql} `
                 let num = await sqlutil.query(sql2)
                 res.data = val
                 res.total = num[0].num
+            } catch (error) {
+                res = {
+                    code: "error",
+                    message: error.message
+                }
+                logUtil.writeErr("拉取员工记录异常：" + JSON.stringify(error))
+            }
+        }
+        return res
+    },
+    /**
+     * 员工配件提交日志
+     */
+    fetchuserpartlog: async function (params) {
+        var res = {
+            code: "ok"
+        }
+        if (!params) {
+            res = {
+                code: "error",
+                message: "参数错误"
+            }
+        } else {
+            try {
+                var valsql = " 1=1"
+                if (params.userid) {
+                    valsql += ` and uif.userid ='${params.userid}'`
+                }
+                if (params.search) {
+                    valsql += ` and concat_ws(" " ,IFNULL(oif.pid, "" ),IFNULL(oif.fromtime, "" ),IFNULL(oif.entertime, "" ),IFNULL(oif.STATUS, "" ),IFNULL(oif.category, "" ),IFNULL(oif.customer, "" ),IFNULL(oif.endcustomer, "" ),IFNULL(oif.partstate, "" ),IFNULL(oif.parttime, "" ),IFNULL(oif.partuser, "" ))  like %${params.search}%"`
+                }
+                if (params.starttime && params.endtime) {
+                    valsql += ` AND  oif.parttime  BETWEEN '${params.starttime}' AND '${params.endtime}'`
+                }
+                if (params.category && params.category != "ALL") {
+                    valsql += `and oif.category ="${params.category}" `
+                }
+
+                let page = ""
+                if (params.limit) {
+                    page = `LIMIT  ${params.offset}, ${params.limit}`
+                }
+                // let sql1 = `SELECT oif.pid,DATE_FORMAT( oif.fromtime, \"%Y-%m-%d %H:%i:%s\") as fromtime ,DATE_FORMAT(oif.entertime, \"%Y-%m-%d %H:%i:%s\") as entertime ,oif.status,oif.category,oif.customer,oif.endcustomer,oif.partstate,DATE_FORMAT(oif.parttime, \"%Y-%m-%d %H:%i:%s\") as parttime ,oif.partuser,wcd.userid,wif.workstage,wcd.id,DATE_FORMAT(wcd.recordtime, \"%Y-%m-%d %H:%i:%s\") as recordtime ,wcd.kind,wif.index,wif.num FROM workrecord AS wcd LEFT JOIN workstageinfo AS wif ON wcd.workstageid = wif.id  LEFT JOIN orderinfo AS oif ON wif.orderinfo = oif.pid ${valsql} order by wcd.${params.sortName}, wcd.recordtime DESC  ${page}`
+                let sql1=`SELECT oif.pid,DATE_FORMAT( oif.fromtime, "%Y-%m-%d %H:%i:%s" ) AS fromtime,DATE_FORMAT( oif.entertime, "%Y-%m-%d %H:%i:%s" ) AS entertime,oif.status,oif.category,oif.customer,oif.endcustomer,oif.partstate,DATE_FORMAT( oif.parttime, "%Y-%m-%d %H:%i:%s" ) AS parttime,oif.partuser, uif.userid  FROM	orderinfo AS oif LEFT JOIN userinfo AS uif on oif.partuser=uif.openid WHERE ${valsql} ORDER BY	oif.parttime DESC ${page}`
+                let val = await sqlutil.query(sql1)
+                let sql2 = `SELECT COUNT( * ) as num FROM orderinfo AS oif LEFT JOIN userinfo AS uif on oif.partuser=uif.openid WHERE ${valsql}`
+                let num = await sqlutil.query(sql2)
+                res.data = val
+                res.total = num[0].num
+
             } catch (error) {
                 res = {
                     code: "error",

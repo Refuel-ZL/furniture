@@ -43,6 +43,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label for="inputLine" class="col-sm-3 control-label">配件工序</label>
+                                    <div class="col-sm-8">
+                                        <input type="checkbox" id="part" name="part" placeholder="part" value="1">
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label for="inputWork" class="col-sm-3 control-label">默认工序(3项)</label>
                                     <div class="col-sm-8">
                                         <select id="workitem" class="workitem" name="work" multiple></select>
@@ -212,7 +218,6 @@
 
                             $(function() {
                                 click("init");
-                                var parent = $('#workitem');
                                 $.get({
                                     url: '/config/workitems',
                                     success: function(data) {
@@ -246,7 +251,7 @@
                                                 optionString += "</optgroup>"
                                             })
 
-
+                                            var parent = $('#workitem');
                                             parent.empty();
                                             parent.append(optionString)
                                                 // parent.selectpicker('render');
