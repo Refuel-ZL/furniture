@@ -360,9 +360,10 @@ var fun = {
                 message: "参数错误"
             }
         }
-        let sql1 = "update orderinfo set fromtime=?, entertime=?,status=?, category=?,customer=?,endcustomer=? where pid=?"
+        let sql1 = "update orderinfo set fromtime=?, entertime=?,status=?, category=?,customer=?,endcustomer=?,partstate=? where pid=?"
+        params.part=params.part==1?params.part:0
         try {
-            await sqlutil.query(sql1, [params.fromtime, params.entertime, params.status, params.category, params.customer, params.endcustomer, params.pid])
+            await sqlutil.query(sql1, [params.fromtime, params.entertime, params.status, params.category, params.customer, params.endcustomer,params.part, params.pid])
         } catch (error) {
             res = {
                 code: "error",

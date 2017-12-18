@@ -468,6 +468,12 @@ var edit = function(row) {
     if (row.status == 1) {
         $("#_status").attr('disabled', "true")
     }
+    if (row.partstate == 1) {
+        $("#part").attr('checked', "true")
+    }else{
+        $("#part").removeAttr('checked')
+    }
+    
     var list = "<option value=0>进行中</option><option value=1 >已完成</option><option value=2>已取消</option>"
     $("#_status").html(list)
     $("#_status ").val(row.status)
@@ -493,17 +499,9 @@ $("#re-submit").on("click", function() {
         showConfirmButton: false,
         imageUrl: "/images/timg.gif"
     });
-    $("#_fromtime :text").removeAttr('disabled')
-    $("#_entertime :text").removeAttr('disabled')
-    $("#_pid").removeAttr('disabled')
-    $("#_category").removeAttr('disabled')
-    $("#_status").removeAttr('disabled')
+    $("#_fromtime :text,#_entertime :text,#_pid,#_category,#_status").removeAttr('disabled')
     var data = $("#re_Form").serialize()
-    $("#_fromtime :text").attr('disabled', "true")
-    $("#_entertime :text").attr('disabled', "true")
-    $("#_pid").attr('disabled', "true")
-    $("#_category").attr('disabled', "true")
-    $("#_status").attr('disabled', "true")
+    $("#_fromtime :text,#_entertime :text,#_pid,#_category,#_status").attr('disabled', "true")
     $.ajax({
         type: "post",
         url: "/order/edit",

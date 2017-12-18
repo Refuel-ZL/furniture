@@ -97,6 +97,15 @@ var tableconf = {
     }, {
         field: "workpart",
         title: "配件工序",
+        formatter: function(value, row, index) {
+            if (value == 0) {
+                return "无"
+            } else if (value == 1) {
+                return "有"
+            } else  {
+                return value
+            }
+        }
     }, {
         field: "1",
         title: "工序1"

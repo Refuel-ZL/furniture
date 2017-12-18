@@ -108,8 +108,8 @@ router.get("/qrupinfo", async(ctx, next) => {
                         //1.是否已经提交
                         //2.未提交返回的数据
                         if (val.data.parttime || val.data.partuser) {
-                            let _data=await userutil.fetchname(val.data.partuser)
-                            let name =_data.code=="ok"?_data.data.name:val.data.partuser
+                            let _data = await userutil.fetchname(val.data.partuser)
+                            let name = _data.code == "ok" ? _data.data.name : val.data.partuser
                             ctx.state.content = `该订单已由【${name}】于【${moment(val.data.parttime).format("YYYY-MM-DD HH:mm:ss")}】提交配件工序，如有问题请联系管理员`
                         } else {
                             ctx.state.data = val.data
@@ -122,35 +122,28 @@ router.get("/qrupinfo", async(ctx, next) => {
                     }
                 } else {
                     //1.判断配件工序是否完成 status
-                    var status = false
-                    if (val.data.partstate == 1) { //配件订单
-                        if (val.data.parttime || val.data.partuser) {
-                            status = true
-                        } else {
-                            var _data = await orderutil.fetchorderwork(state)
-                            if (_data.code == "ok") {
-                                status = true
-                                let list =[] //下一道工序的序号
-                                for (i in _data.data) {
-                                    list.push( _data.data[i].workstage) 
-                                }
-                                var nextid=list.indexOf(val.data.next)
-                                var key_work = ["柜体-封边","柜门-白胚质检", "柜体-白胚质检"]
-                                for (var i = 0; i < key_work.length; i++) {
-                                    var n = list.indexOf(key_work[i])
-                                    if (n <= nextid&& n!=-1) {
-                                        status = false
-                                        ctx.state.content = `该${state}订单配件工序尚未完成，无法对其进行${val.data.next}等后续操作。如有问题请联系管理员`
-                                        break
-                                    }
-                                }
-                            } else {
-                                status = false
-                                ctx.state.content = `该${state}订单的工序集合获取失败。如有问题请联系管理员`
+                    var status = true
+                    if (val.data.partstate == 1 && !(val.data.parttime && val.data.partuser)) { //配件订单
+                        var _data = await orderutil.fetchorderwork(state)
+                        if (_data.code == "ok") {
+                            let list = [] //下一道工序的序号
+                            for (i in _data.data) {
+                                list.push(_data.data[i].workstage)
                             }
-
+                            var nextid = list.indexOf(val.data.next)
+                            var key_work = ["柜门-白胚质检","实柜-白胚质检", "柜体-白胚质检","房门-白胚质检"]
+                            for (var i = 0; i < key_work.length; i++) {
+                                var n = list.indexOf(key_work[i])
+                                if (n <= nextid && n != -1) {
+                                    status = false
+                                    ctx.state.content = `该${state}订单配件工序尚未完成，无法对其进行${val.data.next}等后续操作。如有问题请联系管理员`
+                                    break
+                                }
+                            }
+                        } else {
+                            status = false
+                            ctx.state.content = `该${state}订单的工序集合获取失败。如有问题请联系管理员`
                         }
-
                     }
                     if (status) {
                         val.data.type = 0 //正常提交
