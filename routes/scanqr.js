@@ -131,7 +131,7 @@ router.get("/qrupinfo", async(ctx, next) => {
                                 list.push(_data.data[i].workstage)
                             }
                             var nextid = list.indexOf(val.data.next)
-                            var key_work = ["柜门-白胚质检","实柜-白胚质检", "柜体-白胚质检","房门-白胚质检"]
+                            var key_work = ["柜门-白胚质检","门套-白胚质检", "墙板-白胚质检","房门-白胚质检"]
                             for (var i = 0; i < key_work.length; i++) {
                                 var n = list.indexOf(key_work[i])
                                 if (n <= nextid && n != -1) {

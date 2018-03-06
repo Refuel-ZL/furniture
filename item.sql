@@ -11,7 +11,7 @@
  Target Server Version : 50553
  File Encoding         : 65001
 
- Date: 18/12/2017 09:20:38
+ Date: 27/12/2017 10:47:00
 */
 
 SET NAMES utf8mb4;
@@ -57,7 +57,7 @@ CREATE TABLE `orderinfo`  (
   `partuser` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '配件完成用户',
   PRIMARY KEY (`id`, `pid`) USING BTREE,
   INDEX `pid`(`pid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for userinfo
@@ -85,7 +85,7 @@ CREATE TABLE `userworkinfo`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `userid`(`userid`) USING BTREE,
   CONSTRAINT `userworkinfo_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `userinfo` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 142 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 170 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for workrecord
@@ -102,7 +102,7 @@ CREATE TABLE `workrecord`  (
   INDEX `userid`(`userid`) USING BTREE,
   CONSTRAINT `workrecord_ibfk_2` FOREIGN KEY (`workstageid`) REFERENCES `workstageinfo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `workrecord_ibfk_3` FOREIGN KEY (`userid`) REFERENCES `userinfo` (`userid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for workstageinfo
@@ -118,6 +118,6 @@ CREATE TABLE `workstageinfo`  (
   INDEX `workstage`(`workstage`) USING BTREE,
   INDEX `orderinfo`(`orderinfo`) USING BTREE,
   CONSTRAINT `workstageinfo_ibfk_1` FOREIGN KEY (`orderinfo`) REFERENCES `orderinfo` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1225 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 48 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;

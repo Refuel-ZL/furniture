@@ -223,33 +223,34 @@
                                     success: function(data) {
                                         if (data.total > 0) {
                                             var optionString = "";
-                                            // $.each(data.rows, function(index, units) {
-                                            //     optionString += `<optgroup class="group_${index}" label="${units.name}">`
-                                            //     $.each(units.item, function(i, u) {
-                                            //         optionString += "<option value='" + u + "'>" + u + "</option>"
-                                            //     })
-                                            //     optionString += "</optgroup>"
-                                            // })
-                                            var list = {}
                                             $.each(data.rows, function(index, units) {
-                                                $.each(units.item, function(i, u) {
-                                                    var n = u.substring(0, u.indexOf("-"))
-                                                    if (!list.hasOwnProperty(n)) {
-                                                        list[n] = []
-                                                    }
-                                                    if (list[n].indexOf(u) < 0) {
-                                                        list[n].push(u);
-                                                    }
-                                                })
+                                                 optionString += `<optgroup class="group_${index}" label="${units.name}">`
+                                                 $.each(units.item, function(i, u) {
+                                                     optionString += "<option value='" + u + "'>" + u + "</option>"
+                                                 })
+                                                 optionString += "</optgroup>"
                                             })
+											
+                                            //var list = {}
+                                            // $.each(data.rows, function(index, units) {
+                                            //   $.each(units.item, function(i, u) {
+                                            //      var n = u.substring(0, u.indexOf("-"))
+                                            //      if (!list.hasOwnProperty(n)) {
+                                            //          list[n] = []
+                                            //      }
+                                            //      if (list[n].indexOf(u) < 0) {
+                                            //           list[n].push(u);
+                                            //       }
+                                            //   })
+											// })
 
-                                            $.each(list, function(index, units) {
-                                                optionString += `<optgroup  label="${index}">`
-                                                $.each(units, function(i, u) {
-                                                    optionString += "<option value='" + u + "'>" + u + "</option>"
-                                                })
-                                                optionString += "</optgroup>"
-                                            })
+											//  $.each(list, function(index, units) {
+                                           //     optionString += `<optgroup  label="${index}">`
+                                           //     $.each(units, function(i, u) {
+                                          //          optionString += "<option value='" + u + "'>" + u + "</option>"
+                                          //      })
+                                          //      optionString += "</optgroup>"
+                                          //  })
 
                                             var parent = $('#workitem');
                                             parent.empty();

@@ -148,7 +148,7 @@ var fun = {
                                 part[0]["userid"] =val[0].partuser
                             }
                         }
-                       
+
 
                         part[0]["workstage"] = "配件"
                         part[0]["kind"] = null
