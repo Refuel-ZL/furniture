@@ -142,7 +142,7 @@
                         if (data.index != 0 && !data.timeout.status) {
                             rediodata[data.id] = data.workstage
                         }
-                        let message = ""
+                        var message = ""
                         if (data.timeout.status) {
                             message = `据上一工序已超过允许范围:<br>超时【${data.timeout.timer}】`
                         }

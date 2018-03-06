@@ -323,7 +323,7 @@
                                 ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
                                 ctx.putImageData(oldCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
                                 if (config.status != 'normal') {
-                                    let text = "失效"; //设置文字内容  
+                                    var text = "失效"; //设置文字内容  
                                     ctx.fillStyle = 'rgba(96,96,96, 0.9)';
                                     ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
                                     ctx.fillStyle = '#000000';
